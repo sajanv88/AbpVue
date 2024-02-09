@@ -7,17 +7,31 @@
     "dev": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "generate:apiabp": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && openapi --input https://localhost:44388/swagger/v1/swagger.json --output ./services/proxy/src --client axios",
+    "lint:ts": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
+    "lint:check": "prettier --check .",
+    "lint": "pnpm run lint:ts && pnpm run lint:check",
+    "lint:fix": "prettier --write --list-different . && pnpm run lint:ts --fix"
   },
   "devDependencies": {
+    "@nuxtjs/eslint-module": "^4.1.0",
     "@nuxtjs/tailwindcss": "^6.11.3",
+    "@pinia/nuxt": "^0.5.1",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-vue": "^9.21.1",
     "nuxt": "^3.10.0",
+    "openapi-typescript-codegen": "^0.27.0",
+    "prettier": "^3.2.5",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
     "flowbite": "^2.2.1",
-    "flowbite-vue": "^0.1.2",
     "jwt-decode": "^4.0.0",
     "openid-client": "^5.6.4"
   }
