@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "generate:apiabp": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && openapi --input https://localhost:44388/swagger/v1/swagger.json --output ./services/proxy/src --client axios",
+    "generate:apiabp": "export NODE_TLS_REJECT_UNAUTHORIZED=0 && openapi --input https://localhost:44388/swagger/v1/swagger.json --output ./services/proxy/src --client fetch",
     "lint:ts": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
     "lint:check": "prettier --check .",
     "lint": "pnpm run lint:ts && pnpm run lint:check",

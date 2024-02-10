@@ -3,8 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type Volo_Abp_TenantManagement_TenantDto = {
-  readonly extraProperties?: Record<string, any> | null;
-  id?: string;
-  name?: string | null;
-  concurrencyStamp?: string | null;
+    readonly extraProperties?: Record<string, any> | null;
+    id?: string;
+    name?: string | null;
+    concurrencyStamp?: string | null;
 };
+

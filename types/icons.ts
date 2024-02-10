@@ -5,4 +5,7 @@ export type IconName =
   | "identity"
   | "configure"
   | "menu"
-  | "cross";
+  | "cross"
+  | "logout"
+  | "search"
+  | "plus";

@@ -14,6 +14,7 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   runtimeConfig: {
     openiddict: {
       issuer: process.env.NUXT_AUTHORITY_URL,
@@ -24,6 +25,7 @@ export default defineNuxtConfig({
       postLogoutRedirectUrl: process.env.NUXT_POST_LOGOUT_REDIRECT_URI,
     },
     sessionSecret: process.env.NUXT_SESSION_SECRET,
+    abpApiEndpoint: process.env.NUXT_ABP_API_ENDPOINT,
     public: {
       baseUrl: process.env.NUXT_ORIGIN,
     },

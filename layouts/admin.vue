@@ -3,7 +3,7 @@ import Navigation from "~/components/admin/Navigation.vue";
 import type { INavigation } from "~/types/navigation";
 import IconButton from "~/components/shared/IconButton.vue";
 import Icon from "~/components/shared/Icon.vue";
-import { useTokenSet } from "~/store/state";
+import { useAbpConfiguration, useTokenSet } from "~/store/state";
 
 const navigations: Array<INavigation> = [
   {
@@ -21,7 +21,7 @@ const navigations: Array<INavigation> = [
       {
         id: "tenants",
         title: "Tenants",
-        link: "/admin/tenants",
+        link: "/admin/saas/tenants",
       },
     ],
   },
@@ -58,9 +58,18 @@ const navigations: Array<INavigation> = [
     ],
   },
 ];
+
 const token = useTokenSet();
+const abpConfig = useAbpConfiguration();
+
 await callOnce(async () => {
+  console.log("Fetching token");
   await token.fetch();
+});
+
+await callOnce(async () => {
+  console.log("Fetching abpConfig");
+  await abpConfig.fetch();
 });
 
 const onMenuClickEvent = () => {
@@ -77,7 +86,7 @@ const onMenuClickEvent = () => {
 </script>
 
 <template>
-  <main class="relative">
+  <main class="relative bg-gray-200 dark:bg-gray-800">
     <IconButton
       class="block absolute transition md:hidden"
       @click="onMenuClickEvent"
@@ -87,7 +96,7 @@ const onMenuClickEvent = () => {
     </IconButton>
     <section class="grid md:grid-cols-12">
       <section
-        class="absolute w-full translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3 xl:col-span-2 bg-gray-200 dark:bg-gray-800 h-svh"
+        class="absolute w-full shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3 xl:col-span-2 h-svh"
         data-navSection="main-nav"
       >
         <IconButton
@@ -103,7 +112,11 @@ const onMenuClickEvent = () => {
         role="main"
         class="pl-10 md:pl-0 md:col-span-8 lg:col-span-9 xl:col-span-10"
       >
-        <AdminHeader sticky class="hidden md:block" position="justify-end" />
+        <AdminHeader
+          sticky
+          class="hidden ml-2 md:block"
+          position="justify-end"
+        />
         <section
           class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:p-10"
         >
