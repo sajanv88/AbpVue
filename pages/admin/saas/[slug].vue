@@ -8,6 +8,7 @@ const saasSlugs = ["tenants"] as const;
 type Slug = (typeof saasSlugs)[number];
 definePageMeta({
   layout: "admin",
+  middleware: "auth",
 });
 const {
   params: { slug },

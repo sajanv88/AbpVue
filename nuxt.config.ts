@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import type { NuxtPage } from "@nuxt/schema";
+
 export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/eslint-module", "@pinia/nuxt"],
   app: {
@@ -14,7 +16,23 @@ export default defineNuxtConfig({
       ],
     },
   },
-
+  // hooks: {
+  //   "pages:extend"(pages) {
+  //     function setMiddleware(pages: NuxtPage[]) {
+  //       for (const page of pages) {
+  //         console.log(page, "page");
+  //         if (page.path.includes("/admin/")) {
+  //           page.meta ||= {};
+  //           page.meta.middleware = ["auth"];
+  //         }
+  //         if (page.children) {
+  //           setMiddleware(page.children);
+  //         }
+  //       }
+  //     }
+  //     setMiddleware(pages);
+  //   },
+  // },
   runtimeConfig: {
     openiddict: {
       issuer: process.env.NUXT_AUTHORITY_URL,

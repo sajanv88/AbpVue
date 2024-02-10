@@ -3,7 +3,7 @@ import type { TokenSet } from "~/types/tokenSet";
 import type { Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto } from "~/services/proxy/src";
 
 type TokenSetState = { jwt?: TokenSet };
-const getAbpServiceProxy = () => "/api/abpServiceProxy";
+export const getAbpServiceProxy = () => "/api/abpServiceProxy";
 export const useTokenSet = defineStore("tokenSet", {
   state: () => ({
     accessToken: "",
@@ -50,13 +50,6 @@ export const useAbpConfiguration = defineStore("abpConfiguration", {
         this.error = error.value as AbpConfigurationState["error"];
       }
       const response = data.value as AbpConfigurationState["config"];
-
-      if (!response?.currentUser?.isAuthenticated) {
-        throw createError({
-          statusCode: 401,
-          message: "User is not authenticated",
-        });
-      }
       this.config = response;
     },
   },

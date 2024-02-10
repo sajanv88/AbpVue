@@ -9,10 +9,16 @@ defineProps({
 
 <template>
   <header
-    class="w-full h-16 bg-gray-200 dark:bg-gray-800"
-    :class="sticky ? 'sticky' : ''"
+    class="w-full mb-3 md:h-16 bg-gray-200 dark:bg-gray-800 shadow-md md:pr-5"
   >
-    <div class="container flex items-center h-full pr-5" :class="position">
+    <div class="flex items-center h-full" :class="position">
+      <div class="flex-1 pl-2 md:pl-5">
+        <h1
+          class="text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white"
+        >
+          AbpVue Template
+        </h1>
+      </div>
       <ClientOnly fallback="...">
         <ThemeSwitch />
       </ClientOnly>

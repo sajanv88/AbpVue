@@ -87,8 +87,9 @@ const onMenuClickEvent = () => {
 
 <template>
   <main class="relative bg-gray-200 dark:bg-gray-800">
+    <AdminHeader />
     <IconButton
-      class="block absolute transition md:hidden"
+      class="block absolute transition left-2 md:hidden"
       @click="onMenuClickEvent"
       data-menuBtn="mobile-menu"
     >
@@ -96,11 +97,11 @@ const onMenuClickEvent = () => {
     </IconButton>
     <section class="grid md:grid-cols-12">
       <section
-        class="absolute w-full shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3 xl:col-span-2 h-svh"
+        class="absolute z-10 w-full bg-gray-200 dark:bg-gray-800 shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3 h-svh"
         data-navSection="main-nav"
       >
         <IconButton
-          class="hidden absolute right-0 transition md:hidden"
+          class="hidden absolute right-2 transition md:hidden"
           @click="onMenuClickEvent"
           data-menuBtn="mobile-cross"
         >
@@ -110,13 +111,8 @@ const onMenuClickEvent = () => {
       </section>
       <section
         role="main"
-        class="pl-10 md:pl-0 md:col-span-8 lg:col-span-9 xl:col-span-10"
+        class="mt-10 md:mt-0 md:pl-0 md:col-span-8 lg:col-span-9"
       >
-        <AdminHeader
-          sticky
-          class="hidden ml-2 md:block"
-          position="justify-end"
-        />
         <section
           class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:p-10"
         >
