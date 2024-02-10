@@ -15,7 +15,6 @@ Yet to be updated!
 
 Yet to be updated!
 
-
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/en/)
@@ -54,6 +53,7 @@ pnpm dev
 This is a Vue UI for the [ABP Framework](https://abp.io/). We are just getting started it is not ready for production, However, you can use fork it with your own risk. We are using [Nuxt](https://nuxt.com/), [TypeScript](https://www.typescriptlang.org/) and [Tailwind CSS](https://tailwindcss.com/).
 
 ## Why Use ABP Vue?
+
 In the past we have used Angular and React for the ABP Framework. We have also used Blazor for the ABP Framework. We have not yet used Vue for the ABP Framework. Vue is a very popular framework and it is very easy to use. We are building this project to provide a Vue UI for the ABP Framework. We are also building this project to provide a reference for anyone who wants to build a Vue UI for the ABP Framework.
 
 ## LightHouse Score
@@ -66,7 +66,7 @@ It will be a fully functional UI that can be used as a starting point for any AB
 ## Features
 
 - [] Landing Page
-- [X] Login, Logout, Register, Forgot Password (Without UX)
+- [x] Login, Logout, Register, Forgot Password (Without UX)
 - [] Multilingual
 - [] Theme Switcher
 - [] Profile
