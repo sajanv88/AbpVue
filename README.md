@@ -45,6 +45,23 @@ dotnet new abp-vue -o my-project-name
 ```bash
 cd my-project-name
 pnpm install
+
+// configure .env file as follows
+
+NUXT_AUTHORITY_URL=https://localhost:44312
+NUXT_CLIENT_ID=Abp_Vue
+
+NUXT_CLIENT_SECRET=1q2w3e*
+NUXT_SCOPE=openid profile email Abp
+
+NUXT_REDIRECT_URI=api/auth/callback/openiddict
+NUXT_POST_LOGOUT_REDIRECT_URI=api/auth/signout/callback
+NUXT_ORIGIN=http://localhost:3000
+
+NUXT_SESSION_SECRET=p66u6g46N/pFYYTFOTWyA3AqVvbyb0+i6LBg6bTOOMVeOP4=
+
+NUXT_ABP_API_ENDPOINT=https://localhost:44388/api
+
 pnpm dev
 ```
 
