@@ -1,9 +1,9 @@
-import { Issuer, generators } from 'openid-client';
+import { Issuer, generators } from "openid-client";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
   const iss = await Issuer.discover(config.openiddict.issuer);
-  console.log('Discovered issuer %s %O', iss.issuer, iss.metadata);
+  // console.log('Discovered issuer %s %O', iss.issuer, iss.metadata);
   const client = new iss.Client({
     client_id: config.openiddict.clientId,
     client_secret: config.openiddict.clientSecret,
@@ -13,17 +13,17 @@ export default defineEventHandler(async (event) => {
     post_logout_redirect_uris: [
       `${config.public.baseUrl}/${config.openiddict.postLogoutRedirectUrl}`,
     ],
-    response_types: ['code'],
+    response_types: ["code"],
   });
-  if (event.path == '/api/auth/signin') {
+  if (event.path == "/api/auth/signin") {
     try {
       const codeVerifier = generators.codeVerifier();
       const codeChallenge = generators.codeChallenge(codeVerifier);
-      const codeChallengeMethod = 'S256';
+      const codeChallengeMethod = "S256";
 
-      setCookie(event, 'code_verifier', codeVerifier, {
+      setCookie(event, "code_verifier", codeVerifier, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === "production",
       });
 
       const authorizationUrl = client.authorizationUrl({
@@ -37,15 +37,15 @@ export default defineEventHandler(async (event) => {
     } catch (e: unknown) {
       if (e instanceof Error) {
         return {
-          error: 'Error discovering issuer.',
-          isAuthenticated: 'false',
+          error: "Error discovering issuer.",
+          isAuthenticated: "false",
           message: e.message,
         };
       }
     }
   } else if (event.path.includes(config.openiddict.redirectUrl)) {
     try {
-      const code_verifier = getCookie(event, 'code_verifier');
+      const code_verifier = getCookie(event, "code_verifier");
 
       const req = event.node.req;
       const params = client.callbackParams(req);
@@ -69,16 +69,16 @@ export default defineEventHandler(async (event) => {
         },
       );
 
-      await sendRedirect(event, '/admin');
+      await sendRedirect(event, "/admin");
     } catch (e: unknown) {
       if (e instanceof Error) {
-        console.error('Error Authenticating: ', e.message);
-        await sendRedirect(event, '/', 400);
+        console.error("Error Authenticating: ", e.message);
+        await sendRedirect(event, "/", 400);
       }
     }
-  } else if (event.path == '/api/auth/signup') {
+  } else if (event.path == "/api/auth/signup") {
     await sendRedirect(event, `${config.openiddict.issuer}/Account/Register`);
-  } else if (event.path == '/api/auth/signout') {
+  } else if (event.path == "/api/auth/signout") {
     await getSession(event, { password: config.sessionSecret });
     const logoutUrl = client.endSessionUrl({
       client_id: config.openiddict.clientId,
@@ -86,8 +86,8 @@ export default defineEventHandler(async (event) => {
     await sendRedirect(event, logoutUrl);
   } else if (event.path == `/${config.openiddict.postLogoutRedirectUrl}`) {
     await clearSession(event, { password: config.sessionSecret });
-    await sendRedirect(event, '/');
+    await sendRedirect(event, "/");
   } else {
-    await sendRedirect(event, '/error/notfound', 404);
+    await sendRedirect(event, "/error/notfound", 404);
   }
 });

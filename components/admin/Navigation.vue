@@ -8,11 +8,10 @@ interface INavigationProps {
 defineProps<INavigationProps>();
 const { config } = useAbpConfiguration();
 const currentUser = config?.currentUser;
-console.log(currentUser, "config");
 </script>
 
 <template>
-  <section role="navigation" class="bg">
+  <section role="navigation" class="bg" id="nav">
     <div class="flex flex-col w-full p-1 pt-5">
       <h1
         class="capitalize text-lg dark:text-white font-extrabold text-center"

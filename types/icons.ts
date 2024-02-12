@@ -8,4 +8,5 @@ export type IconName =
   | "cross"
   | "logout"
   | "search"
-  | "plus";
+  | "plus"
+  | "check";

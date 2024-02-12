@@ -1,9 +1,15 @@
 import { defineStore } from "pinia";
 import type { TokenSet } from "~/types/tokenSet";
-import type { Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto } from "~/services/proxy/src";
+import type {
+  Volo_Abp_Application_Dtos_PagedResultDto_1,
+  Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto,
+  Volo_Abp_TenantManagement_TenantDto,
+} from "~/services/proxy/src";
+import type { GrantedPolicyType } from "~/types/grantedPolicies";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = () => "/api/abpServiceProxy";
+
 export const useTokenSet = defineStore("tokenSet", {
   state: () => ({
     accessToken: "",
@@ -23,8 +29,12 @@ export const useTokenSet = defineStore("tokenSet", {
         this.idToken = response.jwt.id_token;
         this.scope = response.jwt.scope;
       }
-      if (error.value) {
-        throw new Error(error.value.message);
+      console.log(error, "error");
+      if (error) {
+        return createError({
+          statusCode: 401,
+          message: "Unauthorized: Please login.",
+        });
       }
     },
   },
@@ -33,12 +43,15 @@ export const useTokenSet = defineStore("tokenSet", {
 type AbpConfigurationState = {
   config: Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto | null;
   error: { message: string; statusCode: number } | null;
+  grantedPolicies: Map<GrantedPolicyType, boolean> | null;
 };
+
 export const useAbpConfiguration = defineStore("abpConfiguration", {
   state: (): AbpConfigurationState => {
     return {
       config: null,
       error: null,
+      grantedPolicies: null,
     };
   },
 
@@ -50,7 +63,68 @@ export const useAbpConfiguration = defineStore("abpConfiguration", {
         this.error = error.value as AbpConfigurationState["error"];
       }
       const response = data.value as AbpConfigurationState["config"];
-      this.config = response;
+      if (response) {
+        this.config = response;
+
+        if (response.auth?.grantedPolicies) {
+          const keys = Object.entries(response.auth.grantedPolicies);
+          this.grantedPolicies = new Map<GrantedPolicyType, boolean>();
+          for (const [key, value] of keys) {
+            const localKey =
+              `is${key.split(".").join("")}` as GrantedPolicyType;
+            this.grantedPolicies.set(localKey, value);
+          }
+        }
+      }
+    },
+  },
+});
+
+type AbpTenantState = {
+  tenants: Volo_Abp_TenantManagement_TenantDto[] | null;
+  totalCount: number;
+  error: { message: string; statusCode: number } | null;
+  isLoading: boolean;
+};
+type TenantFetchProps = {
+  Filter?: string;
+  Sorting?: string;
+  SkipCount?: number;
+  MaxResultCount?: number;
+};
+export const useTenants = defineStore("tenants", {
+  state: (): AbpTenantState => {
+    return {
+      tenants: null,
+      error: null,
+      totalCount: 0,
+      isLoading: false,
+    };
+  },
+  actions: {
+    async fetch(params?: TenantFetchProps) {
+      this.isLoading = true;
+      let url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
+      if (params && Object.keys(params).length > 0) {
+        const queries = Object.entries(params);
+        const queryParam: string[] = [];
+        for (const [key, value] of queries) {
+          queryParam.push(`${key}=${value}`);
+        }
+        url = `${url}?${queryParam.join("&")}`;
+      }
+      const { data, error } = await useFetch(url);
+
+      if (error.value) {
+        this.error = error.value as AbpTenantState["error"];
+        this.isLoading = false;
+      }
+      const response = data.value as Volo_Abp_Application_Dtos_PagedResultDto_1;
+      if (response) {
+        this.tenants = response?.items as AbpTenantState["tenants"];
+        this.totalCount = response?.totalCount as AbpTenantState["totalCount"];
+        this.isLoading = false;
+      }
     },
   },
 });

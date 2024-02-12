@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import type { NuxtPage } from "@nuxt/schema";
+// import type { NuxtPage } from "@nuxt/schema";
 
 export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/eslint-module", "@pinia/nuxt"],

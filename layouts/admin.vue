@@ -95,7 +95,7 @@ const onMenuClickEvent = () => {
     >
       <Icon icon="menu" />
     </IconButton>
-    <section class="grid md:grid-cols-12">
+    <section class="grid md:grid-cols-12 max-h-max">
       <section
         class="absolute z-10 w-full bg-gray-200 dark:bg-gray-800 shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3 h-svh"
         data-navSection="main-nav"
@@ -114,7 +114,7 @@ const onMenuClickEvent = () => {
         class="mt-10 md:mt-0 md:pl-0 md:col-span-8 lg:col-span-9"
       >
         <section
-          class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:p-10"
+          class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:p-5"
         >
           <slot />
         </section>
