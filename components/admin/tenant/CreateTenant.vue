@@ -2,13 +2,15 @@
 import Dialog from "~/components/shared/Dialog.vue";
 import { useTenants } from "~/store/state";
 import type { Volo_Abp_TenantManagement_TenantCreateDto } from "~/services/proxy/src";
+import { storeToRefs } from "pinia";
+import Alert from "~/components/shared/Alert.vue";
 interface ICreateTenantProps {
   edit?: boolean;
   open: boolean;
 }
 defineProps<ICreateTenantProps>();
 const tenantStore = useTenants();
-
+const { create } = storeToRefs(tenantStore);
 const createNewTenant = async function (e: SubmitEvent) {
   e.stopImmediatePropagation();
   e.preventDefault();
@@ -40,6 +42,7 @@ const createNewTenant = async function (e: SubmitEvent) {
     :open="open"
     @close="$emit('dialogClose')"
   >
+    <Alert v-if="create.error" type="error" :message="create.error.message" />
     <form class="p-4 md:p-5" @submit="createNewTenant">
       <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
@@ -87,7 +90,9 @@ const createNewTenant = async function (e: SubmitEvent) {
         </div>
       </div>
       <footer class="flex items-center justify-end space-x-2">
+        <span v-if="tenantStore.create.status">Creating a New Tenant...</span>
         <button
+          v-if="!tenantStore.create.status"
           id="tenantCancelBtn"
           type="button"
           @click="$emit('dialogClose')"
@@ -96,6 +101,7 @@ const createNewTenant = async function (e: SubmitEvent) {
           Cancel
         </button>
         <button
+          v-if="!tenantStore.create.status"
           type="submit"
           class="inline-flex items-center px-4 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
         >

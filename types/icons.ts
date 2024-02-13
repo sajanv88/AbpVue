@@ -10,4 +10,6 @@ export type IconName =
   | "search"
   | "plus"
   | "check"
-  | "dots";
+  | "dots"
+  | "info-circle"
+  | "chev-down";

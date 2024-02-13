@@ -30,7 +30,7 @@ export const useTokenSet = defineStore("tokenSet", {
         this.idToken = response.jwt.id_token;
         this.scope = response.jwt.scope;
       }
-      console.log(error, "error");
+
       if (error) {
         return createError({
           statusCode: 401,
@@ -61,7 +61,10 @@ export const useAbpConfiguration = defineStore("abpConfiguration", {
       const url = `${getAbpServiceProxy()}/abp/application-configuration`;
       const { data, error } = await useFetch(url);
       if (error.value) {
-        this.error = error.value as AbpConfigurationState["error"];
+        this.error = {
+          message: error.value.statusMessage,
+          statusCode: error.value.statusCode,
+        } as AbpConfigurationState["error"];
       }
       const response = data.value as AbpConfigurationState["config"];
       if (response) {
@@ -86,7 +89,10 @@ type AbpTenantState = {
   totalCount: number;
   error: { message: string; statusCode: number } | null;
   isLoading: boolean;
-  isCreating: boolean;
+  create: {
+    error: { message: string; statusCode: number } | null;
+    status: boolean;
+  };
 };
 type TenantFetchProps = {
   Filter?: string;
@@ -101,22 +107,32 @@ export const useTenants = defineStore("tenants", {
       error: null,
       totalCount: 0,
       isLoading: false,
-      isCreating: false,
+      create: {
+        error: null,
+        status: false,
+      },
     };
   },
   actions: {
     async createTenant(payload: Volo_Abp_TenantManagement_TenantCreateDto) {
-      this.isCreating = true;
+      if (this.create.error) this.create.error = null;
       const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
       const { pending, error } = await useFetch(url, {
         method: "POST",
         body: payload,
       });
+      this.create.status = pending.value;
+
       if (error.value) {
-        this.error = error.value as AbpTenantState["error"];
+        this.create.error = {
+          message: error.value.statusMessage,
+          statusCode: error.value.statusCode,
+        } as AbpTenantState["error"];
+        this.create.status = false;
         return;
       }
-      this.isCreating = false;
+      this.create.status = false;
+      this.create.error = null;
       await this.fetch();
       return true;
     },
@@ -134,7 +150,10 @@ export const useTenants = defineStore("tenants", {
       const { data, error } = await useFetch(url);
 
       if (error.value) {
-        this.error = error.value as AbpTenantState["error"];
+        this.error = {
+          message: error.value.statusMessage,
+          statusCode: error.value.statusCode,
+        } as AbpTenantState["error"];
         this.isLoading = false;
       }
       const response = data.value as Volo_Abp_Application_Dtos_PagedResultDto_1;
@@ -142,7 +161,56 @@ export const useTenants = defineStore("tenants", {
         this.tenants = response?.items as AbpTenantState["tenants"];
         this.totalCount = response?.totalCount as AbpTenantState["totalCount"];
         this.isLoading = false;
+        this.error = null;
       }
+    },
+  },
+});
+
+type DeleteDialogState = {
+  isOpen: boolean;
+  id: string;
+  message: string;
+  isLoading: boolean;
+  error: { message: string; statusCode: number } | null;
+};
+export const useDeleteDialog = defineStore("deleteDialog", {
+  state: (): DeleteDialogState => {
+    return {
+      isOpen: false,
+      id: "",
+      message: "",
+      isLoading: false,
+      error: null,
+    };
+  },
+  actions: {
+    async showDialog(id: string, message: string) {
+      this.id = id;
+      this.message = message;
+      this.isOpen = true;
+    },
+    async deleteRecord(apiUrl: string) {
+      const url = `${getAbpServiceProxy()}/${apiUrl}`;
+      this.isLoading = true;
+      console.log(url, "url");
+      const { error } = await useFetch(url, {
+        method: "DELETE",
+      });
+
+      if (error.value) {
+        this.error = {
+          message: error.value.statusMessage,
+          statusCode: error.value.statusCode,
+        } as DeleteDialogState["error"];
+        this.isLoading = false;
+        return;
+      }
+
+      this.error = null;
+      this.isOpen = false;
+      this.isLoading = false;
+      return true;
     },
   },
 });

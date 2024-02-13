@@ -87,6 +87,8 @@ const onMenuClickEvent = () => {
 
 <template>
   <main class="relative bg-gray-200 dark:bg-gray-800">
+    <div id="dialog" />
+
     <AdminHeader />
     <IconButton
       class="block absolute transition left-2 md:hidden"

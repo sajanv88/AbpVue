@@ -2,15 +2,25 @@
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import FilterContainer from "~/components/admin/FilterContainer.vue";
-import { useTenants } from "~/store/state";
+import {
+  useAbpConfiguration,
+  useDeleteDialog,
+  useTenants,
+} from "~/store/state";
 
 import Table from "~/components/shared/Table.vue";
 import type { ActionCtaDataType } from "~/components/shared/Table.vue";
 import Pagination from "~/components/shared/Pagination.vue";
+import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
 type Slug = (typeof saasSlugs)[number];
+type ReturnConfig = {
+  headers: Array<{ name: string }>;
+  columns: Array<{ name: string; id: string }>;
+  actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
+};
 definePageMeta({
   layout: "admin",
   middleware: "auth",
@@ -21,7 +31,11 @@ const {
 const paramSlug: Slug = slug as Slug;
 
 const tenantStore = useTenants();
+const abpConfigStore = useAbpConfiguration();
+const deleteDialogStore = useDeleteDialog();
 const { tenants, totalCount, isLoading } = storeToRefs(tenantStore);
+const { isOpen } = storeToRefs(deleteDialogStore);
+
 const currentPage = ref(0);
 const maxRecord = ref(10);
 const enablePagination = ref(false);
@@ -38,53 +52,89 @@ if (!saasSlugs.includes(paramSlug)) {
   await navigateTo("/error/notfound");
 }
 
-const onTableActionEvent = ({
+const tenantPolicies = () => {
+  const canDeleteTenant = abpConfigStore?.grantedPolicies?.get(
+    "isAbpTenantManagementTenantsDelete",
+  );
+  const canUpdateTenant = abpConfigStore?.grantedPolicies?.get(
+    "isAbpTenantManagementTenantsUpdate",
+  );
+  const canManageFeatures = abpConfigStore?.grantedPolicies?.get(
+    "isAbpTenantManagementTenantsManageFeatures",
+  );
+  return { canDeleteTenant, canUpdateTenant, canManageFeatures };
+};
+
+// Update your code for editions etc..
+const slugMapper: Record<Slug, () => ReturnConfig> = {
+  tenants: () => {
+    const headers: Array<{ name: string }> = [
+      {
+        name: "Actions",
+      },
+      {
+        name: "TenantName",
+      },
+    ];
+    const columns: Array<{ name: string; id: string }> = [];
+
+    const { canDeleteTenant, canUpdateTenant, canManageFeatures } =
+      tenantPolicies();
+    const actionCtaBtnProps: ReturnConfig["actionCtaBtnProps"] = {
+      name: "Actions",
+      options: [],
+    };
+    if (canDeleteTenant) {
+      actionCtaBtnProps.options.push({ name: "Delete" });
+    }
+    if (canUpdateTenant) {
+      actionCtaBtnProps.options.push({ name: "Edit" });
+    }
+    if (canManageFeatures) {
+      actionCtaBtnProps.options.push({ name: "Settings" });
+    }
+
+    return { headers, actionCtaBtnProps, columns };
+  },
+};
+const onTableActionEvent = async ({
   data: { invokedBy, value },
 }: {
   data: ActionCtaDataType;
 }) => {
   console.log({ invokedBy, value });
+  if (invokedBy === "Delete") {
+    await deleteDialogStore.showDialog(
+      value.id,
+      `${value.name} will be deleted. Do you confirm that?`,
+    );
+  }
 };
 
-// Update your code for editions etc..
-const headers: Array<{ name: string }> = [
-  {
-    name: "Actions",
-  },
-  {
-    name: "TenantName",
-  },
-];
-
-let columns: Array<{ name: string; id: string }> = [];
+const config = ref(slugMapper[paramSlug]());
 
 const updateTenants = (params: typeof tenants) => {
   if (paramSlug == "tenants" && params.value) {
     for (const param of params.value) {
-      columns.push({ name: param.name!, id: param.id! });
+      config.value.columns.push({ name: param.name!, id: param.id! });
     }
   }
 };
 
 updateTenants(tenants);
 
-const actionCtaBtnProps = {
-  name: "Actions",
-};
-
 watch(tenants, () => {
-  columns = [];
+  config.value.columns = [];
   const t: typeof tenants = tenants;
   updateTenants(t);
 });
 
 watch(totalCount, () => {
-  enablePagination.value = totalCount.value > columns.length;
+  enablePagination.value = totalCount.value > config.value.columns.length;
 });
 
-enablePagination.value = totalCount.value > columns.length;
+enablePagination.value = totalCount.value > config.value.columns.length;
 
-console.log(totalCount.value, "totalCount");
 const onNextPage = async (page: number) => {
   currentPage.value = page;
   await tenantStore.fetch({
@@ -112,6 +162,10 @@ const totalPages = Math.ceil(totalCount.value / maxRecord.value);
 
 <template>
   <section>
+    <Teleport to="body">
+      <DeleteDialog :type="paramSlug" v-if="isOpen" />
+    </Teleport>
+
     <FilterContainer
       :slug="slug"
       newBtnName="New Tenant"
@@ -121,9 +175,9 @@ const totalPages = Math.ceil(totalCount.value / maxRecord.value);
     <main>
       <Table
         :is-loading="isLoading"
-        :headers="headers"
-        :columns="columns"
-        :action-cta="actionCtaBtnProps"
+        :headers="config.headers"
+        :columns="config.columns"
+        :action-cta="config.actionCtaBtnProps"
         @on-Action="onTableActionEvent"
       />
       <div v-if="enablePagination">

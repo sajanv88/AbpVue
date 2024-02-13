@@ -14,11 +14,11 @@ const lastPage = localCurrentPage >= props.totalPage;
 
 <template>
   <nav
-    class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4"
+    class="flex items-center flex-column pt-10 pb-10 justify-center flex-wrap md:pt-4 md:pb-0 md:flex-row md:justify-between"
     aria-label="Table navigation"
   >
     <span
-      class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:inline md:w-auto"
+      class="block text-center md:text-left text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 w-full md:inline md:w-auto"
       >Showing
       <span class="font-semibold text-gray-900 dark:text-white"
         >{{ localCurrentPage }}-{{ props.totalPage }}</span
@@ -53,11 +53,11 @@ const lastPage = localCurrentPage >= props.totalPage;
         <button
           v-else
           @click="$emit('onSelectedPage', page)"
-          class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
+          class="flex items-center justify-center px-3 h-8 leading-tight border border-gray-300 dark:border-gray-700"
           :class="
             localCurrentPage == page
-              ? 'cursor-not-allowed text-gray-800 bg-gray-400 dark:text-gray-800 dark:bg-gray-100'
-              : 'text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white'
+              ? 'cursor-not-allowed text-gray-800 bg-gray-400  dark:bg-gray-100 '
+              : 'text-gray-500 bg-white hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-white dark:bg-gray-800 dark:text-gray-400'
           "
           :disabled="localCurrentPage == page"
         >
