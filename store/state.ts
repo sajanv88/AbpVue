@@ -3,6 +3,7 @@ import type { TokenSet } from "~/types/tokenSet";
 import type {
   Volo_Abp_Application_Dtos_PagedResultDto_1,
   Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto,
+  Volo_Abp_TenantManagement_TenantCreateDto,
   Volo_Abp_TenantManagement_TenantDto,
 } from "~/services/proxy/src";
 import type { GrantedPolicyType } from "~/types/grantedPolicies";
@@ -85,6 +86,7 @@ type AbpTenantState = {
   totalCount: number;
   error: { message: string; statusCode: number } | null;
   isLoading: boolean;
+  isCreating: boolean;
 };
 type TenantFetchProps = {
   Filter?: string;
@@ -99,9 +101,25 @@ export const useTenants = defineStore("tenants", {
       error: null,
       totalCount: 0,
       isLoading: false,
+      isCreating: false,
     };
   },
   actions: {
+    async createTenant(payload: Volo_Abp_TenantManagement_TenantCreateDto) {
+      this.isCreating = true;
+      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
+      const { pending, error } = await useFetch(url, {
+        method: "POST",
+        body: payload,
+      });
+      if (error.value) {
+        this.error = error.value as AbpTenantState["error"];
+        return;
+      }
+      this.isCreating = false;
+      await this.fetch();
+      return true;
+    },
     async fetch(params?: TenantFetchProps) {
       this.isLoading = true;
       let url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;

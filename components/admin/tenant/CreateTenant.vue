@@ -1,35 +1,35 @@
 <script setup lang="ts">
 import Dialog from "~/components/shared/Dialog.vue";
-import { getAbpServiceProxy, useTenants } from "~/store/state";
+import { useTenants } from "~/store/state";
+import type { Volo_Abp_TenantManagement_TenantCreateDto } from "~/services/proxy/src";
 interface ICreateTenantProps {
   edit?: boolean;
   open: boolean;
 }
 defineProps<ICreateTenantProps>();
 const tenantStore = useTenants();
-const creating = ref(false);
 
-const createNewTenant = async (e: SubmitEvent) => {
+const createNewTenant = async function (e: SubmitEvent) {
+  e.stopImmediatePropagation();
   e.preventDefault();
+
   const formElem = e.target as HTMLFormElement;
 
   const formData = new FormData(formElem);
-  const payload: Record<string, FormDataEntryValue> = {};
+  const formValue: Record<string, FormDataEntryValue> = {};
   for (const [key, value] of formData.entries()) {
-    payload[key] = value;
+    formValue[key] = value;
   }
-  const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
-  const { pending, error } = await useFetch(url, {
-    method: "POST",
-    body: payload,
-  });
-  creating.value = pending.value;
-  if (error.value) {
-    console.log(error.value, "error");
-    return;
+  const payload: Volo_Abp_TenantManagement_TenantCreateDto = {
+    name: formValue.name as string,
+    adminEmailAddress: formValue.adminEmailAddress as string,
+    adminPassword: formValue.adminPassword as string,
+  };
+  const success = await tenantStore.createTenant(payload);
+  if (success) {
+    // close dialog
+    document.getElementById("tenantCancelBtn")?.click();
   }
-  await tenantStore.fetch();
-  document.getElementById("tenantCancelBtn")?.click();
 };
 </script>
 
@@ -89,6 +89,7 @@ const createNewTenant = async (e: SubmitEvent) => {
       <footer class="flex items-center justify-end space-x-2">
         <button
           id="tenantCancelBtn"
+          type="button"
           @click="$emit('dialogClose')"
           class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
         >

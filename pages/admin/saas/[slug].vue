@@ -6,6 +6,7 @@ import { useTenants } from "~/store/state";
 
 import Table from "~/components/shared/Table.vue";
 import type { ActionCtaDataType } from "~/components/shared/Table.vue";
+import Pagination from "~/components/shared/Pagination.vue";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
@@ -21,9 +22,15 @@ const paramSlug: Slug = slug as Slug;
 
 const tenantStore = useTenants();
 const { tenants, totalCount, isLoading } = storeToRefs(tenantStore);
+const currentPage = ref(0);
+const maxRecord = ref(10);
+const enablePagination = ref(false);
 await callOnce(async () => {
   if (paramSlug === "tenants") {
-    await tenantStore.fetch();
+    await tenantStore.fetch({
+      MaxResultCount: maxRecord.value,
+      SkipCount: currentPage.value,
+    });
   }
 });
 
@@ -50,6 +57,7 @@ const headers: Array<{ name: string }> = [
 ];
 
 let columns: Array<{ name: string; id: string }> = [];
+
 const updateTenants = (params: typeof tenants) => {
   if (paramSlug == "tenants" && params.value) {
     for (const param of params.value) {
@@ -69,6 +77,37 @@ watch(tenants, () => {
   const t: typeof tenants = tenants;
   updateTenants(t);
 });
+
+watch(totalCount, () => {
+  enablePagination.value = totalCount.value > columns.length;
+});
+
+enablePagination.value = totalCount.value > columns.length;
+
+console.log(totalCount.value, "totalCount");
+const onNextPage = async (page: number) => {
+  currentPage.value = page;
+  await tenantStore.fetch({
+    MaxResultCount: maxRecord.value,
+    SkipCount: currentPage.value,
+  });
+};
+const onPreviousPage = async (page: number) => {
+  currentPage.value = page;
+  await tenantStore.fetch({
+    MaxResultCount: maxRecord.value,
+    SkipCount: currentPage.value,
+  });
+};
+const onSelectedPage = async (page: number) => {
+  currentPage.value = page;
+  await tenantStore.fetch({
+    MaxResultCount: maxRecord.value,
+    SkipCount: currentPage.value,
+  });
+};
+
+const totalPages = Math.ceil(totalCount.value / maxRecord.value);
 </script>
 
 <template>
@@ -87,7 +126,16 @@ watch(tenants, () => {
         :action-cta="actionCtaBtnProps"
         @on-Action="onTableActionEvent"
       />
-      <span>{{ totalCount }}</span>
+      <div v-if="enablePagination">
+        <Pagination
+          :total-page="totalPages"
+          :current-page="currentPage"
+          :key="currentPage"
+          @on-next-page="onNextPage"
+          @on-previous-page="onPreviousPage"
+          @on-selected-page="onSelectedPage"
+        />
+      </div>
     </main>
   </section>
 </template>

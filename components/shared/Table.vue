@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
+
 export type ActionCtaDataType = {
   value: Record<string, unknown>;
   invokedBy: string;
@@ -15,7 +16,7 @@ defineProps<ITableProps>();
 
 <template>
   <div
-    class="relative overflow-x-auto shadow-md sm:rounded-lg overflow-y-auto h-[34rem]"
+    class="relative overflow-x-auto shadow-md sm:rounded-lg overflow-y-auto max-h-[34rem]"
   >
     <div v-if="isLoading" class="flex items-center justify-center h-40">
       <span>Loading...</span>

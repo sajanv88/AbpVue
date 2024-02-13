@@ -9,4 +9,5 @@ export type IconName =
   | "logout"
   | "search"
   | "plus"
-  | "check";
+  | "check"
+  | "dots";

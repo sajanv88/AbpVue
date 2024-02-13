@@ -114,7 +114,7 @@ const onMenuClickEvent = () => {
         class="mt-10 md:mt-0 md:pl-0 md:col-span-8 lg:col-span-9"
       >
         <section
-          class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:p-5"
+          class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:pl-5 md:pr-5 md:pb-5 md:pt-2"
         >
           <slot />
         </section>

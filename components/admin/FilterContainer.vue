@@ -44,6 +44,7 @@ const onCreateAction = () => {
 
 <template>
   <CreateTenant
+    v-if="showCreateTenantDialog"
     :open="showCreateTenantDialog"
     @dialog-close="showCreateTenantDialog = false"
   />
