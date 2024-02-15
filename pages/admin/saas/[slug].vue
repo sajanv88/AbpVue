@@ -179,6 +179,7 @@ const totalPages = Math.ceil(totalCount.value / maxRecord.value);
         :columns="config.columns"
         :action-cta="config.actionCtaBtnProps"
         @on-Action="onTableActionEvent"
+        :is-no-data="tenants?.length === 0"
       />
       <div v-if="enablePagination">
         <Pagination

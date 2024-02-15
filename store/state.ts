@@ -60,6 +60,7 @@ export const useAbpConfiguration = defineStore("abpConfiguration", {
     async fetch() {
       const url = `${getAbpServiceProxy()}/abp/application-configuration`;
       const { data, error } = await useFetch(url);
+
       if (error.value) {
         this.error = {
           message: error.value.statusMessage,
@@ -117,6 +118,7 @@ export const useTenants = defineStore("tenants", {
     async createTenant(payload: Volo_Abp_TenantManagement_TenantCreateDto) {
       if (this.create.error) this.create.error = null;
       const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
+
       const { pending, error } = await useFetch(url, {
         method: "POST",
         body: payload,

@@ -10,6 +10,7 @@ interface ITableProps {
   actionCta?: { name: string; options?: Array<{ name: string }> };
   columns: Array<Record<string, unknown>>;
   isLoading: boolean;
+  isNoData?: boolean;
 }
 defineProps<ITableProps>();
 const toggleSettings = ref("");
@@ -41,13 +42,10 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative overflow-x-auto shadow-md border dark:border-gray-700 sm:rounded-lg overflow-y-auto min-h-[30rem] max-h-[34rem]"
+    class="relative overflow-x-auto shadow-md border dark:border-gray-700 sm:rounded-lg overflow-y-auto max-h-[34rem]"
+    :class="isNoData ? 'min-h-fit' : 'min-h-[30rem]'"
   >
-    <div v-if="isLoading" class="flex items-center justify-center h-40">
-      <span>Loading...</span>
-    </div>
     <table
-      v-if="!isLoading"
       class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
     >
       <thead
@@ -61,6 +59,14 @@ onUnmounted(() => {
       </thead>
 
       <tbody>
+        <tr v-if="isLoading">
+          <th>Loading...</th>
+        </tr>
+        <tr v-if="isNoData">
+          <th class="pt-4 pl-4">No data available</th>
+          <th class="pt-4 pl-4 pb-4">0 total</th>
+        </tr>
+
         <tr
           class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50/10 dark:hover:bg-gray-600/10"
           v-for="col in columns"

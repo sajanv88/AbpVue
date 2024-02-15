@@ -16,7 +16,12 @@ export default defineNuxtConfig({
       ],
     },
   },
-
+  devServer: {
+    https: {
+      key: "cert.key",
+      cert: "ca.pem",
+    },
+  },
   runtimeConfig: {
     openiddict: {
       issuer: process.env.NUXT_AUTHORITY_URL,

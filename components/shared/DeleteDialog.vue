@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDeleteDialog } from "~/store/state";
+import { useDeleteDialog, useTenants } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Dialog from "~/components/shared/Dialog.vue";
 import Alert from "~/components/shared/Alert.vue";
@@ -9,6 +9,7 @@ interface IDeleteDialogProps {
 }
 const props = defineProps<IDeleteDialogProps>();
 const deleteStore = useDeleteDialog();
+const tenantStore = useTenants();
 const { message, isOpen, isLoading, id, error } = storeToRefs(deleteStore);
 
 const typeMapper: Record<IDeleteDialogProps["type"], string> = {
@@ -16,11 +17,20 @@ const typeMapper: Record<IDeleteDialogProps["type"], string> = {
   roles: "role",
   users: "user",
 };
+const storeFetchMapper: Record<
+  IDeleteDialogProps["type"],
+  () => Promise<void>
+> = {
+  tenants: tenantStore.fetch,
+  roles: () => Promise.resolve(),
+  users: () => Promise.resolve(),
+};
 
 const deleteAction = async () => {
   const success = await deleteStore.deleteRecord(typeMapper[props.type]);
   if (success) {
     deleteStore.$reset();
+    await storeFetchMapper[props.type]();
   }
 };
 const onClose = () => {
@@ -56,7 +66,7 @@ const onClose = () => {
         <button
           v-if="!isLoading"
           type="button"
-          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-red-200 hover:bg-red-700 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-red-800 dark:text-white dark:border-red-600 dark:hover:text-white dark:hover:bg-red-700"
+          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 focus:outline-none focus:border-blue-500 bg-white border border-red-200 hover:bg-red-700 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-red-800 dark:text-white dark:border-red-600 dark:hover:text-white dark:hover:bg-red-700"
           @click="deleteAction"
         >
           Delete
