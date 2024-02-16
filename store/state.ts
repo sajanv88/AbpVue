@@ -1,17 +1,17 @@
+/**
+ * This file is used to define the global state of the application.
+ */
 import { defineStore } from "pinia";
 import type { TokenSet } from "~/types/tokenSet";
-import type {
-  Volo_Abp_Application_Dtos_PagedResultDto_1,
-  Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto,
-  Volo_Abp_TenantManagement_TenantCreateDto,
-  Volo_Abp_TenantManagement_TenantDto,
-} from "~/services/proxy/src";
+import type { Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto } from "~/services/proxy/src";
 import type { GrantedPolicyType } from "~/types/grantedPolicies";
+import { useTenants } from "./tenantStore";
+import { useFeatures } from "./featureStore";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = () => "/api/abpServiceProxy";
 
-export const useTokenSet = defineStore("tokenSet", {
+const useTokenSet = defineStore("tokenSet", {
   state: () => ({
     accessToken: "",
     tokenType: "",
@@ -47,7 +47,7 @@ type AbpConfigurationState = {
   grantedPolicies: Map<GrantedPolicyType, boolean> | null;
 };
 
-export const useAbpConfiguration = defineStore("abpConfiguration", {
+const useAbpConfiguration = defineStore("abpConfiguration", {
   state: (): AbpConfigurationState => {
     return {
       config: null,
@@ -85,90 +85,6 @@ export const useAbpConfiguration = defineStore("abpConfiguration", {
   },
 });
 
-type AbpTenantState = {
-  tenants: Volo_Abp_TenantManagement_TenantDto[] | null;
-  totalCount: number;
-  error: { message: string; statusCode: number } | null;
-  isLoading: boolean;
-  create: {
-    error: { message: string; statusCode: number } | null;
-    status: boolean;
-  };
-};
-type TenantFetchProps = {
-  Filter?: string;
-  Sorting?: string;
-  SkipCount?: number;
-  MaxResultCount?: number;
-};
-export const useTenants = defineStore("tenants", {
-  state: (): AbpTenantState => {
-    return {
-      tenants: null,
-      error: null,
-      totalCount: 0,
-      isLoading: false,
-      create: {
-        error: null,
-        status: false,
-      },
-    };
-  },
-  actions: {
-    async createTenant(payload: Volo_Abp_TenantManagement_TenantCreateDto) {
-      if (this.create.error) this.create.error = null;
-      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
-
-      const { pending, error } = await useFetch(url, {
-        method: "POST",
-        body: payload,
-      });
-      this.create.status = pending.value;
-
-      if (error.value) {
-        this.create.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpTenantState["error"];
-        this.create.status = false;
-        return;
-      }
-      this.create.status = false;
-      this.create.error = null;
-      await this.fetch();
-      return true;
-    },
-    async fetch(params?: TenantFetchProps) {
-      this.isLoading = true;
-      let url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
-      if (params && Object.keys(params).length > 0) {
-        const queries = Object.entries(params);
-        const queryParam: string[] = [];
-        for (const [key, value] of queries) {
-          queryParam.push(`${key}=${value}`);
-        }
-        url = `${url}?${queryParam.join("&")}`;
-      }
-      const { data, error } = await useFetch(url);
-
-      if (error.value) {
-        this.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpTenantState["error"];
-        this.isLoading = false;
-      }
-      const response = data.value as Volo_Abp_Application_Dtos_PagedResultDto_1;
-      if (response) {
-        this.tenants = response?.items as AbpTenantState["tenants"];
-        this.totalCount = response?.totalCount as AbpTenantState["totalCount"];
-        this.isLoading = false;
-        this.error = null;
-      }
-    },
-  },
-});
-
 type DeleteDialogState = {
   isOpen: boolean;
   id: string;
@@ -176,7 +92,7 @@ type DeleteDialogState = {
   isLoading: boolean;
   error: { message: string; statusCode: number } | null;
 };
-export const useDeleteDialog = defineStore("deleteDialog", {
+const useDeleteDialog = defineStore("deleteDialog", {
   state: (): DeleteDialogState => {
     return {
       isOpen: false,
@@ -216,3 +132,11 @@ export const useDeleteDialog = defineStore("deleteDialog", {
     },
   },
 });
+
+export {
+  useTokenSet,
+  useAbpConfiguration,
+  useDeleteDialog,
+  useTenants,
+  useFeatures,
+};

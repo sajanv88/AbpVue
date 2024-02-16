@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
   const body = ["POST", "PUT"].includes(event.method)
     ? await readBody(event)
     : undefined;
+
   const response = await fetch(targetUrl, {
     method: event.method,
     headers: headers,
@@ -42,11 +43,12 @@ export default defineEventHandler(async (event) => {
 
   console.log(response.status, response.statusText, "response");
   if (response.status === 204) {
+    setResponseStatus(event, response.status, response.statusText);
     return "";
   }
+
   if (!response.ok) {
     const jsonData = await response.json();
-
     setResponseStatus(event, response.status, response.statusText);
     return {
       status: response.status,
@@ -54,6 +56,7 @@ export default defineEventHandler(async (event) => {
       details: jsonData.error.details,
     };
   }
+
   const jsonData = await response.json();
   return jsonData;
 });

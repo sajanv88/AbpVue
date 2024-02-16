@@ -5,6 +5,7 @@ import FilterContainer from "~/components/admin/FilterContainer.vue";
 import {
   useAbpConfiguration,
   useDeleteDialog,
+  useFeatures,
   useTenants,
 } from "~/store/state";
 
@@ -12,6 +13,8 @@ import Table from "~/components/shared/Table.vue";
 import type { ActionCtaDataType } from "~/components/shared/Table.vue";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
+import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
+import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureManagement.vue";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
@@ -30,27 +33,34 @@ const {
 } = useRoute();
 const paramSlug: Slug = slug as Slug;
 
+if (!saasSlugs.includes(paramSlug)) {
+  await navigateTo("/error/notfound");
+}
+
 const tenantStore = useTenants();
 const abpConfigStore = useAbpConfiguration();
 const deleteDialogStore = useDeleteDialog();
+const featureStore = useFeatures();
 const { tenants, totalCount, isLoading } = storeToRefs(tenantStore);
 const { isOpen } = storeToRefs(deleteDialogStore);
 
 const currentPage = ref(0);
 const maxRecord = ref(10);
 const enablePagination = ref(false);
+
+// Pagination for tenant list
+const paginateTenants = async () => {
+  await tenantStore.fetch({
+    MaxResultCount: maxRecord.value,
+    SkipCount: currentPage.value,
+  });
+};
+
 await callOnce(async () => {
   if (paramSlug === "tenants") {
-    await tenantStore.fetch({
-      MaxResultCount: maxRecord.value,
-      SkipCount: currentPage.value,
-    });
+    await paginateTenants();
   }
 });
-
-if (!saasSlugs.includes(paramSlug)) {
-  await navigateTo("/error/notfound");
-}
 
 const tenantPolicies = () => {
   const canDeleteTenant = abpConfigStore?.grantedPolicies?.get(
@@ -97,6 +107,7 @@ const slugMapper: Record<Slug, () => ReturnConfig> = {
     return { headers, actionCtaBtnProps, columns };
   },
 };
+
 const onTableActionEvent = async ({
   data: { invokedBy, value },
 }: {
@@ -104,10 +115,23 @@ const onTableActionEvent = async ({
 }) => {
   console.log({ invokedBy, value });
   if (invokedBy === "Delete") {
-    await deleteDialogStore.showDialog(
+    return await deleteDialogStore.showDialog(
       value.id,
       `${value.name} will be deleted. Do you confirm that?`,
     );
+  }
+
+  if (invokedBy === "Edit") {
+    if (paramSlug === "tenants") {
+      // Trigger the tenant edit dialog
+      return await tenantStore.getSelectedTenant(value.id);
+    }
+  }
+  if (invokedBy === "Settings") {
+    if (paramSlug === "tenants") {
+      // Trigger the tenant feature management dialog
+      return await featureStore.fetch(value.id);
+    }
   }
 };
 
@@ -123,6 +147,7 @@ const updateTenants = (params: typeof tenants) => {
 
 updateTenants(tenants);
 
+// Tenant list watcher..
 watch(tenants, () => {
   config.value.columns = [];
   const t: typeof tenants = tenants;
@@ -137,24 +162,21 @@ enablePagination.value = totalCount.value > config.value.columns.length;
 
 const onNextPage = async (page: number) => {
   currentPage.value = page;
-  await tenantStore.fetch({
-    MaxResultCount: maxRecord.value,
-    SkipCount: currentPage.value,
-  });
+  if (paramSlug === "tenants") {
+    return await paginateTenants();
+  }
 };
 const onPreviousPage = async (page: number) => {
   currentPage.value = page;
-  await tenantStore.fetch({
-    MaxResultCount: maxRecord.value,
-    SkipCount: currentPage.value,
-  });
+  if (paramSlug === "tenants") {
+    return await paginateTenants();
+  }
 };
 const onSelectedPage = async (page: number) => {
   currentPage.value = page;
-  await tenantStore.fetch({
-    MaxResultCount: maxRecord.value,
-    SkipCount: currentPage.value,
-  });
+  if (paramSlug === "tenants") {
+    return await paginateTenants();
+  }
 };
 
 const totalPages = Math.ceil(totalCount.value / maxRecord.value);
@@ -164,6 +186,15 @@ const totalPages = Math.ceil(totalCount.value / maxRecord.value);
   <section>
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
+      <CreateTenant
+        :open="!!tenantStore.selectedTenant.data"
+        :edit="true"
+        @dialog-close="tenantStore.resetSelectedTenant()"
+      />
+      <TenantFeatureManagement
+        :open="!!featureStore.featureGroups"
+        @dialog-close="featureStore.resetFeatures()"
+      />
     </Teleport>
 
     <FilterContainer
