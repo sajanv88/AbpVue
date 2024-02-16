@@ -1,10 +1,17 @@
+/**
+ * This file is used to define the global state of the application.
+ */
 import { defineStore } from "pinia";
 import type { TokenSet } from "~/types/tokenSet";
 import type { Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto } from "~/services/proxy/src";
+import type { GrantedPolicyType } from "~/types/grantedPolicies";
+import { useTenants } from "./tenantStore";
+import { useFeatures } from "./featureStore";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = () => "/api/abpServiceProxy";
-export const useTokenSet = defineStore("tokenSet", {
+
+const useTokenSet = defineStore("tokenSet", {
   state: () => ({
     accessToken: "",
     tokenType: "",
@@ -23,8 +30,12 @@ export const useTokenSet = defineStore("tokenSet", {
         this.idToken = response.jwt.id_token;
         this.scope = response.jwt.scope;
       }
-      if (error.value) {
-        throw new Error(error.value.message);
+
+      if (error) {
+        return createError({
+          statusCode: 401,
+          message: "Unauthorized: Please login.",
+        });
       }
     },
   },
@@ -33,12 +44,15 @@ export const useTokenSet = defineStore("tokenSet", {
 type AbpConfigurationState = {
   config: Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto | null;
   error: { message: string; statusCode: number } | null;
+  grantedPolicies: Map<GrantedPolicyType, boolean> | null;
 };
-export const useAbpConfiguration = defineStore("abpConfiguration", {
+
+const useAbpConfiguration = defineStore("abpConfiguration", {
   state: (): AbpConfigurationState => {
     return {
       config: null,
       error: null,
+      grantedPolicies: null,
     };
   },
 
@@ -46,11 +60,83 @@ export const useAbpConfiguration = defineStore("abpConfiguration", {
     async fetch() {
       const url = `${getAbpServiceProxy()}/abp/application-configuration`;
       const { data, error } = await useFetch(url);
+
       if (error.value) {
-        this.error = error.value as AbpConfigurationState["error"];
+        this.error = {
+          message: error.value.statusMessage,
+          statusCode: error.value.statusCode,
+        } as AbpConfigurationState["error"];
       }
       const response = data.value as AbpConfigurationState["config"];
-      this.config = response;
+      if (response) {
+        this.config = response;
+
+        if (response.auth?.grantedPolicies) {
+          const keys = Object.entries(response.auth.grantedPolicies);
+          this.grantedPolicies = new Map<GrantedPolicyType, boolean>();
+          for (const [key, value] of keys) {
+            const localKey =
+              `is${key.split(".").join("")}` as GrantedPolicyType;
+            this.grantedPolicies.set(localKey, value);
+          }
+        }
+      }
     },
   },
 });
+
+type DeleteDialogState = {
+  isOpen: boolean;
+  id: string;
+  message: string;
+  isLoading: boolean;
+  error: { message: string; statusCode: number } | null;
+};
+const useDeleteDialog = defineStore("deleteDialog", {
+  state: (): DeleteDialogState => {
+    return {
+      isOpen: false,
+      id: "",
+      message: "",
+      isLoading: false,
+      error: null,
+    };
+  },
+  actions: {
+    async showDialog(id: string, message: string) {
+      this.id = id;
+      this.message = message;
+      this.isOpen = true;
+    },
+    async deleteRecord(apiUrl: string) {
+      const url = `${getAbpServiceProxy()}/${apiUrl}`;
+      this.isLoading = true;
+      console.log(url, "url");
+      const { error } = await useFetch(url, {
+        method: "DELETE",
+      });
+
+      if (error.value) {
+        this.error = {
+          message: error.value.statusMessage,
+          statusCode: error.value.statusCode,
+        } as DeleteDialogState["error"];
+        this.isLoading = false;
+        return;
+      }
+
+      this.error = null;
+      this.isOpen = false;
+      this.isLoading = false;
+      return true;
+    },
+  },
+});
+
+export {
+  useTokenSet,
+  useAbpConfiguration,
+  useDeleteDialog,
+  useTenants,
+  useFeatures,
+};

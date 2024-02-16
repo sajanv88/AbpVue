@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
       message: "Unauthorized: Please login.",
     };
   }
+
   const tokenSet = session.data.tokenSet;
   return { jwt: tokenSet };
 });

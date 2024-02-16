@@ -30,15 +30,21 @@ const onReset = () => {
         name="search"
         class="block p-4 w-full z-20 text-gray-900 bg-gray-50 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
         :placeholder="props.placeholder"
-        @change="searchString = $event.target.value"
+        @change="
+          $emit('onSearch', $event.target.value);
+          searchString = $event.target.value;
+        "
         required
       />
       <span v-if="searchString.length > 0" class="absolute top-3 end-16 z-10">
         <IconButton
-          @click="onReset"
+          @click="
+            $emit('onSearch', '');
+            onReset();
+          "
           classname="bg-transparent dark:bg-transparent border-none"
         >
-          <Icon icon="cross" w="16" h="16" />
+          <Icon icon="cross" :w="16" :h="16" />
         </IconButton>
       </span>
       <button
