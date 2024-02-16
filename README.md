@@ -87,11 +87,13 @@ It will be a fully functional UI that can be used as a starting point for any AB
 - [] Multilingual
 - [] Theme Switcher
 - [] Profile
-- [] Tenant Management
+- [x] Tenant Management
 - [] Role Management
 - [] User Management
 - [] Settings Management
 - [] Feature Management
+- [] Toast notification for all the interactions
+- [] Configure playwright and adding tests
 
 ## Roadmap
 
