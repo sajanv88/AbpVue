@@ -12,4 +12,5 @@ export type IconName =
   | "check"
   | "dots"
   | "info-circle"
-  | "chev-down";
+  | "chev-down"
+  | "rocket-takeoff";
