@@ -88,18 +88,19 @@ const onMenuClickEvent = () => {
 <template>
   <main class="relative bg-gray-200 dark:bg-gray-800">
     <div id="dialog" />
-
-    <AdminHeader />
+    <div class="fixed w-full z-50">
+      <AdminHeader />
+    </div>
     <IconButton
-      class="block absolute transition left-2 md:hidden"
+      class="block absolute transition top-[3rem] left-2 md:hidden"
       @click="onMenuClickEvent"
       data-menuBtn="mobile-menu"
     >
       <Icon icon="menu" />
     </IconButton>
-    <section class="grid md:grid-cols-12 max-h-max">
+    <section class="grid md:grid-cols-12 pt-20">
       <section
-        class="absolute z-10 w-full bg-gray-200 dark:bg-gray-800 shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3 h-svh"
+        class="absolute z-10 h-svh w-full bg-gray-200 dark:bg-gray-800 shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3"
         data-navSection="main-nav"
       >
         <IconButton
@@ -111,14 +112,13 @@ const onMenuClickEvent = () => {
         </IconButton>
         <Navigation :navigations="navigations" />
       </section>
-      <section
-        role="main"
-        class="mt-10 md:mt-0 md:pl-0 md:col-span-8 lg:col-span-9"
-      >
+      <section role="main" class="md:pl-0 md:col-span-8 lg:col-span-9">
         <section
           class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:pl-5 md:pr-5 md:pb-5 md:pt-2"
         >
-          <slot />
+          <div class="md:max-h-svh md:overflow-y-auto">
+            <slot />
+          </div>
         </section>
       </section>
     </section>

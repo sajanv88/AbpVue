@@ -4,7 +4,7 @@ import Card from "~/components/shared/Card.vue";
 </script>
 
 <template>
-  <section class="grid gap2 pt-28 pb-10">
+  <section class="grid gap2 pb-10">
     <header class="p-4">
       <div class="flex items-center w-full justify-center p-3 md:p-0 space-x-2">
         <Icon

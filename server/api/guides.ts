@@ -97,8 +97,89 @@ const guides: Array<{
     },
   },
 ];
+
+const commercials: Array<{
+  title: string;
+  description: string;
+  link: {
+    hrefs: Array<{ name: string; url: string }>;
+  };
+}> = [
+  {
+    title: "Pre-built Modules",
+    description: `Use sidebar menu to explore the pre-built modules!`,
+    link: {
+      hrefs: [
+        {
+          name: "See All Modules",
+          url: "https://commercial.abp.io/modules?ref=tmpl",
+        },
+      ],
+    },
+  },
+  {
+    title: "Modern UI Themes",
+    description: `ABP Commercial theme provides multiple layout variations with different styles and colors!.`,
+    link: {
+      hrefs: [
+        {
+          name: "See  Themes",
+          url: "https://commercial.abp.io/themes",
+        },
+      ],
+    },
+  },
+  {
+    title: "Multiple UI & Database Options",
+    description: `ABP Commercial provides multiple UI and database options to choose from Angular, MVC Razor pages, Blazir, Database Providers, etc.`,
+    link: {
+      hrefs: [],
+    },
+  },
+  {
+    title: "Abp Framework",
+    description: `ABP Commercial is based on the ABP Framework, an open source and community driven web application framework for ASP.NET Core.`,
+    link: {
+      hrefs: [
+        {
+          name: "ABP Framework",
+          url: "https://abp.io/?ref=tmpl",
+        },
+      ],
+    },
+  },
+  {
+    title: "Abp Suite | Don't Repeat Yourself (DRY)",
+    description: `ABP Suite can generate basic CRUD functionalities for you from the database layer to the UI layer.`,
+    link: {
+      hrefs: [
+        {
+          name: "ABP Suite",
+          url: "https://commercial.abp.io/tools/suite",
+        },
+      ],
+    },
+  },
+  {
+    title: "Abp Community",
+    description: `It is a place where people can share ABP related articles. Search for articles, tutorials, code samples, case studies and meet people in the same lane as you.`,
+    link: {
+      hrefs: [
+        {
+          name: "ABP Community",
+          url: "https://community.abp.io/?ref=tmpl",
+        },
+      ],
+    },
+  },
+];
 export default defineEventHandler(async (event) => {
-  setResponseStatus(event, 200, "OK");
-  console.log("guides", event.path);
+  const query = getQuery(event);
+  const data = [];
+  if (query.type === "commercials") {
+    setResponseStatus(event, 200, "OK");
+    await sendWebResponse(event, Response.json(commercials));
+    return;
+  }
   await sendWebResponse(event, Response.json(guides));
 });

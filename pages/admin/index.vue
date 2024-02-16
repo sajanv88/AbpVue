@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Welcome from "~/components/shared/Welcome.vue";
+
 definePageMeta({
   layout: "admin",
   middleware: "auth",
@@ -6,7 +8,7 @@ definePageMeta({
 </script>
 
 <template>
-  <h1>Admin page</h1>
+  <Welcome />
 </template>
 
 <style scoped></style>

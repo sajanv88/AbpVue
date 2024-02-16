@@ -128,16 +128,10 @@ export const useTenants = defineStore("tenants", {
     },
     async fetch(params?: TenantFetchProps) {
       this.isLoading = true;
-      let url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
-      if (params && Object.keys(params).length > 0) {
-        const queries = Object.entries(params);
-        const queryParam: string[] = [];
-        for (const [key, value] of queries) {
-          queryParam.push(`${key}=${value}`);
-        }
-        url = `${url}?${queryParam.join("&")}`;
-      }
-      const { data, error } = await useFetch(url);
+      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
+      const { data, error } = await useFetch(url, {
+        ...(params && { query: params }),
+      });
 
       if (error.value) {
         this.error = {

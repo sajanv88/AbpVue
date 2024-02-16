@@ -2,8 +2,14 @@
 import Card from "~/components/shared/Card.vue";
 import Icon from "~/components/shared/Icon.vue";
 const guides = ref([]);
+const commercials = ref([]);
 const { data, error } = useFetch("/api/guides", { server: true });
+const { data: commercialData, error: commercialError } = useFetch(
+  "/api/guides",
+  { server: true, query: { type: "commercials" } },
+);
 guides.value = data.value;
+commercials.value = commercialData.value;
 </script>
 
 <template>
@@ -12,7 +18,7 @@ guides.value = data.value;
       Getting Started Guide
     </h2>
 
-    <div class="grid gap-3 md:grid-cols-3 pt-10 pb-10">
+    <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 pt-10 pb-10">
       <Card rounded v-for="guide in guides" :key="guide.title">
         <h3
           class="text-lg text-gray-800 font-semibold dark:text-white pb-2 mb-4 border-b"
@@ -56,13 +62,14 @@ guides.value = data.value;
         tooling, professional UI themes, premium support and more.
       </p>
     </div>
-    <div class="grid gap-3 md:grid-cols-3 pt-10 pb-10">
-      <Card rounded v-for="guide in guides" :key="guide.title">
+    <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 pt-10 pb-10">
+      <Card rounded v-for="guide in commercials" :key="guide.title">
         <h3
           class="text-lg text-gray-800 font-semibold dark:text-white pb-2 mb-4 border-b"
         >
           {{ guide.title }}
         </h3>
+
         <p class="text-md text-gray-800 dark:text-white pb-4">
           {{ guide.description }}
         </p>
