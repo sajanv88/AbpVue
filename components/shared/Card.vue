@@ -7,7 +7,7 @@ defineProps<ICardProps>();
 
 <template>
   <section
-    class="max-w-screen-2xl p-6 bg-white dark:bg-gray-800 border border-gray-200 shadow dark:border-gray-700"
+    class="p-3 md:max-w-screen-2xl md:p-6 bg-white dark:bg-gray-800 border border-gray-200 shadow dark:border-gray-700"
     :class="rounded ? 'rounded-lg' : ''"
   >
     <slot />
