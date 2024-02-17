@@ -86,7 +86,7 @@ It will be a fully functional UI that can be used as a starting point for any AB
 - [x] Login, Logout, Register, Forgot Password (Without UX)
 - [] Multilingual
 - [] Theme Switcher
-- [] Profile
+- [x] Profile
 - [x] Tenant Management
 - [] Role Management
 - [] User Management
