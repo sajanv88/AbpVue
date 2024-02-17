@@ -38,7 +38,7 @@ Create a new project using the template
 dotnet new abp-vue -o my-project-name
 ```
 
-> Note: You can use any name for the project. I used `my-project-name` for this example. keep in mind that the project name should be in kebab case (all lowercase and words separated by hyphens) because it will be used as the name of the packages org name.
+> Note: You can use any name for the project. I used `my-project-name` for this example. keep in mind that the project name should be in kebab case (all lowercase and words separated by hyphens) because it will be used as the name of the package's org name.
 
 ### Running the project
 
@@ -67,18 +67,18 @@ pnpm dev
 
 ## What is this?
 
-This is a Vue UI for the [ABP Framework](https://abp.io/). We are just getting started it is not ready for production, However, you can use fork it with your own risk. We are using [Nuxt](https://nuxt.com/), [TypeScript](https://www.typescriptlang.org/) and [Tailwind CSS](https://tailwindcss.com/).
+This is a Vue UI for the [ABP Framework](https://abp.io/). I am just getting started it is not ready for production, But you can fork it at your own risk. We are using [Nuxt](https://nuxt.com/), [TypeScript](https://www.typescriptlang.org/) and [Tailwind CSS](https://tailwindcss.com/).
 
 ## Why Use ABP Vue?
 
-In the past we have used Angular and React for the ABP Framework. We have also used Blazor for the ABP Framework. We have not yet used Vue for the ABP Framework. Vue is a very popular framework and it is very easy to use. We are building this project to provide a Vue UI for the ABP Framework. We are also building this project to provide a reference for anyone who wants to build a Vue UI for the ABP Framework.
+In the past, we have used Angular and React for the ABP Framework. We have also used Blazor. However, I thought that having a Vue-based UI template for the ABP Framework would be a nice touch. Nuxt3 is a very popular framework and it is straightforward to use. I am building this project to provide a Vue-based UI for the ABP Framework. I am  also building this project to provide a reference for anyone who wants to build it in Nuxt3.
 
 ## LightHouse Score
 
 ## Goals
 
 The goal of this project is to provide a Vue UI for the ABP Framework.
-It will be a fully functional UI that can be used as a starting point for any ABP project. It will also be a reference for anyone who wants to build a Vue UI for ABP. We will try to implement all the features of the ABP Framework Open Source Application.
+It will be a fully functional UI that can be used as a starting point for any ABP project. It will also be a reference for anyone who wants to build a Vue-based UI for the ABP framework. I will try to implement all the non-commerical ABP Framework  application features.
 
 ## Features
 
@@ -93,7 +93,7 @@ It will be a fully functional UI that can be used as a starting point for any AB
 - [] Settings Management
 - [] Feature Management
 - [] Toast notification for all the interactions
-- [] Configure playwright and adding tests
+- [] Configure the playwright and add tests
 
 ## Roadmap
 
