@@ -13,4 +13,6 @@ export type IconName =
   | "dots"
   | "info-circle"
   | "chev-down"
-  | "rocket-takeoff";
+  | "rocket-takeoff"
+  | "eye"
+  | "eye-slash";
