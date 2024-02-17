@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { getAbpServiceProxy } from "~/store/state";
+import { getAbpServiceProxy, useToast } from "~/store/state";
 import type {
   Volo_Abp_FeatureManagement_GetFeatureListResultDto,
   Volo_Abp_FeatureManagement_UpdateFeaturesDto,
@@ -29,36 +29,55 @@ export const useFeatures = defineStore("features", {
     ) {
       const url = `${getAbpServiceProxy()}/feature-management/features?providerName=${PermissionProvider.T}&providerKey=${this.selectedTenantId}`;
 
-      const { error } = await useFetch(url, {
+      await $fetch(url, {
         method: "PUT",
         body: JSON.stringify(payload),
+      }).catch((error) => {
+        if (error) {
+          this.error = {
+            message: error.statusMessage,
+            statusCode: error.statusCode,
+          } as AbpFeatureState["error"];
+          throw error;
+        }
       });
-      if (error.value) {
-        this.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpFeatureState["error"];
-        return;
-      }
+
       this.error = null;
       this.resetFeatures();
+      const toastStore = useToast();
+      toastStore.show({
+        message: "Feature settings updated successfully",
+        type: "success",
+        dismissible: true,
+        autoClose: true,
+      });
       return true;
     },
     async resetFeaturesToDefault(tenantId: string) {
       const url = `${getAbpServiceProxy()}/feature-management/features?providerName=${PermissionProvider.T}&providerKey=${tenantId}`;
-      const { error } = await useFetch(url, {
+      await $fetch(url, {
         method: "DELETE",
+      }).catch((error) => {
+        if (error) {
+          this.error = {
+            message: error.statusMessage,
+            statusCode: error.statusCode,
+          } as AbpFeatureState["error"];
+        }
+        throw error;
       });
-      if (error.value) {
-        this.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpFeatureState["error"];
-        return;
-      }
+
       this.selectedTenantId = null;
       this.error = null;
+      const toastStore = useToast();
+      toastStore.show({
+        message: "Feature settings has been reset.",
+        type: "success",
+        dismissible: true,
+        autoClose: true,
+      });
       this.resetFeatures();
+
       return true;
     },
     resetFeatures() {
@@ -74,8 +93,8 @@ export const useFeatures = defineStore("features", {
       const data = await $fetch(url).catch((error) => {
         if (error) {
           this.error = {
-            message: error.value.statusMessage,
-            statusCode: error.value.statusCode,
+            message: error.statusMessage,
+            statusCode: error.statusCode,
           } as AbpFeatureState["error"];
           this.isLoading = false;
         }

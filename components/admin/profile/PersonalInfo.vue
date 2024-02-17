@@ -3,6 +3,7 @@ import { useProfile } from "~/store/state";
 import type { Volo_Abp_Account_UpdateProfileDto } from "~/services/proxy/src";
 
 const profileStore = useProfile();
+
 const processing = ref(false);
 const onSubmitEvent = async (e: SubmitEvent) => {
   processing.value = true;

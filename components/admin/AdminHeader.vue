@@ -21,7 +21,7 @@ console.log(config.value?.currentUser);
 
 <template>
   <header
-    class="w-full mb-3 md:h-16 bg-gray-200 dark:bg-gray-800 shadow-md md:pr-5"
+    class="w-full mb-3 md:h-16 bg-gray-200 dark:bg-gray-800 shadow-md border-b border-gray-400 dark:border-gray-300 p-2"
   >
     <div class="flex items-center h-full" :class="position">
       <div class="flex-1 pl-2 md:pl-5">

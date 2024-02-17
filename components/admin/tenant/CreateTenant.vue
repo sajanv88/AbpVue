@@ -12,6 +12,7 @@ const props = defineProps<ICreateTenantProps>();
 const tenantStore = useTenants();
 const { create } = storeToRefs(tenantStore);
 const processing = ref(false);
+const emit = defineEmits(["dialogClose"]);
 const createNewTenant = async function (e: SubmitEvent) {
   e.stopImmediatePropagation();
   e.preventDefault();
@@ -33,8 +34,7 @@ const createNewTenant = async function (e: SubmitEvent) {
     const success = await tenantStore.createTenant(payload);
     processing.value = false;
     if (success) {
-      // close dialog
-      document.getElementById("tenantCancelBtn")?.click();
+      emit("dialogClose");
     }
   } else {
     const payload: Volo_Abp_TenantManagement_TenantUpdateDto = {
@@ -44,8 +44,7 @@ const createNewTenant = async function (e: SubmitEvent) {
     const success = await tenantStore.updateTenant(tenantId, payload);
     processing.value = false;
     if (success) {
-      // close dialog
-      document.getElementById("tenantCancelBtn")?.click();
+      emit("dialogClose");
     }
   }
 };
@@ -110,8 +109,16 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
         </div>
       </div>
       <footer class="flex items-center justify-end space-x-2">
-        <span v-if="tenantStore.create.status">Creating a New Tenant...</span>
-        <span v-if="tenantStore.updateTenant.status">Updating Tenant...</span>
+        <span
+          v-if="tenantStore.create.status"
+          class="text-gray-700 dark:text-white"
+          >Creating a New Tenant...</span
+        >
+        <span
+          v-if="tenantStore.updateTenant.status"
+          class="text-gray-700 dark:text-white"
+          >Updating Tenant...</span
+        >
         <button
           v-if="!processing"
           id="tenantCancelBtn"

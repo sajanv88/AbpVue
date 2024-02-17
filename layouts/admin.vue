@@ -4,6 +4,7 @@ import type { INavigation } from "~/types/navigation";
 import IconButton from "~/components/shared/IconButton.vue";
 import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration, useTokenSet } from "~/store/state";
+import ToastContainer from "~/components/shared/ToastContainer.vue";
 
 const navigations: Array<INavigation> = [
   {
@@ -63,12 +64,10 @@ const token = useTokenSet();
 const abpConfig = useAbpConfiguration();
 
 await callOnce(async () => {
-  console.log("Fetching token");
   await token.fetch();
 });
 
 await callOnce(async () => {
-  console.log("Fetching abpConfig");
   await abpConfig.fetch();
 });
 
@@ -122,6 +121,9 @@ const onMenuClickEvent = () => {
         </section>
       </section>
     </section>
+    <Teleport to="body">
+      <ToastContainer />
+    </Teleport>
   </main>
 </template>
 

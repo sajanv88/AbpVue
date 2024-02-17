@@ -8,8 +8,11 @@ const { data: commercialData, error: commercialError } = useFetch(
   "/api/guides",
   { server: true, query: { type: "commercials" } },
 );
-guides.value = data.value;
-commercials.value = commercialData.value;
+
+onMounted(() => {
+  guides.value = data.value;
+  commercials.value = commercialData.value;
+});
 </script>
 
 <template>
@@ -17,9 +20,8 @@ commercials.value = commercialData.value;
     <h2 class="text-center text-lg md:text-xl text-gray-800 dark:text-white">
       Getting Started Guide
     </h2>
-
     <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3 pt-10 pb-10">
-      <Card rounded v-for="guide in guides" :key="guide.title">
+      <Card :rounded="true" v-for="guide in guides" :key="guide.title">
         <h3
           class="text-lg text-gray-800 font-semibold dark:text-white pb-2 mb-4 border-b"
         >

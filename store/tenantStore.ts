@@ -6,7 +6,8 @@ import type {
 } from "~/services/proxy/src";
 
 import { defineStore } from "pinia";
-import { getAbpServiceProxy } from "~/store/state";
+import { getAbpServiceProxy, useToast } from "~/store/state";
+import { $fetch } from "ofetch";
 
 type AbpTenantState = {
   tenants: Volo_Abp_TenantManagement_TenantDto[] | null;
@@ -63,21 +64,30 @@ export const useTenants = defineStore("tenants", {
     ) {
       this.updateTenant.status = true;
       const url = `${getAbpServiceProxy()}/multi-tenancy/tenants/${tenantId}`;
-      const { pending, error } = await useFetch(url, {
+      await $fetch(url, {
         method: "PUT",
         body: payload,
+      }).catch((error) => {
+        if (error.value) {
+          this.updateTenant.error = {
+            message: error.value.statusMessage,
+            statusCode: error.value.statusCode,
+          } as AbpTenantState["error"];
+          this.updateTenant.status = false;
+          throw error;
+        }
       });
 
-      if (error.value) {
-        this.updateTenant.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpTenantState["error"];
-        this.updateTenant.status = false;
-        return;
-      }
       this.updateTenant.status = false;
       this.updateTenant.error = null;
+      const toastStore = useToast();
+      toastStore.show({
+        show: true,
+        message: "Tenant updated successfully",
+        dismissible: true,
+        type: "success",
+        autoClose: true,
+      });
       await this.fetch();
       return true;
     },
@@ -91,38 +101,55 @@ export const useTenants = defineStore("tenants", {
     async getSelectedTenant(tenantId: string) {
       this.selectedTenant.isLoaded = true;
       const url = `${getAbpServiceProxy()}/multi-tenancy/tenants/${tenantId}`;
-      const { data, error } = await useFetch(url);
-      if (error.value) {
-        this.selectedTenant.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpTenantState["error"];
-        this.selectedTenant.isLoaded = false;
-        return;
-      }
-      this.selectedTenant.data =
-        data.value as Volo_Abp_TenantManagement_TenantDto;
+      const data = await $fetch(url).catch((error) => {
+        if (error) {
+          this.selectedTenant.error = {
+            message: error.statusMessage,
+            statusCode: error.statusCode,
+          } as AbpTenantState["error"];
+          this.selectedTenant.isLoaded = false;
+          const toastStore = useToast();
+          toastStore.show({
+            show: true,
+            message: `Error: ${error.statusMessage}. Please try again.`,
+            dismissible: true,
+            type: "error",
+          });
+          throw error;
+        }
+      });
+
+      this.selectedTenant.data = data as Volo_Abp_TenantManagement_TenantDto;
     },
     async createTenant(payload: Volo_Abp_TenantManagement_TenantCreateDto) {
       if (this.create.error) this.create.error = null;
       this.create.status = true;
       const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
 
-      const { pending, error } = await useFetch(url, {
+      await $fetch(url, {
         method: "POST",
         body: payload,
+      }).catch((error) => {
+        if (error) {
+          this.create.error = {
+            message: error.statusMessage,
+            statusCode: error.statusCode,
+          } as AbpTenantState["error"];
+          this.create.status = false;
+          throw error;
+        }
       });
 
-      if (error.value) {
-        this.create.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as AbpTenantState["error"];
-        this.create.status = false;
-        return;
-      }
       this.create.status = false;
       this.create.error = null;
+      const toastStore = useToast();
+      toastStore.show({
+        show: true,
+        message: "Tenant Created successfully",
+        dismissible: true,
+        type: "success",
+        autoClose: true,
+      });
       await this.fetch();
       return true;
     },

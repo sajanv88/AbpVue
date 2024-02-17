@@ -32,8 +32,11 @@ const onSubmitEvent = async (e: SubmitEvent) => {
     currentPassword: data.currentPassword,
     newPassword: data.newPassword,
   };
-  await profileStore.changePassword(payloadData, data.confirmPassword);
-  processing.value = false;
+  await profileStore
+    .changePassword(payloadData, data.confirmPassword)
+    .finally(() => {
+      processing.value = false;
+    });
 };
 
 const onTogglePassword = (field: string) => {

@@ -19,7 +19,7 @@ import Card from "~/components/shared/Card.vue";
       </div>
     </header>
     <section class="flex justify-center pt-5">
-      <Card rounded>
+      <Card :rounded="true">
         <div class="grid gap-3 md:grid-cols-8">
           <div class="col-span-4">
             <h1
