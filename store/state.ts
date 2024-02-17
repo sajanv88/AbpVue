@@ -7,6 +7,7 @@ import type { Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfi
 import type { GrantedPolicyType } from "~/types/grantedPolicies";
 import { useTenants } from "./tenantStore";
 import { useFeatures } from "./featureStore";
+import { useProfile } from "./profileStore";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = () => "/api/abpServiceProxy";
@@ -139,4 +140,5 @@ export {
   useDeleteDialog,
   useTenants,
   useFeatures,
+  useProfile,
 };

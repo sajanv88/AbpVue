@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 
-definePageMeta({
-  layout: "admin",
-});
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
 definePageMeta({
