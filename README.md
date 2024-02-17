@@ -67,7 +67,8 @@ pnpm dev
 
 ## What is this?
 
-This is a Vue UI for the [ABP Framework](https://abp.io/). I am just getting started it is not ready for production, But you can fork it at your own risk. We are using [Nuxt](https://nuxt.com/), [TypeScript](https://www.typescriptlang.org/) and [Tailwind CSS](https://tailwindcss.com/).
+This is a Vue UI for the [ABP Framework](https://abp.io/). I am just getting started it is not ready for production, But you can fork it at your own risk. I am using these amazing tools
+[Nuxt](https://nuxt.com/), [TypeScript](https://www.typescriptlang.org/) and [Tailwind CSS](https://tailwindcss.com/).
 
 ## Why Use ABP Vue?
 
