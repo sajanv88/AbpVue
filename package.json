@@ -33,6 +33,7 @@
   "dependencies": {
     "flowbite": "^2.3.0",
     "jwt-decode": "^4.0.0",
-    "openid-client": "^5.6.4"
+    "openid-client": "^5.6.4",
+    "uuid": "^9.0.1"
   }
 }

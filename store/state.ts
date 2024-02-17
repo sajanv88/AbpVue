@@ -8,6 +8,7 @@ import type { GrantedPolicyType } from "~/types/grantedPolicies";
 import { useTenants } from "./tenantStore";
 import { useFeatures } from "./featureStore";
 import { useProfile } from "./profileStore";
+import { useToast } from "./toastStore";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = () => "/api/abpServiceProxy";
@@ -112,19 +113,27 @@ const useDeleteDialog = defineStore("deleteDialog", {
     async deleteRecord(apiUrl: string) {
       const url = `${getAbpServiceProxy()}/${apiUrl}`;
       this.isLoading = true;
-      console.log(url, "url");
-      const { error } = await useFetch(url, {
+
+      await $fetch(url, {
         method: "DELETE",
+      }).catch((error) => {
+        if (error) {
+          this.error = {
+            message: error.statusMessage,
+            statusCode: error.statusCode,
+          } as DeleteDialogState["error"];
+          this.isLoading = false;
+          throw error;
+        }
       });
 
-      if (error.value) {
-        this.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
-        } as DeleteDialogState["error"];
-        this.isLoading = false;
-        return;
-      }
+      const toastStore = useToast();
+      toastStore.show({
+        message: "Record deleted successfully",
+        type: "success",
+        dismissible: true,
+        autoClose: true,
+      });
 
       this.error = null;
       this.isOpen = false;
@@ -141,4 +150,5 @@ export {
   useTenants,
   useFeatures,
   useProfile,
+  useToast,
 };
