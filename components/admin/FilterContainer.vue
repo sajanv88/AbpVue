@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
 import Search from "~/components/shared/Search.vue";
-import { useAbpConfiguration, useTenants } from "~/store/state";
+import { useAbpConfiguration, useRoles, useTenants } from "~/store/state";
 import type { GrantedPolicyType } from "~/types/grantedPolicies";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
+import CreateRole from "~/components/admin/roles/CreateRole.vue";
+import type { FetchQueryParamsType } from "~/types/fetchParams";
 
 interface IFilterContainerProps {
   slug: string;
@@ -14,6 +16,7 @@ interface IFilterContainerProps {
 const props = defineProps<IFilterContainerProps>();
 const abpConfigStore = useAbpConfiguration();
 const tenantStore = useTenants();
+const roleStore = useRoles();
 
 const searchTypeMapper: Record<
   IFilterContainerProps["searchType"],
@@ -23,32 +26,61 @@ const searchTypeMapper: Record<
   roles: "isAbpIdentityRolesCreate",
   users: "isAbpIdentityUsersCreate",
 };
+const showCreateTenantDialog = ref(false);
+const showCreateRoleDialog = ref(false);
 
 const policy = searchTypeMapper[props.searchType] as GrantedPolicyType;
 const canCreate = abpConfigStore?.grantedPolicies?.get(policy);
 
-const onSearchEvent = async (value: string) => {
-  if (props.searchType == "tenants") {
-    await tenantStore.fetch({ Filter: value });
-  }
+type TypeMapper = {
+  fetch: (params?: FetchQueryParamsType) => Promise<void>;
+  showCreateDialog: () => void;
 };
 
-const showCreateTenantDialog = ref(false);
+const typeMapper: Record<IFilterContainerProps["searchType"], TypeMapper> = {
+  tenants: {
+    fetch: async (params?: FetchQueryParamsType) =>
+      await tenantStore.fetch(params),
+    showCreateDialog: () => {
+      showCreateTenantDialog.value = true;
+    },
+  },
+  roles: {
+    fetch: async (params?: FetchQueryParamsType) =>
+      await roleStore.fetch(params),
+    showCreateDialog: () => {
+      showCreateRoleDialog.value = true;
+    },
+  },
+  users: {
+    fetch: async (params?: FetchQueryParamsType) => console.log("fetch users"),
+    showCreateDialog: () => console.log("trigger user dialog"),
+  },
+};
+
+const onSearchEvent = async (value: string) => {
+  await typeMapper[props.searchType].fetch({ Filter: value });
+};
 
 const onCreateAction = () => {
-  if (props.searchType == "tenants") {
-    showCreateTenantDialog.value = true;
-  }
+  typeMapper[props.searchType].showCreateDialog();
 };
 </script>
 
 <template>
   <Teleport to="body">
-    <CreateTenant
-      v-if="showCreateTenantDialog"
-      :open="showCreateTenantDialog"
-      @dialog-close="showCreateTenantDialog = false"
-    />
+    <ClientOnly>
+      <CreateTenant
+        v-if="showCreateTenantDialog"
+        :open="showCreateTenantDialog"
+        @dialog-close="showCreateTenantDialog = false"
+      />
+      <CreateRole
+        v-if="showCreateRoleDialog"
+        :open="showCreateRoleDialog"
+        @dialog-close="showCreateRoleDialog = false"
+      />
+    </ClientOnly>
   </Teleport>
   <header
     class="relative mb-5 p-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"

@@ -1,33 +1,36 @@
 <script setup lang="ts">
-import { useDeleteDialog, useTenants } from "~/store/state";
+import { useDeleteDialog, useRoles, useTenants } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Dialog from "~/components/shared/Dialog.vue";
 import Alert from "~/components/shared/Alert.vue";
 import Icon from "~/components/shared/Icon.vue";
+import type { AbpEndpoint } from "~/types/abpEndpoint";
 interface IDeleteDialogProps {
   type: "tenants" | "roles" | "users";
 }
 const props = defineProps<IDeleteDialogProps>();
 const deleteStore = useDeleteDialog();
 const tenantStore = useTenants();
+const roleStore = useRoles();
 const { message, isOpen, isLoading, id, error } = storeToRefs(deleteStore);
 
-const typeMapper: Record<IDeleteDialogProps["type"], string> = {
-  tenants: `multi-tenancy/tenants/${id.value}`,
-  roles: "role",
-  users: "user",
+const typeMapper: Record<IDeleteDialogProps["type"], AbpEndpoint> = {
+  tenants: `/multi-tenancy/tenants`,
+  roles: `/identity/roles`,
+  users: "/identity/users",
 };
 const storeFetchMapper: Record<
   IDeleteDialogProps["type"],
   () => Promise<void>
 > = {
   tenants: tenantStore.fetch,
-  roles: () => Promise.resolve(),
+  roles: roleStore.fetch,
   users: () => Promise.resolve(),
 };
 
 const deleteAction = async () => {
-  const success = await deleteStore.deleteRecord(typeMapper[props.type]);
+  const url = typeMapper[props.type];
+  const success = await deleteStore.deleteRecord(url);
   if (success) {
     deleteStore.$reset();
     await storeFetchMapper[props.type]();
@@ -54,7 +57,9 @@ const onClose = () => {
         </p>
       </div>
       <div class="flex justify-end mt-10 space-x-3">
-        <span v-if="isLoading">Deleting a record...</span>
+        <span v-if="isLoading" class="dark:text-white text-gray-700"
+          >Deleting a record...</span
+        >
         <button
           v-if="!isLoading"
           type="button"

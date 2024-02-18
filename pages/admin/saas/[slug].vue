@@ -160,26 +160,16 @@ watch(totalCount, () => {
 
 enablePagination.value = totalCount.value > config.value.columns.length;
 
-const onNextPage = async (page: number) => {
-  currentPage.value = page;
-  if (paramSlug === "tenants") {
-    return await paginateTenants();
-  }
-};
-const onPreviousPage = async (page: number) => {
-  currentPage.value = page;
-  if (paramSlug === "tenants") {
-    return await paginateTenants();
-  }
-};
-const onSelectedPage = async (page: number) => {
+const onPageChangeEvent = async (page: number) => {
   currentPage.value = page;
   if (paramSlug === "tenants") {
     return await paginateTenants();
   }
 };
 
-const totalPages = Math.ceil(totalCount.value / maxRecord.value);
+const totalPages = computed(() =>
+  Math.ceil(totalCount.value / maxRecord.value),
+);
 </script>
 
 <template>
@@ -217,9 +207,9 @@ const totalPages = Math.ceil(totalCount.value / maxRecord.value);
           :total-page="totalPages"
           :current-page="currentPage"
           :key="currentPage"
-          @on-next-page="onNextPage"
-          @on-previous-page="onPreviousPage"
-          @on-selected-page="onSelectedPage"
+          @on-next-page="onPageChangeEvent"
+          @on-previous-page="onPageChangeEvent"
+          @on-selected-page="onPageChangeEvent"
         />
       </div>
     </main>

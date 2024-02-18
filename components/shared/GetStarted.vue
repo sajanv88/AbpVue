@@ -3,11 +3,11 @@ import Card from "~/components/shared/Card.vue";
 import Icon from "~/components/shared/Icon.vue";
 const guides = ref([]);
 const commercials = ref([]);
-const { data, error } = useFetch("/api/guides", { server: true });
-const { data: commercialData, error: commercialError } = useFetch(
-  "/api/guides",
-  { server: true, query: { type: "commercials" } },
-);
+const { data } = useFetch("/api/guides", { server: true });
+const { data: commercialData } = useFetch("/api/guides", {
+  server: true,
+  query: { type: "commercials" },
+});
 
 onMounted(() => {
   guides.value = data.value;

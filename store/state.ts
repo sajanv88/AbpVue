@@ -9,9 +9,12 @@ import { useTenants } from "./tenantStore";
 import { useFeatures } from "./featureStore";
 import { useProfile } from "./profileStore";
 import { useToast } from "./toastStore";
+import { useRoles } from "./roleStore";
+import type { AbpEndpoint } from "~/types/abpEndpoint";
 
 type TokenSetState = { jwt?: TokenSet };
-export const getAbpServiceProxy = () => "/api/abpServiceProxy";
+export const getAbpServiceProxy = (endpoint: AbpEndpoint) =>
+  `/api/abpServiceProxy${endpoint}`;
 
 const useTokenSet = defineStore("tokenSet", {
   state: () => ({
@@ -47,6 +50,7 @@ type AbpConfigurationState = {
   config: Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto | null;
   error: { message: string; statusCode: number } | null;
   grantedPolicies: Map<GrantedPolicyType, boolean> | null;
+  isAdmin: boolean;
 };
 
 const useAbpConfiguration = defineStore("abpConfiguration", {
@@ -55,12 +59,13 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
       config: null,
       error: null,
       grantedPolicies: null,
+      isAdmin: false,
     };
   },
 
   actions: {
     async fetch() {
-      const url = `${getAbpServiceProxy()}/abp/application-configuration`;
+      const url = `${getAbpServiceProxy("/abp/application-configuration")}`;
       const { data, error } = await useFetch(url);
 
       if (error.value) {
@@ -82,6 +87,7 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
             this.grantedPolicies.set(localKey, value);
           }
         }
+        this.isAdmin = !!response.currentUser?.roles?.includes("admin");
       }
     },
   },
@@ -110,8 +116,8 @@ const useDeleteDialog = defineStore("deleteDialog", {
       this.message = message;
       this.isOpen = true;
     },
-    async deleteRecord(apiUrl: string) {
-      const url = `${getAbpServiceProxy()}/${apiUrl}`;
+    async deleteRecord(apiUrl: AbpEndpoint) {
+      const url = `${getAbpServiceProxy(apiUrl)}/${this.id}`;
       this.isLoading = true;
 
       await $fetch(url, {
@@ -151,4 +157,5 @@ export {
   useFeatures,
   useProfile,
   useToast,
+  useRoles,
 };

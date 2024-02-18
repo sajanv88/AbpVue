@@ -72,14 +72,14 @@ This is a Vue UI for the [ABP Framework](https://abp.io/). I am just getting sta
 
 ## Why Use ABP Vue?
 
-In the past, we have used Angular and React for the ABP Framework. We have also used Blazor. However, I thought that having a Vue-based UI template for the ABP Framework would be a nice touch. Nuxt3 is a very popular framework and it is straightforward to use. I am building this project to provide a Vue-based UI for the ABP Framework. I am  also building this project to provide a reference for anyone who wants to build it in Nuxt3.
+In the past, we have used Angular and React for the ABP Framework. We have also used Blazor. However, I thought that having a Vue-based UI template for the ABP Framework would be a nice touch. Nuxt3 is a very popular framework and it is straightforward to use. I am building this project to provide a Vue-based UI for the ABP Framework. I am also building this project to provide a reference for anyone who wants to build it in Nuxt3.
 
 ## LightHouse Score
 
 ## Goals
 
 The goal of this project is to provide a Vue UI for the ABP Framework.
-It will be a fully functional UI that can be used as a starting point for any ABP project. It will also be a reference for anyone who wants to build a Vue-based UI for the ABP framework. I will try to implement all the non-commerical ABP Framework  application features.
+It will be a fully functional UI that can be used as a starting point for any ABP project. It will also be a reference for anyone who wants to build a Vue-based UI for the ABP framework. I will try to implement all the non-commerical ABP Framework application features.
 
 ## Features
 

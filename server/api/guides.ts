@@ -175,7 +175,6 @@ const commercials: Array<{
 ];
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const data = [];
   if (query.type === "commercials") {
     setResponseStatus(event, 200, "OK");
     await sendWebResponse(event, Response.json(commercials));

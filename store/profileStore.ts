@@ -40,7 +40,7 @@ export const useProfile = defineStore("profile", {
       this.concurrencyStamp = profile.concurrencyStamp ?? "";
     },
     async fetchProfile() {
-      const url = `${getAbpServiceProxy()}/account/my-profile`;
+      const url = getAbpServiceProxy("/account/my-profile");
       const { error, data } = await useFetch(url);
       if (error.value) {
         this.error = {
@@ -52,7 +52,7 @@ export const useProfile = defineStore("profile", {
       this.setProfile(data.value);
     },
     async updateProfile(payload: Volo_Abp_Account_UpdateProfileDto) {
-      const url = `${getAbpServiceProxy()}/account/my-profile`;
+      const url = getAbpServiceProxy("/account/my-profile");
       await $fetch(url, {
         method: "PUT",
         body: JSON.stringify(payload),
@@ -86,7 +86,7 @@ export const useProfile = defineStore("profile", {
         };
         return;
       }
-      const url = `${getAbpServiceProxy()}/account/my-profile/change-password`;
+      const url = getAbpServiceProxy("/account/my-profile/change-password");
       await $fetch(url, {
         method: "POST",
         body: JSON.stringify(payload),
