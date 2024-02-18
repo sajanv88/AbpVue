@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
+import Badge from "~/components/shared/Badge.vue";
 
 export type ActionCtaDataType = {
   value: Record<string, unknown>;
@@ -119,7 +120,21 @@ onUnmounted(() => {
             </span>
           </th>
           <th class="p-4">
-            {{ col.name }}
+            <span class="inline-flex items-center">
+              <span class="pr-2">
+                {{ col.name }}
+              </span>
+              <span
+                v-for="tag in col?.tags"
+                :key="tag.id"
+                class="inline-flex capitalize"
+              >
+                <Badge
+                  :color="tag.name == 'default' ? 'green' : 'blue'"
+                  :text="tag.name"
+                />
+              </span>
+            </span>
           </th>
         </tr>
       </tbody>

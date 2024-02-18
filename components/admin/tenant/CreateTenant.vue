@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import Dialog from "~/components/shared/Dialog.vue";
 import { useTenants } from "~/store/state";
-import type { Volo_Abp_TenantManagement_TenantCreateDto } from "~/services/proxy/src";
+import type {
+  Volo_Abp_TenantManagement_TenantCreateDto,
+  Volo_Abp_TenantManagement_TenantUpdateDto,
+} from "~/services/proxy/src";
 import { storeToRefs } from "pinia";
 import Alert from "~/components/shared/Alert.vue";
 interface ICreateTenantProps {
@@ -40,8 +43,7 @@ const createNewTenant = async function (e: SubmitEvent) {
     const payload: Volo_Abp_TenantManagement_TenantUpdateDto = {
       name: formValue.name as string,
     };
-    const tenantId = tenantStore.selectedTenant.data.id;
-    const success = await tenantStore.updateTenant(tenantId, payload);
+    const success = await tenantStore.updateTenant(payload);
     processing.value = false;
     if (success) {
       emit("dialogClose");

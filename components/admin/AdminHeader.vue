@@ -15,8 +15,6 @@ const name =
   config.value?.currentUser?.name?.charAt(0).toUpperCase() ||
   config.value?.currentUser?.userName?.charAt(0).toUpperCase() ||
   "N/A";
-
-console.log(config.value?.currentUser);
 </script>
 
 <template>

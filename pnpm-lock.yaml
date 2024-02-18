@@ -28,6 +28,9 @@ devDependencies:
   "@pinia/nuxt":
     specifier: ^0.5.1
     version: 0.5.1(typescript@5.3.3)(vue@3.4.19)
+  "@types/uuid":
+    specifier: ^9.0.8
+    version: 9.0.8
   "@typescript-eslint/eslint-plugin":
     specifier: ^6.21.0
     version: 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.56.0)(typescript@5.3.3)
@@ -2637,6 +2640,13 @@ packages:
     resolution:
       {
         integrity: sha512-/wdoPq1QqkSj9/QOeKkFquEuPzQbHTWAMPH/PaUMB+JuR31lXhlWXRZ52IpfDYVlDOUBvX09uBrPwxGT1hjNBg==,
+      }
+    dev: true
+
+  /@types/uuid@9.0.8:
+    resolution:
+      {
+        integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==,
       }
     dev: true
 

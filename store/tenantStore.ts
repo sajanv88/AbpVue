@@ -53,11 +53,9 @@ export const useTenants = defineStore("tenants", {
     };
   },
   actions: {
-    async updateTenant(
-      tenantId: string,
-      payload: Volo_Abp_TenantManagement_TenantUpdateDto,
-    ) {
+    async updateTenant(payload: Volo_Abp_TenantManagement_TenantUpdateDto) {
       this.updateTenant.status = true;
+      const tenantId = this.selectedTenant.data?.id;
       const url = `${getAbpServiceProxy("/multi-tenancy/tenants")}/${tenantId}`;
       await $fetch(url, {
         method: "PUT",

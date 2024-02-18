@@ -9,6 +9,7 @@ import { useTenants } from "./tenantStore";
 import { useFeatures } from "./featureStore";
 import { useProfile } from "./profileStore";
 import { useToast } from "./toastStore";
+import { useRoles } from "./roleStore";
 import type { AbpEndpoint } from "~/types/abpEndpoint";
 
 type TokenSetState = { jwt?: TokenSet };
@@ -153,4 +154,5 @@ export {
   useFeatures,
   useProfile,
   useToast,
+  useRoles,
 };
