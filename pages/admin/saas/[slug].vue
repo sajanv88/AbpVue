@@ -167,7 +167,9 @@ const onPageChangeEvent = async (page: number) => {
   }
 };
 
-const totalPages = Math.ceil(totalCount.value / maxRecord.value);
+const totalPages = computed(() =>
+  Math.ceil(totalCount.value / maxRecord.value),
+);
 </script>
 
 <template>

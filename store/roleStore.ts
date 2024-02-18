@@ -1,8 +1,13 @@
 import type {
   Volo_Abp_Identity_IdentityRoleCreateDto,
   Volo_Abp_Identity_IdentityRoleDto,
+  Volo_Abp_Identity_IdentityRoleUpdateDto,
 } from "~/services/proxy/src";
-import { getAbpServiceProxy, useToast } from "~/store/state";
+import {
+  getAbpServiceProxy,
+  useToast,
+  useAbpConfiguration,
+} from "~/store/state";
 import type { FetchQueryParamsType } from "~/types/fetchParams";
 
 type RoleState = {
@@ -46,8 +51,14 @@ export const useRoles = defineStore("roles", {
   }),
   actions: {
     async fetch(params?: FetchQueryParamsType) {
+      const abpConfigStore = useAbpConfiguration();
+      const isAdmin =
+        abpConfigStore.config?.currentUser?.roles?.includes("admin");
       this.isLoading = true;
-      const url = getAbpServiceProxy("/identity/roles");
+      const url =
+        isAdmin && !params
+          ? getAbpServiceProxy("/identity/roles/all")
+          : getAbpServiceProxy("/identity/roles");
       const { data, error } = await useFetch<
         {
           totalCount: number;
@@ -82,10 +93,12 @@ export const useRoles = defineStore("roles", {
             status: error.statusCode,
             message: error.statusMessage,
           };
+          this.createRole.status = false;
           throw error;
         }
       });
       this.createRole.status = false;
+      this.resetError();
       this.fetch();
       const toast = useToast();
       toast.show({
@@ -96,6 +109,72 @@ export const useRoles = defineStore("roles", {
         autoClose: true,
       });
       return true;
+    },
+    async updateExistingRole(payload: Volo_Abp_Identity_IdentityRoleUpdateDto) {
+      this.updateRole.status = true;
+      const roleId = this.selectedRole.data?.id;
+      const url = `${getAbpServiceProxy("/identity/roles")}/${roleId}`;
+      await $fetch(url, {
+        method: "PUT",
+        body: payload,
+      }).catch((error) => {
+        if (error) {
+          this.updateRole.error = {
+            status: error.statusCode,
+            message: error.statusMessage,
+          };
+          this.updateRole.status = false;
+          throw error;
+        }
+      });
+      this.updateRole.status = false;
+      const toast = useToast();
+      toast.show({
+        show: true,
+        message: "Role Updated successfully",
+        dismissible: true,
+        type: "success",
+        autoClose: true,
+      });
+      this.resetError();
+      this.resetSelectedRole();
+      await this.fetch();
+      return true;
+    },
+    async getRoleById(id: string) {
+      this.selectedRole.isLoaded = true;
+      const url = `${getAbpServiceProxy(`/identity/roles`)}/${id}`;
+      const data = await $fetch<Volo_Abp_Identity_IdentityRoleDto>(url).catch(
+        (error) => {
+          if (error) {
+            this.selectedRole.error = {
+              status: error.statusCode,
+              message: error.statusMessage,
+            };
+            this.selectedRole.isLoaded = false;
+            throw error;
+          }
+        },
+      );
+      this.selectedRole.isLoaded = false;
+      this.selectedRole.data = {
+        ...data,
+      };
+    },
+    resetSelectedRole() {
+      this.selectedRole = {
+        isLoaded: false,
+        data: null,
+        error: null,
+      };
+    },
+    resetError() {
+      this.error = null;
+      this.createRole.error = null;
+      this.updateRole.error = null;
+      this.selectedRole.error = null;
+      this.createRole.status = false;
+      this.updateRole.status = false;
     },
   },
 });

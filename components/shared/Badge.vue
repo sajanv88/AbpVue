@@ -17,7 +17,7 @@ const cssColor = `bg-${props.color}-100 text-gray-800 dark:bg-${props.color}-800
 
 <template>
   <span
-    class="text-xs font-medium mx-1 py-1 px-2"
+    class="text-xs font-medium mx-1 py-1 px-2 truncate"
     :class="cssColor"
     :aria-label="text"
   >

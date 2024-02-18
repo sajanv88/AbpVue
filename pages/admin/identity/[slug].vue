@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import FilterContainer from "~/components/admin/FilterContainer.vue";
-import { useAbpConfiguration, useRoles } from "~/store/state";
+import { useAbpConfiguration, useDeleteDialog, useRoles } from "~/store/state";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
-import Table from "~/components/shared/Table.vue";
+import Table, { type ActionCtaDataType } from "~/components/shared/Table.vue";
 import { v4 } from "uuid";
 import Pagination from "~/components/shared/Pagination.vue";
+import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureManagement.vue";
+import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
+import DeleteDialog from "~/components/shared/DeleteDialog.vue";
+import CreateRole from "~/components/admin/roles/CreateRole.vue";
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
 
@@ -33,12 +37,16 @@ const enablePagination = ref(false);
 
 const roleStore = useRoles();
 const abpConfigStore = useAbpConfiguration();
+const deleteDialogStore = useDeleteDialog();
+const currentUser = abpConfigStore.config?.currentUser;
+
 const {
   roles,
   totalCount: totalRolesCount,
   isLoading: rolesFetching,
   error: rolesError,
 } = storeToRefs(roleStore);
+const { isOpen } = storeToRefs(deleteDialogStore);
 if (!saasSlugs.includes(paramSlug)) {
   await navigateTo("/error/notfound");
 }
@@ -70,12 +78,13 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
   roles: () => {
     const headers = [{ name: "Actions" }, { name: "Role Name" }];
     const columns: TableConfig["columns"] = [];
-    const { canDeleteRole, canUpdateRole, canManageRolePermissions } =
+    const { canUpdateRole, canManageRolePermissions, canDeleteRole } =
       rolePolicies();
     const actionCtaBtnProps: TableConfig["actionCtaBtnProps"] = {
       name: "Actions",
       options: [],
     };
+
     if (canDeleteRole) {
       actionCtaBtnProps.options.push({ name: "Delete" });
     }
@@ -142,6 +151,7 @@ await paginate();
 const records = computed(() => {
   if (paramSlug === "roles") {
     return {
+      title: "Role",
       data: roles.value,
       totalRecords: totalRolesCount.value,
       isLoading: rolesFetching.value,
@@ -152,6 +162,7 @@ const records = computed(() => {
     };
   }
   return {
+    title: "User",
     data: [],
     totalRecords: 0,
     isLoading: false,
@@ -162,26 +173,50 @@ const records = computed(() => {
   };
 });
 
-const onTableActionEvent = () => {
-  console.log("onTableActionEvent");
-};
+const onTableActionEvent = async ({
+  data: { invokedBy, value },
+}: {
+  data: ActionCtaDataType;
+}) => {
+  if (invokedBy === "Delete") {
+    return await deleteDialogStore.showDialog(
+      value.id,
+      `${value.name} will be deleted. Do you confirm that?`,
+    );
+  }
 
+  if (invokedBy === "Edit") {
+    if (paramSlug === "roles") {
+      return await roleStore.getRoleById(value.id);
+    }
+  }
+};
 const onPageChangeEvent = async (page: number) => {
   currentPage.value = page;
   if (paramSlug === "roles") {
     return await paginate();
   }
 };
-const totalPages = Math.ceil(records.value.totalRecords / maxRecord.value);
+const totalPages = computed(() =>
+  Math.ceil(records.value.totalRecords / maxRecord.value),
+);
 </script>
 
 <template>
   <section>
+    <Teleport to="body">
+      <DeleteDialog :type="paramSlug" v-if="isOpen" />
+      <CreateRole
+        v-if="roleStore.selectedRole.data"
+        :open="roleStore.selectedRole.data"
+        :edit="true"
+      />
+    </Teleport>
     <FilterContainer
       :slug="slug"
       :key="slug"
-      :newBtnName="`New ${slug === 'roles' ? 'Role' : 'User'}`"
-      searchType="roles"
+      :newBtnName="`New ${records.title}`"
+      :searchType="slug"
       searchPlaceholder="Search..."
     />
     <main>

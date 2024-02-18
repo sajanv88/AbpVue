@@ -43,8 +43,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="relative overflow-x-auto shadow-md border dark:border-gray-700 sm:rounded-lg overflow-y-auto max-h-[34rem]"
-    :class="isNoData ? 'min-h-fit' : 'min-h-[30rem]'"
+    class="relative overflow-x-auto shadow-md border dark:border-gray-700 sm:rounded-lg overflow-y-auto min-h-fit max-h-[34rem]"
   >
     <table
       class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
@@ -101,6 +100,11 @@ onUnmounted(() => {
                     v-for="o in actionCta.options"
                     :key="o.name"
                     class="hover:bg-gray-400 hover:dark:bg-gray-800/60"
+                    :class="
+                      col.name === 'admin' && o.name === 'Delete'
+                        ? 'hidden'
+                        : 'block'
+                    "
                     @click="
                       $emit('onAction', {
                         data: {
@@ -121,7 +125,7 @@ onUnmounted(() => {
           </th>
           <th class="p-4">
             <span class="inline-flex items-center">
-              <span class="pr-2">
+              <span :class="col.tags?.length > 0 ? 'w-[3.5rem]' : ''">
                 {{ col.name }}
               </span>
               <span
@@ -145,7 +149,6 @@ onUnmounted(() => {
 <style scoped>
 [data-settings-enabled="true"] {
   width: 150px;
-  min-height: 100px;
   max-height: fit-content;
   z-index: 100;
   top: 40px;

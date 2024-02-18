@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import Dialog from "~/components/shared/Dialog.vue";
-import { useRoles } from "~/store/state";
+import { useAbpConfiguration, useRoles } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Alert from "~/components/shared/Alert.vue";
 import Checkbox from "~/components/shared/Checkbox.vue";
-import type { Volo_Abp_Identity_IdentityRoleCreateDto } from "~/services/proxy/src";
+import type {
+  Volo_Abp_Identity_IdentityRoleCreateDto,
+  Volo_Abp_Identity_IdentityRoleUpdateDto,
+} from "~/services/proxy/src";
 
 const roleStore = useRoles();
+const abpConfigStore = useAbpConfiguration();
+const currentUser = abpConfigStore.config?.currentUser;
 const { createRole, updateRole } = storeToRefs(roleStore);
 interface ICreateRole {
   edit?: boolean;
@@ -38,19 +43,41 @@ const onSubmitForm = async (e: SubmitEvent) => {
     if (success) {
       emit("dialogClose");
     }
+  } else {
+    const payload: Volo_Abp_Identity_IdentityRoleUpdateDto = {
+      name: formValue.name as string,
+      isDefault: formValue.isDefault == "true",
+      isPublic: formValue.isPublic == "true",
+    };
+    const success = await roleStore.updateExistingRole(payload).finally(() => {
+      processing.value = false;
+    });
+    if (success) {
+      emit("dialogClose");
+    }
   }
 };
 
+const onCloseDialog = () => {
+  roleStore.resetError();
+  roleStore.resetSelectedRole();
+  emit("dialogClose");
+};
+
 const dialogTitle = props.edit ? "Edit Role" : "New Role";
+const shouldDisabled = computed(() => {
+  if (!props.edit) {
+    return false;
+  }
+  if (roleStore.selectedRole.data?.name === "admin") {
+    return currentUser?.roles?.includes(roleStore.selectedRole.data.name);
+  }
+  return false;
+});
 </script>
 
 <template>
-  <Dialog
-    id="roles"
-    :title="dialogTitle"
-    :open="open"
-    @close="$emit('dialogClose')"
-  >
+  <Dialog id="roles" :title="dialogTitle" :open="open" @close="onCloseDialog">
     <Alert
       v-if="createRole.error"
       type="error"
@@ -68,6 +95,7 @@ const dialogTitle = props.edit ? "Edit Role" : "New Role";
             type="text"
             name="name"
             id="name"
+            :disabled="shouldDisabled"
             @input="roleName = $event.target.value"
             :value="roleStore.selectedRole.data?.name ?? roleName"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
@@ -101,7 +129,7 @@ const dialogTitle = props.edit ? "Edit Role" : "New Role";
         <button
           v-if="!processing"
           type="button"
-          @click="$emit('dialogClose')"
+          @click="onCloseDialog"
           class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
         >
           Cancel

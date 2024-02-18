@@ -50,6 +50,7 @@ type AbpConfigurationState = {
   config: Volo_Abp_AspNetCore_Mvc_ApplicationConfigurations_ApplicationConfigurationDto | null;
   error: { message: string; statusCode: number } | null;
   grantedPolicies: Map<GrantedPolicyType, boolean> | null;
+  isAdmin: boolean;
 };
 
 const useAbpConfiguration = defineStore("abpConfiguration", {
@@ -58,6 +59,7 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
       config: null,
       error: null,
       grantedPolicies: null,
+      isAdmin: false,
     };
   },
 
@@ -85,6 +87,7 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
             this.grantedPolicies.set(localKey, value);
           }
         }
+        this.isAdmin = !!response.currentUser?.roles?.includes("admin");
       }
     },
   },
@@ -114,7 +117,7 @@ const useDeleteDialog = defineStore("deleteDialog", {
       this.isOpen = true;
     },
     async deleteRecord(apiUrl: AbpEndpoint) {
-      const url = `${getAbpServiceProxy(apiUrl)}`;
+      const url = `${getAbpServiceProxy(apiUrl)}/${this.id}`;
       this.isLoading = true;
 
       await $fetch(url, {
