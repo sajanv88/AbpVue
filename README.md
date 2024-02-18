@@ -89,7 +89,7 @@ It will be a fully functional UI that can be used as a starting point for any AB
 - [] Theme Switcher
 - [x] Profile
 - [x] Tenant Management
-- [] Role Management
+- [x] Role Management
 - [] User Management
 - [] Settings Management
 - [] Feature Management
