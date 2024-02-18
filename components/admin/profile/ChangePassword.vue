@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Volo_Abp_Account_ChangePasswordInput } from "~/services/proxy/src";
 import Icon from "~/components/shared/Icon.vue";
-import Alert from "~/components/shared/Alert.vue";
 import { useProfile } from "~/store/state";
 
 const profileStore = useProfile();

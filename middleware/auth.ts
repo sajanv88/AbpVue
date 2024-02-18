@@ -2,7 +2,7 @@ import { getAbpServiceProxy, useProfile } from "~/store/state";
 
 const errorCodes = [401, 500];
 export default defineNuxtRouteMiddleware(async () => {
-  const url = `${getAbpServiceProxy()}/account/my-profile`;
+  const url = getAbpServiceProxy("/account/my-profile");
   const { error, data } = await useFetch(url);
   const profileStore = useProfile();
   if (data.value) {

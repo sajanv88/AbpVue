@@ -27,7 +27,7 @@ export const useFeatures = defineStore("features", {
     async updateFeatureSettings(
       payload: Volo_Abp_FeatureManagement_UpdateFeaturesDto,
     ) {
-      const url = `${getAbpServiceProxy()}/feature-management/features?providerName=${PermissionProvider.T}&providerKey=${this.selectedTenantId}`;
+      const url = `${getAbpServiceProxy("/feature-management/features")}?providerName=${PermissionProvider.T}&providerKey=${this.selectedTenantId}`;
 
       await $fetch(url, {
         method: "PUT",
@@ -54,7 +54,7 @@ export const useFeatures = defineStore("features", {
       return true;
     },
     async resetFeaturesToDefault(tenantId: string) {
-      const url = `${getAbpServiceProxy()}/feature-management/features?providerName=${PermissionProvider.T}&providerKey=${tenantId}`;
+      const url = `${getAbpServiceProxy("/feature-management/features")}?providerName=${PermissionProvider.T}&providerKey=${tenantId}`;
       await $fetch(url, {
         method: "DELETE",
       }).catch((error) => {
@@ -89,7 +89,7 @@ export const useFeatures = defineStore("features", {
     async fetch(tenantId: string) {
       this.selectedTenantId = tenantId;
       this.isLoading = true;
-      const url = `${getAbpServiceProxy()}/feature-management/features?providerName=${PermissionProvider.T}&providerKey=${tenantId}`;
+      const url = `${getAbpServiceProxy("/feature-management/features")}?providerName=${PermissionProvider.T}&providerKey=${tenantId}`;
       const data = await $fetch(url).catch((error) => {
         if (error) {
           this.error = {

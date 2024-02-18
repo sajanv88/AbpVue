@@ -8,6 +8,7 @@ import type {
 import { defineStore } from "pinia";
 import { getAbpServiceProxy, useToast } from "~/store/state";
 import { $fetch } from "ofetch";
+import type { FetchQueryParamsType } from "~/types/fetchParams";
 
 type AbpTenantState = {
   tenants: Volo_Abp_TenantManagement_TenantDto[] | null;
@@ -29,12 +30,6 @@ type AbpTenantState = {
   };
 };
 
-type TenantFetchProps = {
-  Filter?: string;
-  Sorting?: string;
-  SkipCount?: number;
-  MaxResultCount?: number;
-};
 export const useTenants = defineStore("tenants", {
   state: (): AbpTenantState => {
     return {
@@ -63,7 +58,7 @@ export const useTenants = defineStore("tenants", {
       payload: Volo_Abp_TenantManagement_TenantUpdateDto,
     ) {
       this.updateTenant.status = true;
-      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants/${tenantId}`;
+      const url = `${getAbpServiceProxy("/multi-tenancy/tenants")}/${tenantId}`;
       await $fetch(url, {
         method: "PUT",
         body: payload,
@@ -100,7 +95,7 @@ export const useTenants = defineStore("tenants", {
     },
     async getSelectedTenant(tenantId: string) {
       this.selectedTenant.isLoaded = true;
-      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants/${tenantId}`;
+      const url = `${getAbpServiceProxy("/multi-tenancy/tenants")}/${tenantId}`;
       const data = await $fetch(url).catch((error) => {
         if (error) {
           this.selectedTenant.error = {
@@ -124,7 +119,7 @@ export const useTenants = defineStore("tenants", {
     async createTenant(payload: Volo_Abp_TenantManagement_TenantCreateDto) {
       if (this.create.error) this.create.error = null;
       this.create.status = true;
-      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
+      const url = `${getAbpServiceProxy("/multi-tenancy/tenants")}`;
 
       await $fetch(url, {
         method: "POST",
@@ -153,9 +148,9 @@ export const useTenants = defineStore("tenants", {
       await this.fetch();
       return true;
     },
-    async fetch(params?: TenantFetchProps) {
+    async fetch(params?: FetchQueryParamsType) {
       this.isLoading = true;
-      const url = `${getAbpServiceProxy()}/multi-tenancy/tenants`;
+      const url = `${getAbpServiceProxy("/multi-tenancy/tenants")}`;
       const { data, error } = await useFetch(url, {
         ...(params && { query: params }),
       });

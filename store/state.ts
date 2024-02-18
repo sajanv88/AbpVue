@@ -9,9 +9,11 @@ import { useTenants } from "./tenantStore";
 import { useFeatures } from "./featureStore";
 import { useProfile } from "./profileStore";
 import { useToast } from "./toastStore";
+import type { AbpEndpoint } from "~/types/abpEndpoint";
 
 type TokenSetState = { jwt?: TokenSet };
-export const getAbpServiceProxy = () => "/api/abpServiceProxy";
+export const getAbpServiceProxy = (endpoint: AbpEndpoint) =>
+  `/api/abpServiceProxy${endpoint}`;
 
 const useTokenSet = defineStore("tokenSet", {
   state: () => ({
@@ -60,7 +62,7 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
 
   actions: {
     async fetch() {
-      const url = `${getAbpServiceProxy()}/abp/application-configuration`;
+      const url = `${getAbpServiceProxy("/abp/application-configuration")}`;
       const { data, error } = await useFetch(url);
 
       if (error.value) {
@@ -110,8 +112,8 @@ const useDeleteDialog = defineStore("deleteDialog", {
       this.message = message;
       this.isOpen = true;
     },
-    async deleteRecord(apiUrl: string) {
-      const url = `${getAbpServiceProxy()}/${apiUrl}`;
+    async deleteRecord(apiUrl: AbpEndpoint) {
+      const url = `${getAbpServiceProxy(apiUrl)}`;
       this.isLoading = true;
 
       await $fetch(url, {
