@@ -3,6 +3,7 @@ import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Avatar from "~/components/shared/Avatar.vue";
+import IconButton from "~/components/shared/IconButton.vue";
 
 defineProps({
   sticky: Boolean,
@@ -11,23 +12,36 @@ defineProps({
 
 const abpConfigStore = useAbpConfiguration();
 const { config } = storeToRefs(abpConfigStore);
-const name =
-  config.value?.currentUser?.name?.charAt(0).toUpperCase() ||
-  config.value?.currentUser?.userName?.charAt(0).toUpperCase() ||
-  "N/A";
+const name = computed(() => {
+  return (
+    config.value?.currentUser?.name?.charAt(0).toUpperCase() ||
+    config.value?.currentUser?.userName?.charAt(0).toUpperCase() ||
+    "N/A"
+  );
+});
+const fullName = computed(() => {
+  if (config.value?.currentUser?.name && config.value?.currentUser?.surName) {
+    return `${config.value?.currentUser?.name} ${config.value?.currentUser?.surName}`;
+  }
+  if (config.value?.currentUser?.name) {
+    return config.value?.currentUser?.name;
+  }
+  return config.value?.currentUser?.userName;
+});
 </script>
 
 <template>
-  <header
-    class="w-full mb-3 md:h-16 bg-gray-200 dark:bg-gray-800 shadow-md border-b border-gray-400 dark:border-gray-300 p-2"
-  >
-    <div class="flex items-center h-full" :class="position">
-      <div class="flex-1 pl-2 md:pl-5">
+  <header class="w-full p-3 bg-gray-200 dark:bg-gray-800">
+    <div class="flex items-center h-full">
+      <div class="flex-1">
         <h1
-          class="text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-3xl dark:text-white"
+          class="hidden md:block text-lg pt-5 pb-5 tracking-tight font-semibold capitalize text-gray-900 md:text-xl lg:text-2xl dark:text-white"
         >
-          AbpVue Template
+          {{ fullName }}
         </h1>
+        <IconButton @click="$emit('toggleNav')" classname="inline md:hidden">
+          <Icon icon="menu" />
+        </IconButton>
       </div>
 
       <ClientOnly fallback="...">

@@ -6,6 +6,11 @@ import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration, useTokenSet } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
 
+useHead({
+  bodyAttrs: {
+    class: "bg-gray-200 dark:bg-gray-800",
+  },
+});
 const navigations: Array<INavigation> = [
   {
     id: "home",
@@ -71,60 +76,46 @@ await callOnce(async () => {
   await abpConfig.fetch();
 });
 
-const onMenuClickEvent = () => {
-  const nav = document.querySelector("[data-navSection='main-nav']");
-  const mobileMenuBtn = document.querySelector("[data-menuBtn='mobile-menu']");
-  const mobileCrossBtn = document.querySelector(
-    "[data-menuBtn='mobile-cross']",
-  );
-  if (!nav || !mobileMenuBtn) return;
-  nav.classList.toggle("translate-x-[-100rem]");
-  mobileCrossBtn?.classList.toggle("hidden");
-  mobileMenuBtn?.classList.toggle("hidden");
+const toggleNav = ref(false);
+const onToggleNavEvent = () => {
+  toggleNav.value = !toggleNav.value;
 };
 </script>
 
 <template>
   <main class="relative bg-gray-200 dark:bg-gray-800">
-    <div id="dialog" />
-    <div class="fixed w-full z-50">
-      <AdminHeader />
-    </div>
-    <IconButton
-      class="block absolute transition top-[3rem] left-2 md:hidden"
-      @click="onMenuClickEvent"
-      data-menuBtn="mobile-menu"
-    >
-      <Icon icon="menu" />
-    </IconButton>
-    <section class="grid md:grid-cols-12 pt-20">
-      <section
-        class="absolute z-10 h-svh w-full bg-gray-200 dark:bg-gray-800 shadow-lg translate-x-[-100rem] transition-all md:translate-x-0 md:static md:col-span-4 lg:col-span-3"
-        data-navSection="main-nav"
-      >
-        <IconButton
-          class="hidden absolute right-2 transition md:hidden"
-          @click="onMenuClickEvent"
-          data-menuBtn="mobile-cross"
-        >
-          <Icon icon="cross" />
-        </IconButton>
-        <Navigation :navigations="navigations" />
-      </section>
-      <section role="main" class="md:pl-0 md:col-span-8 lg:col-span-9">
+    <section class="h-svh overflow-y-auto">
+      <section class="relative min-h-svh">
         <section
-          class="md:max-w-screen-lg lg:max-w-screen-xl xl:max-w-screen-2xl mx-auto md:pl-5 md:pr-5 md:pb-5 md:pt-2"
+          :class="toggleNav ? 'translate-x-0 w-full' : 'translate-x-[-100rem]'"
+          class="md:w-[17rem] z-20 bg-gray-200 dark:bg-gray-800 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg"
         >
-          <div class="md:max-h-svh md:overflow-y-auto">
+          <Navigation
+            :navigations="navigations"
+            @toggle-nav="onToggleNavEvent"
+          />
+        </section>
+        <section class="md:ml-[4.5rem] lg:ml-[17rem] p-3 lg:p5">
+          <div class="dark:border-gray-300 shadow-md abp-vue-header-container">
+            <AdminHeader @toggle-nav="onToggleNavEvent" />
+          </div>
+          <div class="min-h-svh pt-5">
             <slot />
           </div>
         </section>
       </section>
     </section>
+
     <Teleport to="body">
       <ToastContainer />
     </Teleport>
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+.abp-vue-header-container {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+</style>
