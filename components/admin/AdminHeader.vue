@@ -44,9 +44,8 @@ const fullName = computed(() => {
         </IconButton>
       </div>
 
-      <ClientOnly fallback="...">
-        <ThemeSwitch />
-      </ClientOnly>
+      <ThemeSwitch />
+
       <Avatar :name="name" :full-name="config?.currentUser?.userName" />
       <div
         id="userDropdown"

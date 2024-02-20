@@ -15,7 +15,15 @@ const onCloseDialog = () => {
   emit("dialogClose");
   permissionStore.$reset();
 };
-const onSubmitForm = async (e: SubmitEvent) => {};
+const onSubmitForm = async (e: SubmitEvent) => {
+  e.preventDefault();
+  processing.value = true;
+  const form = new FormData(e.target as HTMLFormElement);
+  for (const [key, value] of form.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+  processing.value = false;
+};
 const title = `Permissions - ${permissionStore.list.entityDisplayName}`;
 const selectedGroup = ref(permissionStore.list.groups?.[0]);
 const isAllPermissionGranted = computed(() => {
@@ -28,10 +36,6 @@ const isAllPermissionGranted = computed(() => {
   );
 });
 
-const groups = computed(() => {
-  return permissionStore.list.groups;
-});
-
 const selectedTab = ref(permissionStore.list.groups?.[0].displayName);
 const onTabChange = (groupName: string) => {
   selectedTab.value = groupName;
@@ -39,6 +43,23 @@ const onTabChange = (groupName: string) => {
     (group) => group.displayName === groupName,
   );
 };
+
+const groups = computed(() => {
+  return permissionStore.list.groups;
+});
+const onGrantAllPermission = (checked: boolean) => {
+  console.log("Grant all permission", typeof checked);
+
+  permissionStore.$patch((state) => {
+    state.list.groups!.forEach((group) => {
+      group.permissions!.forEach((permission) => {
+        permission.isGranted = checked;
+      });
+    });
+    document.getElementById("selectAll")?.click();
+  });
+};
+
 const hasAllSelectedPermission = computed(() => {
   return selectedGroup.value?.permissions?.every(
     (permission) => permission.isGranted == true,
@@ -65,8 +86,9 @@ const hasAllSelectedPermission = computed(() => {
             <Checkbox
               id="grantAll"
               name="grantAll"
-              :checked="isAllPermissionGranted"
+              :checked="isAllPermissionGranted.toString()"
               label="Grant all permissions"
+              @on-change-event="onGrantAllPermission"
             />
           </h2>
           <ul class="mt-5">
@@ -95,21 +117,21 @@ const hasAllSelectedPermission = computed(() => {
             <Checkbox
               id="selectAll"
               name="selectAll"
-              :checked="hasAllSelectedPermission"
+              :checked="hasAllSelectedPermission.toString()"
               label="Select all"
             />
           </h2>
           <ul class="mt-5">
             <li
               v-for="permission in selectedGroup.permissions"
-              :key="permission.name"
+              :key="permission.isGranted"
               class="py-2"
             >
               <span v-if="!!permission.parentName" class="inline-block pl-6">
                 <Checkbox
                   :id="permission.name"
                   :name="permission.name"
-                  :checked="permission.isGranted"
+                  :checked="permission.isGranted.toString()"
                   :label="permission.displayName"
                 />
               </span>
@@ -118,7 +140,7 @@ const hasAllSelectedPermission = computed(() => {
                   :label-style="'font-semibold text-lg leading-none'"
                   :id="permission.name"
                   :name="permission.name"
-                  :checked="permission.isGranted"
+                  :checked="permission.isGranted.toString()"
                   :label="permission.displayName"
                 />
               </span>
