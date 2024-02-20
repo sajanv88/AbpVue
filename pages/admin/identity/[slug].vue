@@ -10,6 +10,7 @@ import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureMana
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateRole from "~/components/admin/roles/CreateRole.vue";
+import Spinner from "~/components/shared/Spinner.vue";
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
 
@@ -220,24 +221,29 @@ const totalPages = computed(() =>
       searchPlaceholder="Search..."
     />
     <main>
-      <Table
-        :is-loading="records.isLoading"
-        :headers="records.headers"
-        :columns="records.columns"
-        :action-cta="records.actionCtaBtnProps"
-        @on-Action="onTableActionEvent"
-        :is-no-data="records.data?.length === 0"
-      />
-      <div v-if="enablePagination" :key="enablePagination">
-        <Pagination
-          :total-page="totalPages"
-          :current-page="currentPage"
-          :key="currentPage"
-          @on-next-page="onPageChangeEvent"
-          @on-previous-page="onPageChangeEvent"
-          @on-selected-page="onPageChangeEvent"
+      <ClientOnly fallback-tag="span" fallback="Loading...">
+        <template #fallback>
+          <Spinner />
+        </template>
+        <Table
+          :is-loading="records.isLoading"
+          :headers="records.headers"
+          :columns="records.columns"
+          :action-cta="records.actionCtaBtnProps"
+          @on-Action="onTableActionEvent"
+          :is-no-data="records.data?.length === 0"
         />
-      </div>
+        <div v-if="enablePagination" :key="enablePagination">
+          <Pagination
+            :total-page="totalPages"
+            :current-page="currentPage"
+            :key="currentPage"
+            @on-next-page="onPageChangeEvent"
+            @on-previous-page="onPageChangeEvent"
+            @on-selected-page="onPageChangeEvent"
+          />
+        </div>
+      </ClientOnly>
     </main>
   </section>
 </template>

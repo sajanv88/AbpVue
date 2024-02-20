@@ -5,7 +5,7 @@ const toastStore = useToast();
 </script>
 
 <template>
-  <section class="fixed bottom-5 right-5 abp-toast space-y-2">
+  <section class="fixed bottom-10 right-5 abp-toast space-y-2">
     <Toast
       v-for="toast in toastStore.toasts"
       :key="toast.id"

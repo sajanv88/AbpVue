@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
 import type { INavigation } from "~/types/navigation";
-import IconButton from "~/components/shared/IconButton.vue";
-import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration, useTokenSet } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
+import { SpeedInsights } from "@vercel/speed-insights/vue";
 
 useHead({
   bodyAttrs: {
@@ -83,6 +82,7 @@ const onToggleNavEvent = () => {
 </script>
 
 <template>
+  <SpeedInsights />
   <main class="relative bg-gray-200 dark:bg-gray-800">
     <section class="h-svh overflow-y-auto">
       <section class="relative min-h-svh">
