@@ -15,6 +15,7 @@ import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureManagement.vue";
+import Spinner from "~/components/shared/Spinner.vue";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
@@ -194,24 +195,29 @@ const totalPages = computed(() =>
       searchPlaceholder="Search..."
     />
     <main>
-      <Table
-        :is-loading="isLoading"
-        :headers="config.headers"
-        :columns="config.columns"
-        :action-cta="config.actionCtaBtnProps"
-        @on-Action="onTableActionEvent"
-        :is-no-data="tenants?.length === 0"
-      />
-      <div v-if="enablePagination">
-        <Pagination
-          :total-page="totalPages"
-          :current-page="currentPage"
-          :key="currentPage"
-          @on-next-page="onPageChangeEvent"
-          @on-previous-page="onPageChangeEvent"
-          @on-selected-page="onPageChangeEvent"
+      <ClientOnly fallback-tag="span" fallback="Loading...">
+        <template #fallback>
+          <Spinner />
+        </template>
+        <Table
+          :is-loading="isLoading"
+          :headers="config.headers"
+          :columns="config.columns"
+          :action-cta="config.actionCtaBtnProps"
+          @on-Action="onTableActionEvent"
+          :is-no-data="tenants?.length === 0"
         />
-      </div>
+        <div v-if="enablePagination">
+          <Pagination
+            :total-page="totalPages"
+            :current-page="currentPage"
+            :key="currentPage"
+            @on-next-page="onPageChangeEvent"
+            @on-previous-page="onPageChangeEvent"
+            @on-selected-page="onPageChangeEvent"
+          />
+        </div>
+      </ClientOnly>
     </main>
   </section>
 </template>

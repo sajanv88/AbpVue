@@ -37,7 +37,10 @@ const borderColor = `border-${colorMapper[props.type]}-500 dark:border-${colorMa
 </script>
 
 <template>
-  <section class="border-t-4 bottom-5 right-5 w-[20rem]" :class="borderColor">
+  <section
+    class="border-t-4 bottom-5 right-5 w-full md:w-[20rem]"
+    :class="borderColor"
+  >
     <section
       role="alert"
       class="flex items-center w-full max-w-xs p-4 shadow-xl text-gray-500 bg-white dark:text-gray-400 dark:bg-gray-900"
