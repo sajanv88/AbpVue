@@ -42,6 +42,7 @@ export const useProfile = defineStore("profile", {
     async fetchProfile() {
       const url = getAbpServiceProxy("/account/my-profile");
       const { error, data } = await useFetch(url);
+      console.log(error.value, data.value);
       if (error.value) {
         this.error = {
           message: error.value.statusMessage ?? "Unknown error",

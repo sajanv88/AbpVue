@@ -174,7 +174,8 @@ const onTableActionEvent = async ({
   }
 
   if (invokedBy === "Permissions") {
-    if (paramSlug === "roles") {
+    // Fetch permissions for the selected role or user
+    if (paramSlug === "roles" || paramSlug === "users") {
       return await permissionStore.fetch(PermissionProvider.R, value.name);
     }
   }
@@ -227,6 +228,7 @@ const totalPages = computed(() =>
       <ManagePermissions
         v-if="!!permissionStore.list.entityDisplayName"
         :open="!!permissionStore.list.entityDisplayName"
+        :type="paramSlug"
       />
     </Teleport>
     <FilterContainer
