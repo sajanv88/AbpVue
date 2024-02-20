@@ -10,6 +10,7 @@ import { useFeatures } from "./featureStore";
 import { useProfile } from "./profileStore";
 import { useToast } from "./toastStore";
 import { useRoles } from "./roleStore";
+import { usePermissionStore } from "./permissionStore";
 import type { AbpEndpoint } from "~/types/abpEndpoint";
 
 type TokenSetState = { jwt?: TokenSet };
@@ -77,7 +78,6 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
       const response = data.value as AbpConfigurationState["config"];
       if (response) {
         this.config = response;
-
         if (response.auth?.grantedPolicies) {
           const keys = Object.entries(response.auth.grantedPolicies);
           this.grantedPolicies = new Map<GrantedPolicyType, boolean>();
@@ -158,4 +158,5 @@ export {
   useProfile,
   useToast,
   useRoles,
+  usePermissionStore,
 };

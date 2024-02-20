@@ -10,7 +10,6 @@ interface INavigationProps {
 }
 defineProps<INavigationProps>();
 const { config } = useAbpConfiguration();
-const currentUser = config?.currentUser;
 </script>
 
 <template>

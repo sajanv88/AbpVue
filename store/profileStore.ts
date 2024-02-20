@@ -44,12 +44,12 @@ export const useProfile = defineStore("profile", {
       const { error, data } = await useFetch(url);
       if (error.value) {
         this.error = {
-          message: error.value.statusMessage,
-          statusCode: error.value.statusCode,
+          message: error.value.statusMessage ?? "Unknown error",
+          statusCode: error.value.statusCode ?? 500,
         };
-        return;
+        throw error.value;
       }
-      this.setProfile(data.value);
+      if (data.value) this.setProfile(data.value);
     },
     async updateProfile(payload: Volo_Abp_Account_UpdateProfileDto) {
       const url = getAbpServiceProxy("/account/my-profile");

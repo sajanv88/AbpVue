@@ -5,6 +5,7 @@ interface ICheckboxProps {
   checked: string;
   id: string;
   name: string;
+  labelStyle?: string;
 }
 const props = defineProps<ICheckboxProps>();
 const checkboxValue = ref(props.checked);
@@ -27,6 +28,7 @@ const checkboxValue = ref(props.checked);
       <label
         :for="props.id"
         class="font-medium text-gray-900 dark:text-white"
+        :class="labelStyle"
         >{{ props.label }}</label
       >
       <p
