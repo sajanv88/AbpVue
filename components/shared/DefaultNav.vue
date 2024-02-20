@@ -21,9 +21,8 @@ import Icon from "~/components/shared/Icon.vue";
         </a>
 
         <div class="flex md:order-2 space-x-3 md:ml-10 rtl:space-x-reverse">
-          <ClientOnly fallback="...">
-            <ThemeSwitch />
-          </ClientOnly>
+          <ThemeSwitch />
+
           <button
             data-collapse-toggle="navbar-sticky"
             type="button"
