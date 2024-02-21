@@ -236,10 +236,17 @@ const onTableActionEvent = async ({
   if (invokedBy === "Permissions") {
     // Fetch permissions for the selected role or user
     if (paramSlug === "roles" || paramSlug === "users") {
-      const provider =
-        paramSlug === "roles" ? PermissionProvider.R : PermissionProvider.U;
-      const key = paramSlug === "roles" ? value.name : value.id;
-      return await permissionStore.fetch(provider, key);
+      let providerKey = "";
+      let providerName: PermissionProvider = PermissionProvider.R;
+      if (paramSlug === "roles") {
+        providerKey = value.name;
+        providerName = PermissionProvider.R;
+      } else if (paramSlug === "users") {
+        permissionStore.setSelectedUserId(value.id);
+        providerKey = value.id;
+        providerName = PermissionProvider.U;
+      }
+      return await permissionStore.fetch(providerName, providerKey);
     }
   }
 };

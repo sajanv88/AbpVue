@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import Alert from "~/components/shared/Alert.vue";
 import Dialog from "~/components/shared/Dialog.vue";
-import { usePermissionStore } from "~/store/state";
+import { useAbpConfiguration, usePermissionStore } from "~/store/state";
 import Checkbox from "~/components/shared/Checkbox.vue";
-import type { Volo_Abp_PermissionManagement_PermissionGrantInfoDto } from "~/services/proxy/src";
+import type {
+  Volo_Abp_Identity_IdentityUserDto,
+  Volo_Abp_PermissionManagement_PermissionGrantInfoDto,
+} from "~/services/proxy/src";
 import { v4 } from "uuid";
+import type { ICurrentUserRoles } from "~/composables/useCurrentUserRoles";
+import { useUserById } from "~/composables/useUserById";
 
 interface IManagePermissions {
   open: boolean;
@@ -14,18 +19,31 @@ const processing = ref(false);
 const permissionStore = usePermissionStore();
 const props = defineProps<IManagePermissions>();
 const emit = defineEmits(["dialogClose"]);
+const abpConfigStore = useAbpConfiguration();
+
+const currentUser = abpConfigStore.config?.currentUser;
+
+const selectedUserRoles = (await useCurrentUserRoles(
+  permissionStore.selectedUserId,
+)) as ICurrentUserRoles;
+
+const selectedUserById = (await useUserById(
+  permissionStore.selectedUserId,
+)) as Volo_Abp_Identity_IdentityUserDto;
 
 const onCloseDialog = () => {
   emit("dialogClose");
   permissionStore.$reset();
 };
+
 const onSubmitForm = async (e: SubmitEvent) => {
   e.preventDefault();
   processing.value = true;
   await permissionStore.savePermissions();
   processing.value = false;
 };
-const title = `Permissions - ${permissionStore.list.entityDisplayName}`;
+const title = `Permissions - ${props.type === "roles" ? permissionStore.list.entityDisplayName : selectedUserById?.userName}`;
+
 const selectedTab = computed(() => {
   return permissionStore.selectedTab;
 });
@@ -45,10 +63,12 @@ const onSelectAllPermissions = (checked: boolean) => {
   permissionStore.grantSelectedPermissions(selectedTabName.value!, checked);
 };
 
-const shouldDisable = computed(() => {
-  // only disable when the type is users and the role is admin
-  return permissionStore.disabled && props.type == "users";
-});
+const shouldDisable =
+  props.type === "roles"
+    ? false
+    : selectedUserRoles.items.filter((role) =>
+        currentUser?.roles?.includes(role.name!),
+      ).length > 0;
 
 const selectedTagGroup = computed(() => {
   return selectedTab.value.get(selectedTabName.value!);
