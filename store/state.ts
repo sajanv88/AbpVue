@@ -11,6 +11,7 @@ import { useProfile } from "./profileStore";
 import { useToast } from "./toastStore";
 import { useRoles } from "./roleStore";
 import { usePermissionStore } from "./permissionStore";
+import { useUsers } from "./userStore";
 import type { AbpEndpoint } from "~/types/abpEndpoint";
 
 type TokenSetState = { jwt?: TokenSet };
@@ -159,4 +160,5 @@ export {
   useToast,
   useRoles,
   usePermissionStore,
+  useUsers,
 };

@@ -5,6 +5,7 @@ import {
   useDeleteDialog,
   usePermissionStore,
   useRoles,
+  useUsers,
 } from "~/store/state";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
@@ -16,17 +17,27 @@ import CreateRole from "~/components/admin/roles/CreateRole.vue";
 import Spinner from "~/components/shared/Spinner.vue";
 import { PermissionProvider } from "~/types/permissionProvider";
 import ManagePermissions from "~/components/admin/permissions/ManagePermissions.vue";
+import Alert from "~/components/shared/Alert.vue";
 
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
 
+type RoleColumn = {
+  name: string;
+  id: string;
+  tags?: Array<{ id: string; name: string }>;
+};
+
+type UserColumn = {
+  name: string;
+  id: string;
+  email: string;
+  phoneNumber: string;
+};
+
 type TableConfig = {
   headers: Array<{ name: string }>;
-  columns: Array<{
-    name: string;
-    id: string;
-    tags?: Array<{ id: string; name: string }>;
-  }>;
+  columns: Array<RoleColumn | UserColumn>;
   actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
 };
 
@@ -46,6 +57,7 @@ const roleStore = useRoles();
 const abpConfigStore = useAbpConfiguration();
 const deleteDialogStore = useDeleteDialog();
 const permissionStore = usePermissionStore();
+const userStore = useUsers();
 
 const {
   roles,
@@ -53,6 +65,13 @@ const {
   isLoading: rolesFetching,
   error: rolesError,
 } = storeToRefs(roleStore);
+
+const {
+  users: userList,
+  totalCount: totalUsersCount,
+  isLoading: usersFetching,
+  error: usersError,
+} = storeToRefs(userStore);
 const { isOpen } = storeToRefs(deleteDialogStore);
 if (!saasSlugs.includes(paramSlug)) {
   await navigateTo("/error/notfound");
@@ -65,28 +84,28 @@ const paginate = async () => {
       MaxResultCount: maxRecord.value,
       SkipCount: currentPage.value,
     });
+  } else if (paramSlug == "users") {
+    await userStore.fetch({
+      MaxResultCount: maxRecord.value,
+      SkipCount: currentPage.value,
+    });
   }
 };
 
-const rolePolicies = () => {
-  const canDeleteRole = abpConfigStore?.grantedPolicies?.get(
-    "isAbpIdentityRolesDelete",
-  );
-  const canUpdateRole = abpConfigStore?.grantedPolicies?.get(
-    "isAbpIdentityRolesUpdate",
-  );
-  const canManageRolePermissions = abpConfigStore?.grantedPolicies?.get(
-    "isAbpIdentityRolesManagePermissions",
-  );
-  return { canDeleteRole, canUpdateRole, canManageRolePermissions };
-};
+const rolePolicies = useRolePolicy();
+const userPolicies = useUserPolicy();
 
 const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
   roles: () => {
-    const headers = [{ name: "Actions" }, { name: "Role Name" }];
+    const headers = [
+      { name: "Actions" },
+      { name: "Role Name" },
+      { name: "" },
+      { name: "" },
+    ];
     const columns: TableConfig["columns"] = [];
     const { canUpdateRole, canManageRolePermissions, canDeleteRole } =
-      rolePolicies();
+      rolePolicies;
     const actionCtaBtnProps: TableConfig["actionCtaBtnProps"] = {
       name: "Actions",
       options: [],
@@ -104,12 +123,30 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
     return { headers, actionCtaBtnProps, columns };
   },
   users: () => {
-    const headers = [{ name: "Actions" }, { name: "User Name" }];
+    const headers = [
+      { name: "Actions" },
+      { name: "User Name" },
+      { name: "Email Address" },
+      { name: "Phone Number" },
+    ];
     const columns: TableConfig["columns"] = [];
     const actionCtaBtnProps: TableConfig["actionCtaBtnProps"] = {
       name: "Actions",
       options: [],
     };
+    const { canUpdateUser, canDeleteUser, canManageUserPermission } =
+      userPolicies;
+
+    if (canDeleteUser) {
+      actionCtaBtnProps.options.push({ name: "Delete" });
+    }
+    if (canUpdateUser) {
+      actionCtaBtnProps.options.push({ name: "Edit" });
+    }
+    if (canManageUserPermission) {
+      actionCtaBtnProps.options.push({ name: "Permissions" });
+    }
+
     return { headers, actionCtaBtnProps, columns };
   },
 };
@@ -138,19 +175,42 @@ const refreshRoles = (params: typeof roles) => {
   }
 };
 
+const refreshUsers = (params: typeof userList) => {
+  if (paramSlug == "users" && params.value) {
+    for (const param of params.value) {
+      config.value.columns.push({
+        name: param.name!,
+        id: param.id!,
+        phoneNumber: param.phoneNumber!,
+        email: param.email!,
+      });
+    }
+  }
+};
+
 watch(roles, () => {
   config.value.columns = [];
   const r: typeof roles = roles;
   refreshRoles(r);
 });
 
+watch(userList, () => {
+  config.value.columns = [];
+  const u: typeof userList = userList;
+  refreshUsers(u);
+});
+
 watch(totalRolesCount, () => {
   if (paramSlug === "roles") {
     enablePagination.value =
       totalRolesCount.value > config.value.columns.length;
+  } else if (paramSlug === "users") {
+    enablePagination.value =
+      totalUsersCount.value > config.value.columns.length;
   }
 });
 
+refreshUsers(userList);
 refreshRoles(roles);
 
 await paginate();
@@ -176,7 +236,10 @@ const onTableActionEvent = async ({
   if (invokedBy === "Permissions") {
     // Fetch permissions for the selected role or user
     if (paramSlug === "roles" || paramSlug === "users") {
-      return await permissionStore.fetch(PermissionProvider.R, value.name);
+      const provider =
+        paramSlug === "roles" ? PermissionProvider.R : PermissionProvider.U;
+      const key = paramSlug === "roles" ? value.name : value.id;
+      return await permissionStore.fetch(provider, key);
     }
   }
 };
@@ -194,7 +257,7 @@ const records = computed(() => {
       data: roles.value,
       totalRecords: totalRolesCount.value,
       isLoading: rolesFetching.value,
-      error: rolesError.value,
+      error: rolesError.value || permissionStore.error,
       headers: config.value.headers,
       columns: config.value.columns,
       actionCtaBtnProps: config.value.actionCtaBtnProps,
@@ -202,10 +265,10 @@ const records = computed(() => {
   }
   return {
     title: "User",
-    data: [],
-    totalRecords: 0,
-    isLoading: false,
-    error: null,
+    data: userList.value,
+    totalRecords: totalUsersCount.value,
+    isLoading: usersFetching.value,
+    error: usersError.value || permissionStore.error,
     headers: config.value.headers,
     columns: config.value.columns,
     actionCtaBtnProps: config.value.actionCtaBtnProps,
@@ -218,6 +281,11 @@ const totalPages = computed(() =>
 
 <template>
   <section>
+    <Alert
+      type="error"
+      v-if="records.error"
+      :message="records.error?.message"
+    />
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
       <CreateRole
@@ -243,6 +311,7 @@ const totalPages = computed(() =>
         <template #fallback>
           <Spinner />
         </template>
+
         <Table
           :is-loading="records.isLoading"
           :headers="records.headers"

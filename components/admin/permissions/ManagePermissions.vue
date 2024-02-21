@@ -120,13 +120,13 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
           <ul class="mt-5">
             <li v-for="group in groups" :key="group.displayName" class="py-2">
               <a
-                class="block border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm p-3 text-center dark:border-blue-500 dark:text-blue-500 dark:focus:ring-blue-800"
+                class="block border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm p-3 text-center dark:border-blue-500 dark:focus:ring-blue-800"
                 href="javascript:void(0)"
                 @click="() => onTabChange(group.displayName!)"
                 :class="
                   selectedTabName == group.displayName
                     ? 'bg-blue-800 text-white'
-                    : 'text-blue-700 hover:text-white dark:hover:text-white dark:hover:bg-blue-500 hover:bg-blue-800'
+                    : 'text-blue-700 dark:text-white hover:text-white dark:hover:text-white dark:hover:bg-blue-500 hover:bg-blue-800'
                 "
               >
                 <span class="inline-flex items-center space-x-2">

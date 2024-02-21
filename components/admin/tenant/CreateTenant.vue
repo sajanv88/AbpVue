@@ -16,6 +16,12 @@ const tenantStore = useTenants();
 const { create } = storeToRefs(tenantStore);
 const processing = ref(false);
 const emit = defineEmits(["dialogClose"]);
+
+const formInputField = ref({
+  name: "",
+  adminEmailAddress: "",
+  adminPassword: "",
+});
 const createNewTenant = async function (e: SubmitEvent) {
   e.stopImmediatePropagation();
   e.preventDefault();
@@ -74,6 +80,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
             type="text"
             name="name"
             id="name"
+            @input="formInputField.name = $event.target.value"
             :value="tenantStore.selectedTenant.data?.name"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             required
@@ -90,6 +97,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
             type="email"
             name="adminEmailAddress"
             id="email"
+            @input="formInputField.adminEmailAddress = $event.target.value"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             required
           />
@@ -103,6 +111,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
           <input
             type="password"
             name="adminPassword"
+            @input="formInputField.adminPassword = $event.target.value"
             id="password"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             placeholder=""
