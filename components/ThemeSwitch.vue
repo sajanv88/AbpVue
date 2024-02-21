@@ -1,54 +1,41 @@
 <script setup lang="ts">
+const { data } = await useFetch<{ theme: string }>("/api/theme");
+
+useHead({
+  htmlAttrs: {
+    class: data.value?.theme,
+  },
+});
 const currentTheme = ref({
-  theme: localStorage.getItem("theme") || "light",
-  visible: new Map([
-    ["light", true],
-    ["dark", false],
-  ]),
+  theme: data.value?.theme,
 });
 
-const onThemeSwitchEvent = () => {
-  if (currentTheme.value.theme == "dark") {
+const onThemeSwitchEvent = async () => {
+  const selectedTheme = document.documentElement.classList.contains("dark")
+    ? "dark"
+    : "light";
+  if (selectedTheme == "dark") {
     document.documentElement.classList.remove("dark");
     document.documentElement.classList.add("light");
-    localStorage.setItem("theme", "light");
-  } else if (currentTheme.value.theme == "light") {
+    currentTheme.value.theme = "light";
+    await $fetch("/api/theme?theme=light");
+  } else if (selectedTheme == "light") {
     document.documentElement.classList.remove("light");
     document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
+    currentTheme.value.theme = "dark";
+    await $fetch("/api/theme?theme=dark");
   }
-  currentTheme.value.visible.forEach((value, key) => {
-    currentTheme.value.visible.set(key, false);
-  });
-  const theme = localStorage.getItem("theme")!;
-  currentTheme.value.theme = theme;
-  currentTheme.value.visible.set(theme, true);
 };
-
-onMounted(() => {
-  document.documentElement.classList.remove("dark");
-  document.documentElement.classList.add(currentTheme.value.theme);
-});
 </script>
 
-<style>
-[data-visible="false"],
-[data-visible="false"] {
-  display: none;
-}
-
-[data-visible="true"],
-[data-visible="true"] {
-  display: inline;
-}
-</style>
+<style scoped></style>
 <template>
   <button
     @click="onThemeSwitchEvent"
     type="button"
     class="mr-3 text-gray-500 dark:text-white dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 text-sm p-2.5"
   >
-    <span class="js-light" :data-visible="currentTheme.visible.get('light')">
+    <span v-if="currentTheme.theme == 'light'">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"
@@ -62,7 +49,7 @@ onMounted(() => {
         />
       </svg>
     </span>
-    <span class="js-dark" :data-visible="currentTheme.visible.get('dark')">
+    <span v-if="currentTheme.theme == 'dark'">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="16"

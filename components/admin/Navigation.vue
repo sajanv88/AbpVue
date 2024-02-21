@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { INavigation } from "~/types/navigation";
 import Accordion from "~/components/shared/Accordion.vue";
-import { useAbpConfiguration } from "~/store/state";
 import IconButton from "~/components/shared/IconButton.vue";
 import Icon from "~/components/shared/Icon.vue";
 
@@ -9,8 +8,6 @@ interface INavigationProps {
   navigations: Array<INavigation>;
 }
 defineProps<INavigationProps>();
-const { config } = useAbpConfiguration();
-const currentUser = config?.currentUser;
 </script>
 
 <template>

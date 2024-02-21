@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
 import type { INavigation } from "~/types/navigation";
+
 import { useAbpConfiguration, useTokenSet } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
@@ -10,7 +11,11 @@ useHead({
     class: "bg-gray-200 dark:bg-gray-800",
   },
 });
-const navigations: Array<INavigation> = [
+const token = useTokenSet();
+const abpConfig = useAbpConfiguration();
+const isTenantId = !!abpConfig.config?.currentUser?.tenantId;
+
+const navList: Array<INavigation> = [
   {
     id: "home",
     title: "Home",
@@ -22,6 +27,7 @@ const navigations: Array<INavigation> = [
     title: "Saas",
     icon: "users",
     link: "",
+
     children: [
       {
         id: "tenants",
@@ -35,12 +41,14 @@ const navigations: Array<INavigation> = [
     title: "Administration",
     icon: "configure",
     link: "",
+
     children: [
       {
         id: "identity",
         title: "Identity Management",
         link: "",
         icon: "identity",
+
         children: [
           {
             id: "roles",
@@ -64,9 +72,6 @@ const navigations: Array<INavigation> = [
   },
 ];
 
-const token = useTokenSet();
-const abpConfig = useAbpConfiguration();
-
 await callOnce(async () => {
   await token.fetch();
 });
@@ -79,6 +84,19 @@ const toggleNav = ref(false);
 const onToggleNavEvent = () => {
   toggleNav.value = !toggleNav.value;
 };
+
+const navigations = computed(() => {
+  return navList
+    .filter((nav) => {
+      // if tenantId is available, hide saas navigation. Host user can see saas navigation.
+      // Read more https://docs.abp.io/en/abp/latest/Multi-Tenancy
+      if (nav.id === "saas" && isTenantId) {
+        return null;
+      }
+      return nav;
+    })
+    .filter(Boolean);
+});
 </script>
 
 <template>

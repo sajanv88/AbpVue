@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import FilterContainer from "~/components/admin/FilterContainer.vue";
-import { useAbpConfiguration, useDeleteDialog, useRoles } from "~/store/state";
+import {
+  useAbpConfiguration,
+  useDeleteDialog,
+  usePermissionStore,
+  useRoles,
+} from "~/store/state";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import Table, { type ActionCtaDataType } from "~/components/shared/Table.vue";
 import { v4 } from "uuid";
 import Pagination from "~/components/shared/Pagination.vue";
-import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureManagement.vue";
-import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateRole from "~/components/admin/roles/CreateRole.vue";
 import Spinner from "~/components/shared/Spinner.vue";
+import { PermissionProvider } from "~/types/permissionProvider";
+import ManagePermissions from "~/components/admin/permissions/ManagePermissions.vue";
+
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
 
@@ -39,7 +45,7 @@ const enablePagination = ref(false);
 const roleStore = useRoles();
 const abpConfigStore = useAbpConfiguration();
 const deleteDialogStore = useDeleteDialog();
-const currentUser = abpConfigStore.config?.currentUser;
+const permissionStore = usePermissionStore();
 
 const {
   roles,
@@ -93,7 +99,7 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
       actionCtaBtnProps.options.push({ name: "Edit" });
     }
     if (canManageRolePermissions) {
-      actionCtaBtnProps.options.push({ name: "Settings" });
+      actionCtaBtnProps.options.push({ name: "Permissions" });
     }
     return { headers, actionCtaBtnProps, columns };
   },
@@ -149,6 +155,38 @@ refreshRoles(roles);
 
 await paginate();
 
+const onTableActionEvent = async ({
+  data: { invokedBy, value },
+}: {
+  data: ActionCtaDataType;
+}) => {
+  if (invokedBy === "Delete") {
+    return await deleteDialogStore.showDialog(
+      value.id,
+      `${value.name} will be deleted. Do you confirm that?`,
+    );
+  }
+
+  if (invokedBy === "Edit") {
+    if (paramSlug === "roles") {
+      return await roleStore.getRoleById(value.id);
+    }
+  }
+
+  if (invokedBy === "Permissions") {
+    // Fetch permissions for the selected role or user
+    if (paramSlug === "roles" || paramSlug === "users") {
+      return await permissionStore.fetch(PermissionProvider.R, value.name);
+    }
+  }
+};
+
+const onPageChangeEvent = async (page: number) => {
+  currentPage.value = page;
+  if (paramSlug === "roles") {
+    return await paginate();
+  }
+};
 const records = computed(() => {
   if (paramSlug === "roles") {
     return {
@@ -173,31 +211,6 @@ const records = computed(() => {
     actionCtaBtnProps: config.value.actionCtaBtnProps,
   };
 });
-
-const onTableActionEvent = async ({
-  data: { invokedBy, value },
-}: {
-  data: ActionCtaDataType;
-}) => {
-  if (invokedBy === "Delete") {
-    return await deleteDialogStore.showDialog(
-      value.id,
-      `${value.name} will be deleted. Do you confirm that?`,
-    );
-  }
-
-  if (invokedBy === "Edit") {
-    if (paramSlug === "roles") {
-      return await roleStore.getRoleById(value.id);
-    }
-  }
-};
-const onPageChangeEvent = async (page: number) => {
-  currentPage.value = page;
-  if (paramSlug === "roles") {
-    return await paginate();
-  }
-};
 const totalPages = computed(() =>
   Math.ceil(records.value.totalRecords / maxRecord.value),
 );
@@ -211,6 +224,11 @@ const totalPages = computed(() =>
         v-if="roleStore.selectedRole.data"
         :open="roleStore.selectedRole.data"
         :edit="true"
+      />
+      <ManagePermissions
+        v-if="!!permissionStore.list.entityDisplayName"
+        :open="!!permissionStore.list.entityDisplayName"
+        :type="paramSlug"
       />
     </Teleport>
     <FilterContainer

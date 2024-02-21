@@ -7,7 +7,6 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: {
         lang: "en",
-        class: "dark",
       },
       script: [
         {
