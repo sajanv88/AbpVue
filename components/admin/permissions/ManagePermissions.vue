@@ -3,6 +3,8 @@ import Alert from "~/components/shared/Alert.vue";
 import Dialog from "~/components/shared/Dialog.vue";
 import { usePermissionStore } from "~/store/state";
 import Checkbox from "~/components/shared/Checkbox.vue";
+import type { Volo_Abp_PermissionManagement_PermissionGrantInfoDto } from "~/services/proxy/src";
+import { v4 } from "uuid";
 
 interface IManagePermissions {
   open: boolean;
@@ -12,6 +14,7 @@ const processing = ref(false);
 const permissionStore = usePermissionStore();
 const props = defineProps<IManagePermissions>();
 const emit = defineEmits(["dialogClose"]);
+
 const onCloseDialog = () => {
   emit("dialogClose");
   permissionStore.$reset();
@@ -32,16 +35,13 @@ const onTabChange = (groupName: string) => {
   permissionStore.updateSelectedTab(groupName);
 };
 
-const groups = computed(() => {
-  return permissionStore.list.groups;
-});
+const groups = permissionStore.list.groups;
+
 const onGrantAllPermission = (checked: boolean) => {
-  console.log("Grant all permission", typeof checked);
   permissionStore.grantAllPermissions(checked);
 };
 
 const onSelectAllPermissions = (checked: boolean) => {
-  console.log("Select all permission", typeof checked);
   permissionStore.grantSelectedPermissions(selectedTabName.value!, checked);
 };
 
@@ -51,13 +51,42 @@ const shouldDisable = computed(() => {
 });
 
 const selectedTagGroup = computed(() => {
-  const g = selectedTab.value.get(selectedTabName.value!);
-  return g?.group;
+  return selectedTab.value.get(selectedTabName.value!);
 });
-const allGroupPermission = computed(() => {
-  const g = selectedTab.value.get(selectedTabName.value!);
-  return g;
-});
+
+const onSubPermissionChange = (
+  checked: boolean,
+  permission: Volo_Abp_PermissionManagement_PermissionGrantInfoDto,
+) => {
+  const g = selectedTagGroup.value?.group;
+  if (!g) return;
+  // Parent name is null select all child permissions
+  if (!permission.parentName) {
+    permissionStore.$patch((state) => {
+      g.permissions?.forEach((p) => {
+        if (p.parentName == permission.name || p.name == permission.name) {
+          p.isGranted = checked;
+        }
+      });
+      const selected = state.selectedTab.get(selectedTabName.value!);
+      if (selected) {
+        state.selectedTab.set(selectedTabName.value!, {
+          ...selected,
+          group: g,
+        });
+      }
+    });
+    return;
+  }
+
+  permissionStore.trackSelectedSubPermissions(
+    selectedTabName.value!,
+    permission.name!,
+    checked,
+  );
+};
+
+const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
 </script>
 
 <template>
@@ -77,23 +106,19 @@ const allGroupPermission = computed(() => {
         <section class="mb-10 md:mb-0 col-span-12 md:col-span-5">
           <h2
             class="border-b border-gray-400 dark:border-white pb-3"
-            :key="permissionStore.hasAllPermissionsGranted"
+            :key="checkAllPermissions"
           >
             <Checkbox
               id="grantAll"
               name="grantAll"
-              :checked="permissionStore.hasAllPermissionsGranted.toString()"
+              :checked="checkAllPermissions.toString()"
               label="Grant all permissions"
               :disabled="shouldDisable"
               @on-change-event="onGrantAllPermission"
             />
           </h2>
           <ul class="mt-5">
-            <li
-              v-for="group in groups"
-              :key="group.displayNameKey"
-              class="py-2"
-            >
+            <li v-for="group in groups" :key="group.displayName" class="py-2">
               <a
                 class="block border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm p-3 text-center dark:border-blue-500 dark:text-blue-500 dark:focus:ring-blue-800"
                 href="javascript:void(0)"
@@ -107,11 +132,7 @@ const allGroupPermission = computed(() => {
                 <span class="inline-flex items-center space-x-2">
                   <span class="truncate">{{ group.displayName }}</span>
                   <span>
-                    ({{
-                      group.permissions?.filter(
-                        (permission) => permission.isGranted,
-                      ).length
-                    }})
+                    ({{ group.permissions?.filter((p) => p.isGranted).length }})
                   </span>
                 </span>
               </a>
@@ -121,12 +142,12 @@ const allGroupPermission = computed(() => {
         <section class="mb-10 md:-mb-0 col-span-12 md:col-span-7">
           <h2
             class="border-b border-gray-400 dark:border-white pb-3"
-            :key="allGroupPermission.isSelectedAll"
+            :key="selectedTagGroup.isSelectedAll"
           >
             <Checkbox
               id="selectAll"
               name="selectAll"
-              :checked="allGroupPermission.isSelectedAll.toString()"
+              :checked="selectedTagGroup.isSelectedAll.toString()"
               label="Select all"
               :disabled="shouldDisable"
               @on-change-event="onSelectAllPermissions"
@@ -134,8 +155,8 @@ const allGroupPermission = computed(() => {
           </h2>
           <ul class="mt-5">
             <li
-              v-for="permission in selectedTagGroup?.permissions"
-              :key="permission.isGranted"
+              v-for="permission in selectedTagGroup?.group?.permissions"
+              :key="permission.isGranted + v4()"
               class="py-2"
             >
               <span v-if="!!permission.parentName" class="inline-block pl-6">
@@ -145,6 +166,9 @@ const allGroupPermission = computed(() => {
                   :checked="permission.isGranted.toString()"
                   :disabled="shouldDisable"
                   :label="permission.displayName"
+                  @on-change-event="
+                    (checked) => onSubPermissionChange(checked, permission)
+                  "
                 />
               </span>
               <span v-else class="inline-block">
@@ -155,6 +179,9 @@ const allGroupPermission = computed(() => {
                   :disabled="shouldDisable"
                   :checked="permission.isGranted.toString()"
                   :label="permission.displayName"
+                  @on-change-event="
+                    (checked) => onSubPermissionChange(checked, permission)
+                  "
                 />
               </span>
             </li>

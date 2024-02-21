@@ -89,16 +89,50 @@ export const usePermissionStore = defineStore("permissionStore", {
           return group.permissions?.every((permission) => permission.isGranted);
         }).length === this.list.groups?.length;
     },
+    trackSelectedSubPermissions(
+      selectedGroupName: string,
+      selectedPermissionName: string,
+      checked: boolean,
+    ) {
+      const selectedGroup = this.selectedTab.get(selectedGroupName);
+      if (!selectedGroup) throw new Error("Group not found");
+      const selectedPermission = selectedGroup.group?.permissions?.find(
+        (p) => p.name === selectedPermissionName,
+      );
+      if (!selectedPermission) throw new Error("Permission not found");
+      if (selectedPermission.parentName) {
+        selectedPermission.isGranted = checked;
+        const parent = selectedGroup.group?.permissions?.find(
+          (p) => p.name === selectedPermission.parentName,
+        );
+        if (!parent) throw new Error("Parent permission not found");
+
+        const children = selectedGroup.group?.permissions?.filter(
+          (p) => p.parentName === parent.name,
+        );
+        const isChildPermissionsGranted = children?.every((c) => c.isGranted);
+        parent.isGranted = !!isChildPermissionsGranted;
+      }
+
+      selectedGroup.isSelectedAll = !!selectedGroup.group?.permissions?.every(
+        (permission) => permission.isGranted,
+      );
+      this.selectedTab.delete(selectedGroupName);
+
+      this.selectedTab.set(selectedGroupName, selectedGroup);
+    },
     grantAllPermissions(check: boolean) {
       this.list.groups?.forEach((group) => {
         group.permissions?.forEach((permission) => {
           permission.isGranted = check;
         });
+        this.selectedTab.set(group.displayName!, {
+          name: group.displayName!,
+          isSelectedAll: check,
+          group,
+        });
       });
       this.hasAllPermissionsGranted = check;
-      this.selectedTab.forEach((tab) => {
-        tab.isSelectedAll = check;
-      });
     },
     updateSelectedTab(name: string) {
       const group = this.list.groups?.find((g) => g.displayName === name);
@@ -116,7 +150,9 @@ export const usePermissionStore = defineStore("permissionStore", {
       select?.group?.permissions?.forEach((permission) => {
         permission.isGranted = check;
       });
-      select.isSelectedAll = check;
+      select.isSelectedAll = !!select?.group?.permissions?.every(
+        (p) => p.isGranted,
+      );
       this.trackAllPermissions();
     },
     async savePermissions() {
