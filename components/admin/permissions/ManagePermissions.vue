@@ -63,12 +63,15 @@ const onSelectAllPermissions = (checked: boolean) => {
   permissionStore.grantSelectedPermissions(selectedTabName.value!, checked);
 };
 
-const shouldDisable =
-  props.type === "roles"
-    ? false
-    : selectedUserRoles.items.filter((role) =>
-        currentUser?.roles?.includes(role.name!),
-      ).length > 0;
+const shouldDisable = computed(() => {
+  if (props.type === "roles") return false;
+
+  return (
+    selectedUserRoles.items.filter((role) =>
+      currentUser?.roles?.includes(role.name!),
+    ).length > 0
+  );
+});
 
 const selectedTagGroup = computed(() => {
   return selectedTab.value.get(selectedTabName.value!);

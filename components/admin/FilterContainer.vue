@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
 import Search from "~/components/shared/Search.vue";
-import { useAbpConfiguration, useRoles, useTenants } from "~/store/state";
+import {
+  useAbpConfiguration,
+  useRoles,
+  useTenants,
+  useUsers,
+} from "~/store/state";
 import type { GrantedPolicyType } from "~/types/grantedPolicies";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import CreateRole from "~/components/admin/roles/CreateRole.vue";
 import type { FetchQueryParamsType } from "~/types/fetchParams";
+import CreateUser from "~/components/admin/users/CreateUser.vue";
 
 interface IFilterContainerProps {
   slug: string;
@@ -17,6 +23,7 @@ const props = defineProps<IFilterContainerProps>();
 const abpConfigStore = useAbpConfiguration();
 const tenantStore = useTenants();
 const roleStore = useRoles();
+const userStore = useUsers();
 
 const searchTypeMapper: Record<
   IFilterContainerProps["searchType"],
@@ -28,6 +35,7 @@ const searchTypeMapper: Record<
 };
 const showCreateTenantDialog = ref(false);
 const showCreateRoleDialog = ref(false);
+const showCreateUserDialog = ref(false);
 
 const policy = searchTypeMapper[props.searchType] as GrantedPolicyType;
 const canCreate = abpConfigStore?.grantedPolicies?.get(policy);
@@ -53,8 +61,12 @@ const typeMapper: Record<IFilterContainerProps["searchType"], TypeMapper> = {
     },
   },
   users: {
-    fetch: async (params?: FetchQueryParamsType) => console.log("fetch users"),
-    showCreateDialog: () => console.log("trigger user dialog"),
+    fetch: async (params?: FetchQueryParamsType) => {
+      await userStore.fetch(params);
+    },
+    showCreateDialog: () => {
+      showCreateUserDialog.value = true;
+    },
   },
 };
 
@@ -79,6 +91,11 @@ const onCreateAction = () => {
         v-if="showCreateRoleDialog"
         :open="showCreateRoleDialog"
         @dialog-close="showCreateRoleDialog = false"
+      />
+      <CreateUser
+        v-if="showCreateUserDialog"
+        :open="showCreateUserDialog"
+        @dialog-close="showCreateUserDialog = false"
       />
     </ClientOnly>
   </Teleport>

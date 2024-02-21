@@ -253,10 +253,9 @@ const onTableActionEvent = async ({
 
 const onPageChangeEvent = async (page: number) => {
   currentPage.value = page;
-  if (paramSlug === "roles") {
-    return await paginate();
-  }
+  return await paginate();
 };
+
 const records = computed(() => {
   if (paramSlug === "roles") {
     return {

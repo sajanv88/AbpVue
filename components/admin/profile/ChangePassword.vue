@@ -5,8 +5,12 @@ import { useProfile } from "~/store/state";
 
 const profileStore = useProfile();
 const processing = ref(false);
-
-const passwordViewer = ref({
+type PasswordViewerType = {
+  currentPassword: { fieldValue: string; visible: boolean };
+  newPassword: { fieldValue: string; visible: boolean };
+  confirmPassword: { fieldValue: string; visible: boolean };
+};
+const passwordViewer = ref<PasswordViewerType>({
   currentPassword: {
     fieldValue: "",
     visible: false,
@@ -20,6 +24,7 @@ const passwordViewer = ref({
     visible: false,
   },
 });
+
 const onSubmitEvent = async (e: SubmitEvent) => {
   processing.value = true;
   e.stopImmediatePropagation();
