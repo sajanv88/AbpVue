@@ -39,7 +39,7 @@ const navList: Array<INavigation> = [
     ],
   },
   {
-    id: "administration",
+    id: "admin",
     title: "Administration",
     icon: "configure",
     link: "",

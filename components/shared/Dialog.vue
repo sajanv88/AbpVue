@@ -19,7 +19,9 @@ defineProps<DialogProps>();
     :class="open ? 'block' : 'hidden'"
   >
     <section class="relative p-4 w-full max-w-2xl max-h-full">
-      <section class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <section
+        class="relative bg-white rounded-lg shadow-xl dark:bg-gray-800 border border-gray-300 dark:border-gray-700"
+      >
         <header
           class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
         >

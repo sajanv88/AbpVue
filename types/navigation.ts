@@ -5,5 +5,6 @@ export interface INavigation {
   title: string;
   icon?: IconName;
   link: string;
+  isSelected?: boolean;
   children?: INavigation[];
 }
