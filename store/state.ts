@@ -12,8 +12,9 @@ import { useToast } from "./toastStore";
 import { useRoles } from "./roleStore";
 import { usePermissionStore } from "./permissionStore";
 import { useUsers } from "./userStore";
+import { useEmailing } from "./emailingStore";
+
 import type { AbpEndpoint } from "~/types/abpEndpoint";
-import type { INavigation } from "~/types/navigation";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = (endpoint: AbpEndpoint) =>
@@ -181,4 +182,5 @@ export {
   usePermissionStore,
   useUsers,
   useNavigation,
+  useEmailing,
 };
