@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDeleteDialog, useRoles, useTenants } from "~/store/state";
+import { useDeleteDialog, useRoles, useTenants, useUsers } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Dialog from "~/components/shared/Dialog.vue";
 import Alert from "~/components/shared/Alert.vue";
@@ -12,6 +12,7 @@ const props = defineProps<IDeleteDialogProps>();
 const deleteStore = useDeleteDialog();
 const tenantStore = useTenants();
 const roleStore = useRoles();
+const userStore = useUsers();
 const { message, isOpen, isLoading, id, error } = storeToRefs(deleteStore);
 
 const typeMapper: Record<IDeleteDialogProps["type"], AbpEndpoint> = {
@@ -25,7 +26,7 @@ const storeFetchMapper: Record<
 > = {
   tenants: tenantStore.fetch,
   roles: roleStore.fetch,
-  users: () => Promise.resolve(),
+  users: userStore.fetch,
 };
 
 const deleteAction = async () => {

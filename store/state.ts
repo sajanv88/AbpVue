@@ -11,7 +11,9 @@ import { useProfile } from "./profileStore";
 import { useToast } from "./toastStore";
 import { useRoles } from "./roleStore";
 import { usePermissionStore } from "./permissionStore";
+import { useUsers } from "./userStore";
 import type { AbpEndpoint } from "~/types/abpEndpoint";
+import type { INavigation } from "~/types/navigation";
 
 type TokenSetState = { jwt?: TokenSet };
 export const getAbpServiceProxy = (endpoint: AbpEndpoint) =>
@@ -149,6 +151,24 @@ const useDeleteDialog = defineStore("deleteDialog", {
   },
 });
 
+interface INavigationState {
+  isSideNavbarOpen: boolean;
+  selectedLink: string;
+}
+const useNavigation = defineStore("navigation", {
+  state: (): INavigationState => {
+    return {
+      isSideNavbarOpen: false,
+      selectedLink: "",
+    };
+  },
+  actions: {
+    toggleSideNavbar() {
+      this.isSideNavbarOpen = !this.isSideNavbarOpen;
+    },
+  },
+});
+
 export {
   useTokenSet,
   useAbpConfiguration,
@@ -159,4 +179,6 @@ export {
   useToast,
   useRoles,
   usePermissionStore,
+  useUsers,
+  useNavigation,
 };

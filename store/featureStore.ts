@@ -54,6 +54,13 @@ export const useFeatures = defineStore("features", {
       return true;
     },
     async resetFeaturesToDefault(tenantId: string) {
+      if (!tenantId) {
+        this.error = {
+          message: "TenantId is required",
+          statusCode: 400,
+        };
+        throw this.error;
+      }
       const url = `${getAbpServiceProxy("/feature-management/features")}?providerName=${PermissionProvider.T}&providerKey=${tenantId}`;
       await $fetch(url, {
         method: "DELETE",

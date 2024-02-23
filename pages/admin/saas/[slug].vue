@@ -16,6 +16,7 @@ import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureManagement.vue";
 import Spinner from "~/components/shared/Spinner.vue";
+import { useTenantPolicy } from "~/composables/useTenantPolicy";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
@@ -63,18 +64,7 @@ await callOnce(async () => {
   }
 });
 
-const tenantPolicies = () => {
-  const canDeleteTenant = abpConfigStore?.grantedPolicies?.get(
-    "isAbpTenantManagementTenantsDelete",
-  );
-  const canUpdateTenant = abpConfigStore?.grantedPolicies?.get(
-    "isAbpTenantManagementTenantsUpdate",
-  );
-  const canManageFeatures = abpConfigStore?.grantedPolicies?.get(
-    "isAbpTenantManagementTenantsManageFeatures",
-  );
-  return { canDeleteTenant, canUpdateTenant, canManageFeatures };
-};
+const tenantPolicies = useTenantPolicy();
 
 // Update your code for editions etc..
 const slugMapper: Record<Slug, () => ReturnConfig> = {
@@ -86,11 +76,17 @@ const slugMapper: Record<Slug, () => ReturnConfig> = {
       {
         name: "TenantName",
       },
+      {
+        name: "",
+      },
+      {
+        name: "",
+      },
     ];
     const columns: Array<{ name: string; id: string }> = [];
 
     const { canDeleteTenant, canUpdateTenant, canManageFeatures } =
-      tenantPolicies();
+      tenantPolicies;
     const actionCtaBtnProps: ReturnConfig["actionCtaBtnProps"] = {
       name: "Actions",
       options: [],

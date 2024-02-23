@@ -140,6 +140,12 @@ onUnmounted(() => {
               </span>
             </span>
           </th>
+          <th class="p-4">
+            {{ col.email }}
+          </th>
+          <th class="p-4">
+            {{ col.phoneNumber }}
+          </th>
         </tr>
       </tbody>
     </table>

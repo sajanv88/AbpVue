@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import Alert from "~/components/shared/Alert.vue";
 import Dialog from "~/components/shared/Dialog.vue";
-import { usePermissionStore } from "~/store/state";
+import { useAbpConfiguration, usePermissionStore } from "~/store/state";
 import Checkbox from "~/components/shared/Checkbox.vue";
-import type { Volo_Abp_PermissionManagement_PermissionGrantInfoDto } from "~/services/proxy/src";
+import type {
+  Volo_Abp_Identity_IdentityUserDto,
+  Volo_Abp_PermissionManagement_PermissionGrantInfoDto,
+} from "~/services/proxy/src";
 import { v4 } from "uuid";
+import type { ICurrentUserRoles } from "~/composables/useCurrentUserRoles";
+import { useUserById } from "~/composables/useUserById";
 
 interface IManagePermissions {
   open: boolean;
@@ -14,18 +19,31 @@ const processing = ref(false);
 const permissionStore = usePermissionStore();
 const props = defineProps<IManagePermissions>();
 const emit = defineEmits(["dialogClose"]);
+const abpConfigStore = useAbpConfiguration();
+
+const currentUser = abpConfigStore.config?.currentUser;
+
+const selectedUserRoles = (await useCurrentUserRoles(
+  permissionStore.selectedUserId,
+)) as ICurrentUserRoles;
+
+const selectedUserById = (await useUserById(
+  permissionStore.selectedUserId,
+)) as Volo_Abp_Identity_IdentityUserDto;
 
 const onCloseDialog = () => {
   emit("dialogClose");
   permissionStore.$reset();
 };
+
 const onSubmitForm = async (e: SubmitEvent) => {
   e.preventDefault();
   processing.value = true;
   await permissionStore.savePermissions();
   processing.value = false;
 };
-const title = `Permissions - ${permissionStore.list.entityDisplayName}`;
+const title = `Permissions - ${props.type === "roles" ? permissionStore.list.entityDisplayName : selectedUserById?.userName}`;
+
 const selectedTab = computed(() => {
   return permissionStore.selectedTab;
 });
@@ -46,8 +64,13 @@ const onSelectAllPermissions = (checked: boolean) => {
 };
 
 const shouldDisable = computed(() => {
-  // only disable when the type is users and the role is admin
-  return permissionStore.disabled && props.type == "users";
+  if (props.type === "roles") return false;
+
+  return (
+    selectedUserRoles.items.filter((role) =>
+      currentUser?.roles?.includes(role.name!),
+    ).length > 0
+  );
 });
 
 const selectedTagGroup = computed(() => {
@@ -120,13 +143,13 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
           <ul class="mt-5">
             <li v-for="group in groups" :key="group.displayName" class="py-2">
               <a
-                class="block border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm p-3 text-center dark:border-blue-500 dark:text-blue-500 dark:focus:ring-blue-800"
+                class="block border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm p-3 text-center dark:border-blue-500 dark:focus:ring-blue-800"
                 href="javascript:void(0)"
                 @click="() => onTabChange(group.displayName!)"
                 :class="
                   selectedTabName == group.displayName
                     ? 'bg-blue-800 text-white'
-                    : 'text-blue-700 hover:text-white dark:hover:text-white dark:hover:bg-blue-500 hover:bg-blue-800'
+                    : 'text-blue-700 dark:text-white hover:text-white dark:hover:text-white dark:hover:bg-blue-500 hover:bg-blue-800'
                 "
               >
                 <span class="inline-flex items-center space-x-2">

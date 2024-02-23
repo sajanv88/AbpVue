@@ -4,11 +4,7 @@ import type {
   Volo_Abp_PermissionManagement_PermissionGroupDto,
   Volo_Abp_PermissionManagement_UpdatePermissionsDto,
 } from "~/services/proxy/src";
-import {
-  getAbpServiceProxy,
-  useAbpConfiguration,
-  useToast,
-} from "~/store/state";
+import { getAbpServiceProxy, useToast } from "~/store/state";
 import type { PermissionProvider } from "~/types/permissionProvider";
 
 type SelectedGroupType = {
@@ -26,6 +22,7 @@ export interface PermissionState {
     key: string;
     name: string;
   };
+  selectedUserId: string;
 }
 export const usePermissionStore = defineStore("permissionStore", {
   state: (): PermissionState => ({
@@ -41,8 +38,12 @@ export const usePermissionStore = defineStore("permissionStore", {
       key: "",
       name: "",
     },
+    selectedUserId: "",
   }),
   actions: {
+    setSelectedUserId(id: string) {
+      this.selectedUserId = id;
+    },
     async fetch(name: PermissionProvider, key: string) {
       const url = getAbpServiceProxy("/permission-management/permissions");
       this.provider.key = key;
@@ -61,8 +62,6 @@ export const usePermissionStore = defineStore("permissionStore", {
           throw error;
         }
       });
-      const abpConfig = useAbpConfiguration();
-      this.disabled = !!abpConfig.config?.currentUser?.roles?.includes("admin");
 
       if (data) {
         this.list = data;

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
 
-defineProps({
-  id: String,
-  title: String,
-  showArrow: Boolean,
-  icon: String,
-  renderAs: String,
-  link: String,
-});
-
+interface IAccordionProps {
+  id: string;
+  title: string;
+  showArrow: boolean;
+  icon: string;
+  renderAs: string;
+  link: string;
+  selected: boolean;
+}
+const props = defineProps<IAccordionProps>();
 const onAccordingClick = (id: string) => {
   const slot = document.querySelector(`[data-slot="slot-${id}"]`);
   const icon = document.querySelector(`[data-accordion-icon="icon-${id}"]`);
@@ -23,10 +24,11 @@ const onAccordingClick = (id: string) => {
 <template>
   <div class="mt-1 mb-1">
     <div class="flex w-full">
-      <span class="flex flex-col w-full">
+      <span class="flex flex-col w-full" :key="renderAs">
         <span class="block">
           <button
             v-if="renderAs == 'button'"
+            :class="selected ? 'bg-gray-300 dark:bg-gray-700' : ''"
             class="block flex items-center w-full p-3 relative z-0 after:absolute after:-z-0 after:w-full after:h-full after:top-0 after:left-0 hover:after:bg-gray-800/20"
             @click="() => onAccordingClick(id as string)"
           >
@@ -66,6 +68,7 @@ const onAccordingClick = (id: string) => {
           <NuxtLink
             v-else-if="renderAs == 'link'"
             :to="link"
+            activeClass="bg-gray-300 dark:bg-gray-700"
             class="flex w-full items-center space-x-2 p-3 relative z-0 after:absolute after:-z-0 after:w-full after:h-full after:top-0 after:left-0 hover:after:bg-gray-800/20"
           >
             <Icon

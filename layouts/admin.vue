@@ -2,7 +2,7 @@
 import Navigation from "~/components/admin/Navigation.vue";
 import type { INavigation } from "~/types/navigation";
 
-import { useAbpConfiguration, useTokenSet } from "~/store/state";
+import { useAbpConfiguration, useNavigation, useTokenSet } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
 
@@ -13,6 +13,8 @@ useHead({
 });
 const token = useTokenSet();
 const abpConfig = useAbpConfiguration();
+const navStore = useNavigation();
+
 const isTenantId = !!abpConfig.config?.currentUser?.tenantId;
 
 const navList: Array<INavigation> = [
@@ -37,7 +39,7 @@ const navList: Array<INavigation> = [
     ],
   },
   {
-    id: "administration",
+    id: "admin",
     title: "Administration",
     icon: "configure",
     link: "",
@@ -80,11 +82,6 @@ await callOnce(async () => {
   await abpConfig.fetch();
 });
 
-const toggleNav = ref(false);
-const onToggleNavEvent = () => {
-  toggleNav.value = !toggleNav.value;
-};
-
 const navigations = computed(() => {
   return navList
     .filter((nav) => {
@@ -105,17 +102,18 @@ const navigations = computed(() => {
     <section class="h-svh overflow-y-auto">
       <section class="relative min-h-svh">
         <section
-          :class="toggleNav ? 'translate-x-0 w-full' : 'translate-x-[-100rem]'"
+          :class="
+            navStore.isSideNavbarOpen
+              ? 'translate-x-0 w-full'
+              : 'translate-x-[-100rem]'
+          "
           class="md:w-[17rem] z-20 bg-gray-200 dark:bg-gray-800 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg"
         >
-          <Navigation
-            :navigations="navigations"
-            @toggle-nav="onToggleNavEvent"
-          />
+          <Navigation :navigations="navigations" />
         </section>
         <section class="md:ml-[4.5rem] lg:ml-[17rem] p-3 lg:p5">
           <div class="dark:border-gray-300 shadow-md abp-vue-header-container">
-            <AdminHeader @toggle-nav="onToggleNavEvent" />
+            <AdminHeader />
           </div>
           <div class="min-h-svh pt-5">
             <slot />
