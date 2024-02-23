@@ -84,16 +84,16 @@ It will be a fully functional UI that can be used as a starting point for any AB
 ## Features
 
 - [x] Landing Page
-- [x] Login, Logout, Register, Forgot Password (Without UX)
+- [x] Login, Logout, Register, Forgot Password (default MVC Auth server)
 - [] Multilingual
 - [] Theme Switcher
 - [x] Profile
 - [x] Tenant Management
 - [x] Role Management
-- [] User Management
-- [] Settings Management
-- [] Feature Management
-- [] Toast notification for all the interactions
+- [x] User Management
+- [x] Settings Management
+- [x] Feature Management
+- [x] Toast notification for all the interactions
 - [] Configure the playwright and add tests
 
 ## Roadmap
