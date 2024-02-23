@@ -1,16 +1,27 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
 import type { INavigation } from "~/types/navigation";
-
 import { useAbpConfiguration, useNavigation, useTokenSet } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
+import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
-
 useHead({
   bodyAttrs: {
     class: "bg-gray-200 dark:bg-gray-800",
   },
 });
+
+const showLogoutDialog = ref<boolean>(false);
+onMounted(() => {
+  const worker = new Worker(new URL("../workers/worker.js", import.meta.url));
+  worker.addEventListener("message", (event) => {
+    console.log(event.data);
+    if (event.data.message === "Unauthorized" && event.data.status === 401) {
+      showLogoutDialog.value = true;
+    }
+  });
+});
+
 const token = useTokenSet();
 const abpConfig = useAbpConfiguration();
 const navStore = useNavigation();
@@ -94,11 +105,33 @@ const navigations = computed(() => {
     })
     .filter(Boolean);
 });
+
+const goToAuthServer = async () => {
+  window.location.href = "/api/auth/signin";
+  showLogoutDialog.value = false;
+};
 </script>
 
 <template>
   <SpeedInsights />
   <main class="relative bg-gray-200 dark:bg-gray-800">
+    <Teleport to="body">
+      <Dialog
+        id="logout"
+        title="Session Expired"
+        :open="showLogoutDialog"
+        @close="goToAuthServer"
+      >
+        <section class="p-5">
+          <p class="text-gray-700 dark:text-white">
+            Your session has expired.
+            <a href="/api/auth/signin">
+              <span class="text-blue-500">Click here to login</span>
+            </a>
+          </p>
+        </section>
+      </Dialog>
+    </Teleport>
     <section class="h-svh overflow-y-auto">
       <section class="relative min-h-svh">
         <section
