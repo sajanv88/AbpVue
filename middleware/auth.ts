@@ -5,19 +5,20 @@ const errorCodes = [401, 500];
 export default defineNuxtRouteMiddleware(async () => {
   const url = getAbpServiceProxy("/account/my-profile");
   const app = useNuxtApp();
+  if (app.isHydrating) {
+    const profileStore = useProfile();
 
-  const profileStore = useProfile();
+    const { error, data } = await useFetch<Volo_Abp_Account_ProfileDto>(url);
 
-  const { error, data } = await useFetch<Volo_Abp_Account_ProfileDto>(url);
+    if (data.value) {
+      profileStore.setProfile(data.value);
+    }
 
-  if (data.value) {
-    profileStore.setProfile(data.value);
-  }
-
-  const value = error.value;
-  if (value?.statusCode) {
-    if (errorCodes.includes(value.statusCode)) {
-      return navigateTo("/api/auth/signout");
+    const value = error.value;
+    if (value?.statusCode) {
+      if (errorCodes.includes(value.statusCode)) {
+        return navigateTo("/api/auth/signout");
+      }
     }
   }
 });
