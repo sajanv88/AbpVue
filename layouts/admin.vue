@@ -12,10 +12,9 @@ useHead({
 });
 
 const showLogoutDialog = ref<boolean>(false);
-onMounted(() => {
-  const worker = new Worker(new URL("../workers/worker.js", import.meta.url));
+onMounted(async () => {
+  const worker = new Worker("/workers/worker.js");
   worker.addEventListener("message", (event) => {
-    console.log(event.data);
     if (event.data.message === "Unauthorized" && event.data.status === 401) {
       showLogoutDialog.value = true;
     }
