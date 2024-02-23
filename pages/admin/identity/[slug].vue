@@ -18,6 +18,7 @@ import Spinner from "~/components/shared/Spinner.vue";
 import { PermissionProvider } from "~/types/permissionProvider";
 import ManagePermissions from "~/components/admin/permissions/ManagePermissions.vue";
 import Alert from "~/components/shared/Alert.vue";
+import CreateUser from "~/components/admin/users/CreateUser.vue";
 
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
@@ -154,6 +155,7 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
 const config = ref(tableConfigSlugMapper[paramSlug]());
 const refreshRoles = (params: typeof roles) => {
   if (paramSlug == "roles" && params.value) {
+    config.value.columns = [];
     for (const param of params.value) {
       const tags = [
         {
@@ -177,6 +179,7 @@ const refreshRoles = (params: typeof roles) => {
 
 const refreshUsers = (params: typeof userList) => {
   if (paramSlug == "users" && params.value) {
+    config.value.columns = [];
     for (const param of params.value) {
       config.value.columns.push({
         name: param.name!,
@@ -189,13 +192,11 @@ const refreshUsers = (params: typeof userList) => {
 };
 
 watch(roles, () => {
-  config.value.columns = [];
   const r: typeof roles = roles;
   refreshRoles(r);
 });
 
 watch(userList, () => {
-  config.value.columns = [];
   const u: typeof userList = userList;
   refreshUsers(u);
 });
@@ -210,8 +211,11 @@ watch(totalRolesCount, () => {
   }
 });
 
-refreshUsers(userList);
-refreshRoles(roles);
+if (paramSlug === "roles") {
+  refreshRoles(roles);
+} else if (paramSlug === "users") {
+  refreshUsers(userList);
+}
 
 await paginate();
 
@@ -230,6 +234,8 @@ const onTableActionEvent = async ({
   if (invokedBy === "Edit") {
     if (paramSlug === "roles") {
       return await roleStore.getRoleById(value.id);
+    } else if (paramSlug === "users") {
+      userStore.setSelectedUserId(value.id);
     }
   }
 
@@ -268,29 +274,34 @@ const records = computed(() => {
       columns: config.value.columns,
       actionCtaBtnProps: config.value.actionCtaBtnProps,
     };
+  } else if (paramSlug === "users") {
+    return {
+      title: "User",
+      data: userList.value,
+      totalRecords: totalUsersCount.value,
+      isLoading: usersFetching.value,
+      error: usersError.value || permissionStore.error,
+      headers: config.value.headers,
+      columns: config.value.columns,
+      actionCtaBtnProps: config.value.actionCtaBtnProps,
+    };
   }
-  return {
-    title: "User",
-    data: userList.value,
-    totalRecords: totalUsersCount.value,
-    isLoading: usersFetching.value,
-    error: usersError.value || permissionStore.error,
-    headers: config.value.headers,
-    columns: config.value.columns,
-    actionCtaBtnProps: config.value.actionCtaBtnProps,
-  };
+  return null;
 });
-const totalPages = computed(() =>
-  Math.ceil(records.value.totalRecords / maxRecord.value),
-);
+const totalPages = computed(() => {
+  if (records.value) {
+    return Math.ceil(records.value.totalRecords / maxRecord.value);
+  }
+  return 0;
+});
 </script>
 
 <template>
   <section>
     <Alert
       type="error"
-      v-if="records.error"
-      :message="records.error?.message"
+      v-if="records?.error"
+      :message="records?.error?.message"
     />
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
@@ -304,11 +315,16 @@ const totalPages = computed(() =>
         :open="!!permissionStore.list.entityDisplayName"
         :type="paramSlug"
       />
+      <CreateUser
+        v-if="!!userStore.selectedUserId"
+        :open="!!userStore.selectedUserId"
+        :edit="true"
+      />
     </Teleport>
     <FilterContainer
       :slug="slug"
       :key="slug"
-      :newBtnName="`New ${records.title}`"
+      :newBtnName="`New ${records?.title}`"
       :searchType="slug"
       searchPlaceholder="Search..."
     />
@@ -319,12 +335,12 @@ const totalPages = computed(() =>
         </template>
 
         <Table
-          :is-loading="records.isLoading"
-          :headers="records.headers"
-          :columns="records.columns"
-          :action-cta="records.actionCtaBtnProps"
+          :is-loading="records?.isLoading"
+          :headers="records?.headers"
+          :columns="records?.columns"
+          :action-cta="records?.actionCtaBtnProps"
           @on-Action="onTableActionEvent"
-          :is-no-data="records.data?.length === 0"
+          :is-no-data="records?.data?.length === 0"
         />
         <div v-if="enablePagination" :key="enablePagination">
           <Pagination

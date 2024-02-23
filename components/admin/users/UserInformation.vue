@@ -7,6 +7,7 @@ import type {
 } from "~/services/proxy/src";
 import Checkbox from "~/components/shared/Checkbox.vue";
 import Icon from "~/components/shared/Icon.vue";
+import { storeToRefs } from "pinia";
 interface IUserInformation {
   edit?: boolean;
 }
@@ -30,6 +31,20 @@ const inputRef = ref<
 const existingUser = (await useUserById(
   userStore.selectedUserId,
 )) as Volo_Abp_Identity_IdentityUserDto;
+
+watch(inputRef.value, () => {
+  userStore.setUserInputData(inputRef.value);
+});
+
+if (props.edit && existingUser) {
+  inputRef.value.userName = existingUser.userName!;
+  inputRef.value.surname = existingUser.surname!;
+  inputRef.value.name = existingUser.name!;
+  inputRef.value.email = existingUser.email!;
+  inputRef.value.phoneNumber = existingUser.phoneNumber!;
+  inputRef.value.isActive = existingUser.isActive!;
+  inputRef.value.lockoutEnabled = existingUser.lockoutEnabled!;
+}
 </script>
 
 <template>
@@ -80,11 +95,11 @@ const existingUser = (await useUserById(
         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
       />
     </div>
-    <div class="col-span-12" v-if="!edit">
+    <div class="col-span-12">
       <label
         for="currentPassword"
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >Password *</label
+        >Password {{ edit ? "" : "*" }}</label
       >
       <div class="flex items-center">
         <input
@@ -93,8 +108,9 @@ const existingUser = (await useUserById(
           name="password"
           @input="inputRef.password = $event.target.value"
           :value="inputRef.password"
+          :autocomplete="true"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-          required
+          :required="!edit"
         />
         <button
           type="button"

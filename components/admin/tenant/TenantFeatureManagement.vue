@@ -61,15 +61,15 @@ const onSubmitEvent = async (e: SubmitEvent) => {
           v-for="group in featureGroups.groups"
           :key="group.name"
         >
-          <p class="text-md w-[15rem]">
+          <p class="text-md hidden md:block md:w-[15rem]">
             {{ group.displayName }}
           </p>
 
-          <div class="flex flex-col w-[calc(100%-12rem)]">
+          <div class="flex flex-col md:w-[calc(100%-12rem)]">
             <h3 class="text-xl font-medium pb-4">
               {{ group.displayName }}
             </h3>
-            <hr class="mb-4" />
+            <hr class="mb-4 hidden md:block" />
             <div
               class="text-md mb-4"
               v-for="feature in group.features"

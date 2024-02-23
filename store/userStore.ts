@@ -21,6 +21,10 @@ interface UserState {
     error: { status: number; message: string } | null;
   };
   selectedUserId: string;
+  userInputData:
+    | Volo_Abp_Identity_IdentityUserCreateDto
+    | Volo_Abp_Identity_IdentityUserUpdateDto
+    | null;
 }
 
 export const useUsers = defineStore("users", {
@@ -38,11 +42,53 @@ export const useUsers = defineStore("users", {
       error: null,
     },
     selectedUserId: "",
+    userInputData: null,
   }),
   actions: {
     setSelectedUserId(id: string) {
       this.selectedUserId = id;
     },
+    async validateUserInputData(type: "create" | "update") {
+      console.log(this.userInputData, type);
+      if (!this.userInputData)
+        throw new Error("Bad request: No user information provided.");
+      for (const key in this.userInputData) {
+        if (type === "create") {
+          if (
+            this.userInputData.userName === "" ||
+            this.userInputData.email === "" ||
+            this.userInputData.password === ""
+          ) {
+            throw new Error("Please fill in all required fields");
+          }
+        } else if (type === "update") {
+          if (
+            this.userInputData.userName === "" ||
+            this.userInputData.email === ""
+          ) {
+            throw new Error("Please fill in all required fields");
+          }
+        }
+      }
+    },
+    resetErrors() {
+      this.error = null;
+      this.createUser.error = null;
+      this.createUser.status = false;
+      this.updateUser.error = null;
+      this.updateUser.status = false;
+    },
+    setUserInputData(data: UserState["userInputData"]) {
+      if (this.userInputData) {
+        this.userInputData = {
+          ...this.userInputData,
+          ...data,
+        };
+        return;
+      }
+      this.userInputData = data;
+    },
+
     async fetch(params?: FetchQueryParamsType) {
       this.isLoading = true;
       const url = getAbpServiceProxy("/identity/users");
@@ -68,6 +114,15 @@ export const useUsers = defineStore("users", {
       }
     },
     async createNewUser(payload: Volo_Abp_Identity_IdentityUserCreateDto) {
+      await this.validateUserInputData("create").catch((error) => {
+        this.createUser.error = {
+          status: 400,
+          message: error.message,
+        };
+        this.createUser.status = false;
+        throw error;
+      });
+
       const url = getAbpServiceProxy("/identity/users");
       await $fetch(url, {
         method: "POST",
@@ -92,6 +147,14 @@ export const useUsers = defineStore("users", {
       return true;
     },
     async updateExistingUser(payload: Volo_Abp_Identity_IdentityUserUpdateDto) {
+      await this.validateUserInputData("update").catch((error) => {
+        this.updateUser.error = {
+          status: 400,
+          message: error.message,
+        };
+        this.updateUser.status = false;
+        throw error;
+      });
       const url = `${getAbpServiceProxy(`/identity/users`)}/${this.selectedUserId}`;
       await $fetch(url, {
         method: "PUT",

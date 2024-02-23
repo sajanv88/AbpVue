@@ -150,6 +150,22 @@ const useDeleteDialog = defineStore("deleteDialog", {
   },
 });
 
+interface INavigationState {
+  isSideNavbarOpen: boolean;
+}
+const useNavigation = defineStore("navigation", {
+  state: (): INavigationState => {
+    return {
+      isSideNavbarOpen: false,
+    };
+  },
+  actions: {
+    toggleSideNavbar() {
+      this.isSideNavbarOpen = !this.isSideNavbarOpen;
+    },
+  },
+});
+
 export {
   useTokenSet,
   useAbpConfiguration,
@@ -161,4 +177,5 @@ export {
   useRoles,
   usePermissionStore,
   useUsers,
+  useNavigation,
 };

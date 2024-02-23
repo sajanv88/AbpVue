@@ -3,18 +3,34 @@ import type { INavigation } from "~/types/navigation";
 import Accordion from "~/components/shared/Accordion.vue";
 import IconButton from "~/components/shared/IconButton.vue";
 import Icon from "~/components/shared/Icon.vue";
+import { useNavigation } from "~/store/state";
+import { onBeforeRouteUpdate } from "#app";
 
 interface INavigationProps {
   navigations: Array<INavigation>;
 }
 defineProps<INavigationProps>();
+const navStore = useNavigation();
+const emit = defineEmits(["toggleNav"]);
+
+const onToggleNav = () => {
+  emit("toggleNav");
+  navStore.toggleSideNavbar();
+};
+
+onBeforeRouteUpdate((to, from, next) => {
+  if (navStore.isSideNavbarOpen) {
+    onToggleNav();
+  }
+  next();
+});
 </script>
 
 <template>
   <section role="navigation" id="nav">
     <div class="flex flex-col w-full p-1 pt-5">
-      <div class="md:hidden flex justify-center">
-        <IconButton @click="$emit('toggleNav')">
+      <div class="md:hidden flex justify-center" id="js-mobile-cross">
+        <IconButton @click="onToggleNav">
           <Icon icon="cross" />
         </IconButton>
       </div>

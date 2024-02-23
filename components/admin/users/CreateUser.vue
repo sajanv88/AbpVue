@@ -5,7 +5,10 @@ import { useUsers } from "~/store/state";
 import UserInformation from "~/components/admin/users/UserInformation.vue";
 import UserRoleList from "~/components/admin/users/UserRoleList.vue";
 import { storeToRefs } from "pinia";
-import type { Volo_Abp_Identity_IdentityUserCreateDto } from "~/services/proxy/src";
+import type {
+  Volo_Abp_Identity_IdentityUserCreateDto,
+  Volo_Abp_Identity_IdentityUserUpdateDto,
+} from "~/services/proxy/src";
 
 interface ICreateUser {
   edit?: boolean;
@@ -16,8 +19,13 @@ const userStore = useUsers();
 const { createUser, updateUser } = storeToRefs(userStore);
 const processing = ref(false);
 const emit = defineEmits(["dialogClose"]);
-const dialogTitle = "Create User";
+const dialogTitle = props.edit ? "Edit user" : "Create User";
+
 const onCloseDialog = () => {
+  userStore.resetErrors();
+  if (props.edit) {
+    userStore.setSelectedUserId("");
+  }
   emit("dialogClose");
 };
 
@@ -28,59 +36,44 @@ const error = computed(() => {
 const selectedTab = ref<"user" | "role">("user");
 
 const onSubmitForm = async (e: SubmitEvent) => {
+  userStore.resetErrors();
+
   e.stopImmediatePropagation();
   e.preventDefault();
   processing.value = true;
-  const formElem = e.target as HTMLFormElement;
-  const formData = new FormData(formElem);
-  const formValue: Record<string, FormDataEntryValue> = {};
-  for (const [key, value] of formData.entries()) {
-    formValue[key] = value;
-  }
 
-  console.log(formValue, "formValue");
   if (!props.edit) {
-    const payload: Volo_Abp_Identity_IdentityUserCreateDto = {
-      userName: formValue.userName as string,
-      name: formValue.name as string,
-      surname: formValue.surname as string,
-      email: formValue.email as string,
-      phoneNumber: formValue.phoneNumber as string,
-
-      isActive: formValue.isActive === "true",
-      lockoutEnabled: formValue.lockoutEnabled === "true",
-      password: formValue.password as string,
-    };
+    const payload =
+      userStore.userInputData as Volo_Abp_Identity_IdentityUserCreateDto;
     const success = await userStore.createNewUser(payload).finally(() => {
       processing.value = false;
     });
     if (success) {
-      emit("dialogClose");
+      onCloseDialog();
     }
     return;
   }
 
-  const payload = {
-    id: formValue.id as string,
-    userName: formValue.userName as string,
-    name: formValue.name as string,
-    surname: formValue.surname as string,
-    email: formValue.email as string,
-    phoneNumber: formValue.phoneNumber as string,
-
-    isActive: formValue.isActive === "true",
-    lockoutEnabled: formValue.lockoutEnabled === "true",
-  };
-  userStore.updateExistingUser(payload).finally(() => {
+  const payload =
+    userStore.userInputData as Volo_Abp_Identity_IdentityUserUpdateDto;
+  console.log(payload, "payload");
+  const success = await userStore.updateExistingUser(payload).finally(() => {
     processing.value = false;
   });
+  if (success) {
+    onCloseDialog();
+  }
 };
 </script>
 
 <template>
   <Dialog id="user" :title="dialogTitle" :open="open" @close="onCloseDialog">
     <Alert v-if="error" type="error" :message="error.message" />
-    <form class="p-4 md:p-5" @submit="onSubmitForm">
+    <form
+      class="p-4 md:p-5"
+      @submit="onSubmitForm"
+      :novalidate="selectedTab !== 'user'"
+    >
       <section class="flex items-center space-x-2 mb-5">
         <button
           type="button"
@@ -107,8 +100,10 @@ const onSubmitForm = async (e: SubmitEvent) => {
           Roles
         </button>
       </section>
-      <UserInformation v-if="selectedTab === 'user'" />
-      <UserRoleList v-if="selectedTab === 'role'" />
+
+      <UserInformation v-show="selectedTab === 'user'" :edit="edit" />
+      <UserRoleList v-show="selectedTab === 'role'" :edit="edit" />
+
       <footer class="flex items-center justify-end space-x-2 mt-5">
         <span v-if="createUser.status" class="text-gray-700 dark:text-white"
           >Creating a new user...</span

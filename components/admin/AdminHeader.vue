@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
-import { useAbpConfiguration } from "~/store/state";
+import { useAbpConfiguration, useNavigation } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Avatar from "~/components/shared/Avatar.vue";
 import IconButton from "~/components/shared/IconButton.vue";
@@ -11,7 +11,9 @@ defineProps({
 });
 
 const abpConfigStore = useAbpConfiguration();
+const navStore = useNavigation();
 const { config } = storeToRefs(abpConfigStore);
+const emit = defineEmits(["toggleNav"]);
 const name = computed(() => {
   return (
     config.value?.currentUser?.name?.charAt(0).toUpperCase() ||
@@ -28,6 +30,11 @@ const fullName = computed(() => {
   }
   return config.value?.currentUser?.userName;
 });
+
+const onMenuClickEvent = () => {
+  navStore.toggleSideNavbar();
+  emit("toggleNav");
+};
 </script>
 
 <template>
@@ -39,7 +46,7 @@ const fullName = computed(() => {
         >
           {{ fullName }}
         </h1>
-        <IconButton @click="$emit('toggleNav')" classname="inline md:hidden">
+        <IconButton @click="onMenuClickEvent" classname="inline md:hidden">
           <Icon icon="menu" />
         </IconButton>
       </div>
