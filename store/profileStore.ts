@@ -6,6 +6,7 @@ import type {
 import { getAbpServiceProxy, useToast } from "~/store/state";
 
 type ProfileState = Volo_Abp_Account_ProfileDto & {
+  isAuthenticating: boolean;
   error: { message: string; statusCode: number } | null;
   updatePassword: {
     error: { message: string; statusCode: number } | null;
@@ -14,6 +15,7 @@ type ProfileState = Volo_Abp_Account_ProfileDto & {
 export const useProfile = defineStore("profile", {
   state: (): ProfileState => {
     return {
+      isAuthenticating: false,
       userName: "",
       email: "",
       name: "",

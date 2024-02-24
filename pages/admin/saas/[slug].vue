@@ -2,12 +2,7 @@
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import FilterContainer from "~/components/admin/FilterContainer.vue";
-import {
-  useAbpConfiguration,
-  useDeleteDialog,
-  useFeatures,
-  useTenants,
-} from "~/store/state";
+import { useDeleteDialog, useFeatures, useTenants } from "~/store/state";
 
 import Table from "~/components/shared/Table.vue";
 import type { ActionCtaDataType } from "~/components/shared/Table.vue";
@@ -40,7 +35,6 @@ if (!saasSlugs.includes(paramSlug)) {
 }
 
 const tenantStore = useTenants();
-const abpConfigStore = useAbpConfiguration();
 const deleteDialogStore = useDeleteDialog();
 const featureStore = useFeatures();
 const { tenants, totalCount, isLoading } = storeToRefs(tenantStore);

@@ -7,7 +7,6 @@ import type {
 } from "~/services/proxy/src";
 import Checkbox from "~/components/shared/Checkbox.vue";
 import Icon from "~/components/shared/Icon.vue";
-import Spinner from "~/components/shared/Spinner.vue";
 
 interface IUserInformation {
   edit?: boolean;
