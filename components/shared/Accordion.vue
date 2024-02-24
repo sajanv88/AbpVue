@@ -10,7 +10,7 @@ interface IAccordionProps {
   link: string;
   selected: boolean;
 }
-const props = defineProps<IAccordionProps>();
+defineProps<IAccordionProps>();
 const onAccordingClick = (id: string) => {
   const slot = document.querySelector(`[data-slot="slot-${id}"]`);
   const icon = document.querySelector(`[data-accordion-icon="icon-${id}"]`);

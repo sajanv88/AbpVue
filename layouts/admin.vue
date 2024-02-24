@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
 import type { INavigation } from "~/types/navigation";
-import { useAbpConfiguration, useNavigation, useTokenSet } from "~/store/state";
+import { useAbpConfiguration, useNavigation } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
 import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
+
 useHead({
   bodyAttrs: {
     class: "bg-gray-200 dark:bg-gray-800",
@@ -12,16 +13,14 @@ useHead({
 });
 
 const showLogoutDialog = ref<boolean>(false);
+
 onMounted(async () => {
   const worker = new Worker("/workers/worker.js");
   worker.addEventListener("message", (event) => {
-    if (event.data.message === "Unauthorized" && event.data.status === 401) {
-      showLogoutDialog.value = true;
-    }
+    showLogoutDialog.value = event.data.code == 401;
   });
 });
 
-const token = useTokenSet();
 const abpConfig = useAbpConfiguration();
 const navStore = useNavigation();
 
@@ -83,10 +82,6 @@ const navList: Array<INavigation> = [
     ],
   },
 ];
-
-await callOnce(async () => {
-  await token.fetch();
-});
 
 await callOnce(async () => {
   await abpConfig.fetch();

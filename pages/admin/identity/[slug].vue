@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 import {
-  useAbpConfiguration,
   useDeleteDialog,
   usePermissionStore,
   useRoles,
@@ -55,7 +54,6 @@ const maxRecord = ref(10);
 const enablePagination = ref(false);
 
 const roleStore = useRoles();
-const abpConfigStore = useAbpConfiguration();
 const deleteDialogStore = useDeleteDialog();
 const permissionStore = usePermissionStore();
 const userStore = useUsers();

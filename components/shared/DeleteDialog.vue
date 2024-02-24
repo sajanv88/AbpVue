@@ -13,7 +13,7 @@ const deleteStore = useDeleteDialog();
 const tenantStore = useTenants();
 const roleStore = useRoles();
 const userStore = useUsers();
-const { message, isOpen, isLoading, id, error } = storeToRefs(deleteStore);
+const { message, isOpen, isLoading, error } = storeToRefs(deleteStore);
 
 const typeMapper: Record<IDeleteDialogProps["type"], AbpEndpoint> = {
   tenants: `/multi-tenancy/tenants`,
