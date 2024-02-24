@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
-import type { INavigation } from "~/types/navigation";
 import { useAbpConfiguration, useNavigation } from "~/store/state";
 import ToastContainer from "~/components/shared/ToastContainer.vue";
 import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
+import { navList } from "~/utils";
 
 useHead({
   bodyAttrs: {
@@ -25,63 +25,6 @@ const abpConfig = useAbpConfiguration();
 const navStore = useNavigation();
 
 const isTenantId = !!abpConfig.config?.currentUser?.tenantId;
-
-const navList: Array<INavigation> = [
-  {
-    id: "home",
-    title: "Home",
-    icon: "home",
-    link: "/admin",
-  },
-  {
-    id: "saas",
-    title: "Saas",
-    icon: "users",
-    link: "",
-
-    children: [
-      {
-        id: "tenants",
-        title: "Tenants",
-        link: "/admin/saas/tenants",
-      },
-    ],
-  },
-  {
-    id: "admin",
-    title: "Administration",
-    icon: "configure",
-    link: "",
-
-    children: [
-      {
-        id: "identity",
-        title: "Identity Management",
-        link: "",
-        icon: "identity",
-
-        children: [
-          {
-            id: "roles",
-            title: "Roles",
-            link: "/admin/identity/roles",
-          },
-          {
-            id: "users",
-            title: "Users",
-            link: "/admin/identity/users",
-          },
-        ],
-      },
-      {
-        id: "settings",
-        title: "Settings",
-        link: "/admin/settings",
-        icon: "settings",
-      },
-    ],
-  },
-];
 
 await callOnce(async () => {
   await abpConfig.fetch();

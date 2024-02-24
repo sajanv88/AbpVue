@@ -13,7 +13,7 @@ import { v4 } from "uuid";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateRole from "~/components/admin/roles/CreateRole.vue";
-import Spinner from "~/components/shared/Spinner.vue";
+
 import { PermissionProvider } from "~/types/permissionProvider";
 import ManagePermissions from "~/components/admin/permissions/ManagePermissions.vue";
 import Alert from "~/components/shared/Alert.vue";
@@ -72,9 +72,6 @@ const {
   error: usersError,
 } = storeToRefs(userStore);
 const { isOpen } = storeToRefs(deleteDialogStore);
-if (!saasSlugs.includes(paramSlug)) {
-  await navigateTo("/error/notfound");
-}
 
 // Pagination for roles/users list
 const paginate = async () => {
@@ -327,30 +324,24 @@ const totalPages = computed(() => {
       searchPlaceholder="Search..."
     />
     <main>
-      <ClientOnly fallback-tag="span" fallback="Loading...">
-        <template #fallback>
-          <Spinner />
-        </template>
-
-        <Table
-          :is-loading="records?.isLoading"
-          :headers="records?.headers"
-          :columns="records?.columns"
-          :action-cta="records?.actionCtaBtnProps"
-          @on-Action="onTableActionEvent"
-          :is-no-data="records?.data?.length === 0"
+      <Table
+        :is-loading="records?.isLoading"
+        :headers="records?.headers"
+        :columns="records?.columns"
+        :action-cta="records?.actionCtaBtnProps"
+        @on-Action="onTableActionEvent"
+        :is-no-data="records?.data?.length === 0"
+      />
+      <div v-if="enablePagination" :key="enablePagination">
+        <Pagination
+          :total-page="totalPages"
+          :current-page="currentPage"
+          :key="currentPage"
+          @on-next-page="onPageChangeEvent"
+          @on-previous-page="onPageChangeEvent"
+          @on-selected-page="onPageChangeEvent"
         />
-        <div v-if="enablePagination" :key="enablePagination">
-          <Pagination
-            :total-page="totalPages"
-            :current-page="currentPage"
-            :key="currentPage"
-            @on-next-page="onPageChangeEvent"
-            @on-previous-page="onPageChangeEvent"
-            @on-selected-page="onPageChangeEvent"
-          />
-        </div>
-      </ClientOnly>
+      </div>
     </main>
   </section>
 </template>

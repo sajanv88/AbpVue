@@ -59,10 +59,10 @@ onUnmounted(() => {
       </thead>
 
       <tbody>
-        <tr v-if="isLoading">
+        <tr v-show="isLoading">
           <th>Loading...</th>
         </tr>
-        <tr v-if="isNoData">
+        <tr v-show="isNoData">
           <th class="pt-4 pl-4">No data available</th>
           <th class="pt-4 pl-4 pb-4">0 total</th>
         </tr>

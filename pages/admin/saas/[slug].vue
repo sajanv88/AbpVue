@@ -10,8 +10,9 @@ import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureManagement.vue";
-import Spinner from "~/components/shared/Spinner.vue";
+
 import { useTenantPolicy } from "~/composables/useTenantPolicy";
+import Alert from "~/components/shared/Alert.vue";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
@@ -104,7 +105,6 @@ const onTableActionEvent = async ({
 }: {
   data: ActionCtaDataType;
 }) => {
-  console.log({ invokedBy, value });
   if (invokedBy === "Delete") {
     return await deleteDialogStore.showDialog(
       value.id,
@@ -165,6 +165,12 @@ const totalPages = computed(() =>
 
 <template>
   <section>
+    <Alert
+      type="error"
+      :message="tenantStore.error.message"
+      v-if="tenantStore.error"
+      :dismissible="true"
+    />
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
       <CreateTenant
@@ -185,29 +191,24 @@ const totalPages = computed(() =>
       searchPlaceholder="Search..."
     />
     <main>
-      <ClientOnly fallback-tag="span" fallback="Loading...">
-        <template #fallback>
-          <Spinner />
-        </template>
-        <Table
-          :is-loading="isLoading"
-          :headers="config.headers"
-          :columns="config.columns"
-          :action-cta="config.actionCtaBtnProps"
-          @on-Action="onTableActionEvent"
-          :is-no-data="tenants?.length === 0"
+      <Table
+        :is-loading="isLoading"
+        :headers="config.headers"
+        :columns="config.columns"
+        :action-cta="config.actionCtaBtnProps"
+        @on-Action="onTableActionEvent"
+        :is-no-data="tenants?.length === 0"
+      />
+      <div v-if="enablePagination">
+        <Pagination
+          :total-page="totalPages"
+          :current-page="currentPage"
+          :key="currentPage"
+          @on-next-page="onPageChangeEvent"
+          @on-previous-page="onPageChangeEvent"
+          @on-selected-page="onPageChangeEvent"
         />
-        <div v-if="enablePagination">
-          <Pagination
-            :total-page="totalPages"
-            :current-page="currentPage"
-            :key="currentPage"
-            @on-next-page="onPageChangeEvent"
-            @on-previous-page="onPageChangeEvent"
-            @on-selected-page="onPageChangeEvent"
-          />
-        </div>
-      </ClientOnly>
+      </div>
     </main>
   </section>
 </template>

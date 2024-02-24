@@ -1,3 +1,5 @@
+import type { INavigation } from "~/types/navigation";
+
 export function formatDate(input: string | number, locale = "en-Use"): string {
   const date = new Date(input);
   return date.toLocaleDateString(locale, {
@@ -76,3 +78,60 @@ export const getPages = (
 
   return range(1, totalPages);
 };
+
+export const navList: Array<INavigation> = [
+  {
+    id: "home",
+    title: "Home",
+    icon: "home",
+    link: "/admin",
+  },
+  {
+    id: "saas",
+    title: "Saas",
+    icon: "users",
+    link: "",
+
+    children: [
+      {
+        id: "tenants",
+        title: "Tenants",
+        link: "/admin/saas/tenants",
+      },
+    ],
+  },
+  {
+    id: "admin",
+    title: "Administration",
+    icon: "configure",
+    link: "",
+
+    children: [
+      {
+        id: "identity",
+        title: "Identity Management",
+        link: "",
+        icon: "identity",
+
+        children: [
+          {
+            id: "roles",
+            title: "Roles",
+            link: "/admin/identity/roles",
+          },
+          {
+            id: "users",
+            title: "Users",
+            link: "/admin/identity/users",
+          },
+        ],
+      },
+      {
+        id: "settings",
+        title: "Settings",
+        link: "/admin/settings",
+        icon: "settings",
+      },
+    ],
+  },
+];
