@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json.schemastore.org/template",
+    "author": "Sajankumar Vijayan",
+    "classifications": ["Vue", "ABP", "Typescript"],
+    "identity": "Sajan.Abp.Vue.Template",
+    "sourceName": "abpvue",
+    "name": "An ABP Vue Template",
+    "description": "An ABP Vue Template",
+    "tags": {
+        "language": "typescript",
+        "type": "item"
+    },
+    "shortName": "abp-vue",
+    "preferNameDirectory": true,
+	"symbols": {
+		"apiUrl": {
+			"description": "API URL",
+			"type": "parameter",
+			"replaces": "abp.sajankumarv.com",
+			"defaultValue": "your-api-name.com"
+		}
+	}
+}
