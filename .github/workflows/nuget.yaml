@@ -1,7 +1,7 @@
 name: Nuget Publish
 
 on:
-  rekease:
+  release:
     types: [ published ]
     paths:
       - "**"
