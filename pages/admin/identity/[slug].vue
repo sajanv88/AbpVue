@@ -8,7 +8,10 @@ import {
 } from "~/store/state";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
-import Table, { type ActionCtaDataType } from "~/components/shared/Table.vue";
+import Table, {
+  type ActionCtaDataType,
+  type ITableHeaders,
+} from "~/components/shared/Table.vue";
 import { v4 } from "uuid";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
@@ -36,7 +39,7 @@ type UserColumn = {
 };
 
 type TableConfig = {
-  headers: Array<{ name: string }>;
+  headers: Array<ITableHeaders>;
   columns: Array<RoleColumn | UserColumn>;
   actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
 };
@@ -74,11 +77,12 @@ const {
 const { isOpen } = storeToRefs(deleteDialogStore);
 
 // Pagination for roles/users list
-const paginate = async () => {
+const paginate = async (sortOrder: "asc" | "desc" = "asc") => {
   if (paramSlug === "roles") {
     await roleStore.fetch({
       MaxResultCount: maxRecord.value,
       SkipCount: currentPage.value,
+      Sorting: `name ${sortOrder}`,
     });
   } else if (paramSlug == "users") {
     await userStore.fetch({
@@ -93,9 +97,9 @@ const userPolicies = useUserPolicy();
 
 const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
   roles: () => {
-    const headers = [
+    const headers: Array<ITableHeaders> = [
       { name: "Actions" },
-      { name: "Role Name" },
+      { name: "Role Name", sorting: true },
       { name: "" },
       { name: "" },
     ];
@@ -119,11 +123,11 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
     return { headers, actionCtaBtnProps, columns };
   },
   users: () => {
-    const headers = [
+    const headers: Array<ITableHeaders> = [
       { name: "Actions" },
-      { name: "User Name" },
-      { name: "Email Address" },
-      { name: "Phone Number" },
+      { name: "User Name", sorting: true },
+      { name: "Email Address", sorting: true },
+      { name: "Phone Number", sorting: true },
     ];
     const columns: TableConfig["columns"] = [];
     const actionCtaBtnProps: TableConfig["actionCtaBtnProps"] = {
@@ -257,6 +261,32 @@ const onPageChangeEvent = async (page: number) => {
   return await paginate();
 };
 
+const onSortEvent = async (name: string, order: "asc" | "desc") => {
+  if (name === "Role Name") {
+    await paginate(order);
+  } else if (paramSlug == "users") {
+    if (name === "User Name") {
+      await userStore.fetch({
+        MaxResultCount: maxRecord.value,
+        SkipCount: currentPage.value,
+        Sorting: `userName ${order}`,
+      });
+    } else if (name === "Email Address") {
+      await userStore.fetch({
+        MaxResultCount: maxRecord.value,
+        SkipCount: currentPage.value,
+        Sorting: `email ${order}`,
+      });
+    } else if (name === "Phone Number") {
+      await userStore.fetch({
+        MaxResultCount: maxRecord.value,
+        SkipCount: currentPage.value,
+        Sorting: `phoneNumber ${order}`,
+      });
+    }
+  }
+};
+
 const records = computed(() => {
   if (paramSlug === "roles") {
     return {
@@ -330,6 +360,7 @@ const totalPages = computed(() => {
         :columns="records?.columns"
         :action-cta="records?.actionCtaBtnProps"
         @on-Action="onTableActionEvent"
+        @on-sort="onSortEvent"
         :is-no-data="records?.data?.length === 0"
       />
       <div v-if="enablePagination" :key="enablePagination">

@@ -6,14 +6,22 @@ export type ActionCtaDataType = {
   value: Record<string, unknown>;
   invokedBy: string;
 };
+
+export type ITableHeaders = {
+  name: string;
+  sorting?: boolean;
+};
+
 interface ITableProps {
-  headers: Array<{ name: string }>;
+  headers: Array<ITableHeaders>;
   actionCta?: { name: string; options?: Array<{ name: string }> };
   columns: Array<Record<string, unknown>>;
   isLoading: boolean;
   isNoData?: boolean;
 }
 defineProps<ITableProps>();
+const emit = defineEmits(["onSort"]);
+
 const toggleSettings = ref("");
 const onActionEvent = (id: string) => {
   if (toggleSettings.value === id) {
@@ -39,6 +47,17 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("click", onWindowClickCallback, { capture: true });
 });
+
+const toggleSortIcon = ref<"chev-down" | "chev-up">("chev-down");
+const onSortEvent = (name: string) => {
+  if (toggleSortIcon.value === "chev-down") {
+    toggleSortIcon.value = "chev-up";
+    emit("onSort", name, "desc");
+  } else {
+    toggleSortIcon.value = "chev-down";
+    emit("onSort", name, "asc");
+  }
+};
 </script>
 
 <template>
@@ -53,7 +72,23 @@ onUnmounted(() => {
       >
         <tr>
           <th scope="col" class="p-4" v-for="th in headers" :key="th.name">
-            <span class="text-gray-500 dark:text-white">{{ th.name }}</span>
+            <span
+              v-show="th.sorting"
+              :class="th.sorting ? 'cursor-pointer' : ''"
+              class="text-gray-500 dark:text-white flex items-center space-x-3"
+              @click="() => onSortEvent(th.name)"
+            >
+              <span>{{ th.name }}</span>
+              <Icon
+                :icon="toggleSortIcon"
+                :w="16"
+                :h="16"
+                :key="toggleSortIcon"
+              />
+            </span>
+            <span v-show="!th.sorting" class="text-gray-500 dark:text-white">{{
+              th.name
+            }}</span>
           </th>
         </tr>
       </thead>

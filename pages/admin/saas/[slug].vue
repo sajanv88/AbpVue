@@ -4,7 +4,7 @@ import { watch } from "vue";
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 import { useDeleteDialog, useFeatures, useTenants } from "~/store/state";
 
-import Table from "~/components/shared/Table.vue";
+import Table, { type ITableHeaders } from "~/components/shared/Table.vue";
 import type { ActionCtaDataType } from "~/components/shared/Table.vue";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
@@ -18,7 +18,7 @@ import Alert from "~/components/shared/Alert.vue";
 const saasSlugs = ["tenants"] as const;
 type Slug = (typeof saasSlugs)[number];
 type ReturnConfig = {
-  headers: Array<{ name: string }>;
+  headers: Array<ITableHeaders>;
   columns: Array<{ name: string; id: string }>;
   actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
 };
@@ -64,12 +64,13 @@ const tenantPolicies = useTenantPolicy();
 // Update your code for editions etc..
 const slugMapper: Record<Slug, () => ReturnConfig> = {
   tenants: () => {
-    const headers: Array<{ name: string }> = [
+    const headers: Array<ITableHeaders> = [
       {
         name: "Actions",
       },
       {
         name: "TenantName",
+        sorting: true,
       },
       {
         name: "",
@@ -158,6 +159,15 @@ const onPageChangeEvent = async (page: number) => {
   }
 };
 
+const onSortEvent = async (name: string, order: "asc" | "desc") => {
+  if (paramSlug === "tenants") {
+    await tenantStore.fetch({
+      MaxResultCount: maxRecord.value,
+      SkipCount: currentPage.value,
+      Sorting: `name ${order}`,
+    });
+  }
+};
 const totalPages = computed(() =>
   Math.ceil(totalCount.value / maxRecord.value),
 );
@@ -197,6 +207,7 @@ const totalPages = computed(() =>
         :columns="config.columns"
         :action-cta="config.actionCtaBtnProps"
         @on-Action="onTableActionEvent"
+        @on-sort="onSortEvent"
         :is-no-data="tenants?.length === 0"
       />
       <div v-if="enablePagination">
