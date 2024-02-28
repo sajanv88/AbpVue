@@ -24,6 +24,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Build Package
-      run: dotnet pack --output nupkgs --configuration Release -p PackageVersion=1.0.${{ github.run_number }}
+      run: dotnet pack --output nupkgs
     - name: Push to Nuget
       run: dotnet nuget push "nupkgs/*.nupkg" -s https://api.nuget.org/v3/index.json -k ${{secrets.NUGET_API_KEY}} --skip-duplicate

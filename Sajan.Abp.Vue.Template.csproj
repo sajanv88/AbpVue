@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <PackageType>Template</PackageType>
-        <Version>1.0.1</Version>
+        <Version>1.0.5</Version>
         <TargetFramework>net8.0</TargetFramework>
         <PackageId>Sajan.Abp.Vue.Template</PackageId>
         <Title>Abp Vue Template</Title>
