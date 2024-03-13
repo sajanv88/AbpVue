@@ -36,6 +36,7 @@
   "dependencies": {
     "@vercel/analytics": "^1.2.1",
     "@vercel/speed-insights": "^1.0.10",
+    "@vueuse/core": "^10.9.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "flowbite": "^2.3.0",

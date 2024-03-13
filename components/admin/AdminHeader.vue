@@ -38,7 +38,7 @@ const onMenuClickEvent = () => {
 </script>
 
 <template>
-  <header class="w-full p-3 bg-gray-200 dark:bg-gray-800">
+  <header class="w-full p-3 bg-primary-foreground">
     <div class="flex items-center h-full">
       <div class="flex-1">
         <h1

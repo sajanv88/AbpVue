@@ -28,16 +28,17 @@ const styles: Record<IAlertProps["type"], string> = {
     <p class="ms-3 text-sm font-medium">
       {{ message }}
     </p>
-    <button
+    <Button
       v-if="dismissible"
       @click="$emit('dismissed')"
       type="button"
-      class="ms-auto -mx-1.5 -my-1.5 focus:ring-2 p-1.5 inline-flex items-center justify-center h-8 w-8"
+      size="sm"
+      variant="destructive"
       aria-label="Close"
     >
       <span class="sr-only">Dismiss</span>
       <Icon icon="cross" />
-    </button>
+    </Button>
   </section>
 </template>
 

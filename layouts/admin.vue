@@ -8,7 +8,7 @@ import { navList } from "~/utils";
 
 useHead({
   bodyAttrs: {
-    class: "bg-gray-200 dark:bg-gray-800",
+    class: "bg-primary-foreground",
   },
 });
 
@@ -51,7 +51,7 @@ const goToAuthServer = async () => {
 
 <template>
   <SpeedInsights />
-  <main class="relative bg-gray-200 dark:bg-gray-800">
+  <main class="relative">
     <Teleport to="body">
       <Dialog
         id="logout"
@@ -77,7 +77,7 @@ const goToAuthServer = async () => {
               ? 'translate-x-0 w-full'
               : 'translate-x-[-100rem]'
           "
-          class="md:w-[17rem] z-20 bg-gray-200 dark:bg-gray-800 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg"
+          class="md:w-[17rem] z-20 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg bg-primary-foreground"
         >
           <Navigation :navigations="navigations" />
         </section>

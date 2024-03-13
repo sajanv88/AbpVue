@@ -7,6 +7,7 @@ import type {
 } from "~/services/proxy/src";
 import { storeToRefs } from "pinia";
 import Alert from "~/components/shared/Alert.vue";
+import { Input } from "~/abp/ui/input";
 interface ICreateTenantProps {
   edit?: boolean;
   open: boolean;
@@ -76,13 +77,13 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Tenant name *</label
           >
-          <input
+          <Input
             type="text"
             name="name"
             id="name"
             @input="formInputField.name = $event.target.value"
-            :value="tenantStore.selectedTenant.data?.name"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            :default-value="tenantStore.selectedTenant.data?.name"
+            class="p-6"
             required
           />
         </div>
@@ -93,12 +94,11 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Tenant admin's email address *</label
           >
-          <input
+          <Input
             type="email"
             name="adminEmailAddress"
             id="email"
             @input="formInputField.adminEmailAddress = $event.target.value"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             required
           />
         </div>
@@ -108,12 +108,11 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Tenant admin's password *</label
           >
-          <input
+          <Input
             type="password"
             name="adminPassword"
             @input="formInputField.adminPassword = $event.target.value"
             id="password"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
             placeholder=""
             required
           />
@@ -130,22 +129,16 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
           class="text-gray-700 dark:text-white"
           >Updating Tenant...</span
         >
-        <button
+        <Button
           v-if="!processing"
           id="tenantCancelBtn"
           type="button"
           @click="$emit('dialogClose')"
-          class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+          variant="secondary"
         >
           Cancel
-        </button>
-        <button
-          v-if="!processing"
-          type="submit"
-          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-        >
-          Save
-        </button>
+        </Button>
+        <Button v-if="!processing" type="submit"> Save </Button>
       </footer>
     </form>
   </Dialog>

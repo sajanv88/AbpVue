@@ -28,12 +28,14 @@ defineProps<DialogProps>();
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
             {{ title }}
           </h3>
-          <IconButton
+          <Button
             @click="$emit('close', id)"
+            variant="ghost"
+            size="icon"
             classname="bg-transparent dark:bg-transparent border-none"
           >
             <Icon icon="cross" :w="16" :h="16" />
-          </IconButton>
+          </Button>
         </header>
         <main>
           <slot />

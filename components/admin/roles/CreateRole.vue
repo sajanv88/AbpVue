@@ -4,6 +4,7 @@ import { useAbpConfiguration, useRoles } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Alert from "~/components/shared/Alert.vue";
 import Checkbox from "~/components/shared/Checkbox.vue";
+import { Input } from "~/abp/ui/input";
 import type {
   Volo_Abp_Identity_IdentityRoleCreateDto,
   Volo_Abp_Identity_IdentityRoleUpdateDto,
@@ -91,14 +92,14 @@ const shouldDisabled = computed(() => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Role name *</label
           >
-          <input
+          <Input
             type="text"
             name="name"
             id="name"
             :disabled="shouldDisabled"
             @input="roleName = $event.target.value"
-            :value="roleStore.selectedRole.data?.name ?? roleName"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+            :default-value="roleStore.selectedRole.data?.name ?? roleName"
+            class="p-6 pl-3"
             required
           />
         </div>
@@ -126,21 +127,15 @@ const shouldDisabled = computed(() => {
         <span v-if="updateRole.status" class="text-gray-700 dark:text-white"
           >Updating Role...</span
         >
-        <button
+        <Button
           v-if="!processing"
           type="button"
           @click="onCloseDialog"
-          class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+          variant="secondary"
         >
           Cancel
-        </button>
-        <button
-          v-if="!processing"
-          type="submit"
-          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-        >
-          Save
-        </button>
+        </Button>
+        <Button v-if="!processing" type="submit">Save</Button>
       </footer>
     </form>
   </Dialog>

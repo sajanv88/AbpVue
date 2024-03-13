@@ -142,15 +142,12 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
           </h2>
           <ul class="mt-5">
             <li v-for="group in groups" :key="group.displayName" class="py-2">
-              <a
-                class="block border border-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-xl text-sm p-3 text-center dark:border-blue-500 dark:focus:ring-blue-800"
-                href="javascript:void(0)"
-                @click="() => onTabChange(group.displayName!)"
-                :class="
-                  selectedTabName == group.displayName
-                    ? 'bg-blue-800 text-white'
-                    : 'text-blue-700 dark:text-white hover:text-white dark:hover:text-white dark:hover:bg-blue-500 hover:bg-blue-800'
+              <Button
+                type="button"
+                :variant="
+                  selectedTabName == group.displayName ? 'outline' : 'link'
                 "
+                @click="() => onTabChange(group.displayName!)"
               >
                 <span class="inline-flex items-center space-x-2">
                   <span class="truncate">{{ group.displayName }}</span>
@@ -158,7 +155,7 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
                     ({{ group.permissions?.filter((p) => p.isGranted).length }})
                   </span>
                 </span>
-              </a>
+              </Button>
             </li>
           </ul>
         </section>
@@ -215,21 +212,15 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
         <span v-if="processing" class="text-gray-700 dark:text-white"
           >Saving permissions</span
         >
-        <button
+        <Button
           v-if="!processing"
           type="button"
           @click="onCloseDialog"
-          class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+          variant="secondary"
         >
           Cancel
-        </button>
-        <button
-          v-if="!processing"
-          type="submit"
-          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-        >
-          Save
-        </button>
+        </Button>
+        <Button v-if="!processing" type="submit"> Save </Button>
       </footer>
     </form>
   </Dialog>

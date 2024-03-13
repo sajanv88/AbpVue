@@ -35,30 +35,16 @@ const selectedTab = ref<"personal" | "changePassword">("personal");
           class="py-3 w-full flex items-center md:block dark:text-white text-gray-800 text-md"
         >
           <li @click="selectedTab = 'personal'" class="w-full">
-            <a
-              class="inline-flex truncate justify-center w-full p-5 hover:bg-gray-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-center dark:hover:bg-gray-600 dark:focus:ring-blue-800"
-              href="javascript:void(0)"
-              :class="
-                selectedTab == 'personal'
-                  ? 'border-b bg-gray-400 text-white'
-                  : ''
-              "
-            >
-              Personal info</a
+            <Button :variant="selectedTab == 'personal' ? 'outline' : 'link'">
+              Personal info</Button
             >
           </li>
           <li @click="selectedTab = 'changePassword'" class="w-full">
-            <a
-              class="inline-flex truncate justify-center w-full p-5 hover:bg-gray-500 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium text-center dark:hover:bg-gray-600 dark:focus:ring-blue-800"
-              href="javascript:void(0)"
-              :class="
-                selectedTab == 'changePassword'
-                  ? 'border-b border-b bg-gray-400 text-white'
-                  : ''
-              "
+            <Button
+              :variant="selectedTab == 'changePassword' ? 'outline' : 'link'"
             >
               Change password
-            </a>
+            </Button>
           </li>
         </ul>
       </div>
