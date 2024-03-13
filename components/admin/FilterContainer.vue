@@ -106,14 +106,10 @@ const onCreateAction = () => {
       <h1 class="text-4xl font-extrabold dark:text-white capitalize flex-1">
         {{ props.slug }}
       </h1>
-      <button
-        v-if="canCreate"
-        @click="onCreateAction"
-        class="inline-flex items-center px-2 py-2 text-sm font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-      >
+      <Button v-if="canCreate" @click="onCreateAction">
         <Icon icon="plus" />
-        <span>{{ props.newBtnName }}</span>
-      </button>
+        {{ props.newBtnName }}
+      </Button>
     </div>
     <Search
       @on-search="onSearchEvent"
