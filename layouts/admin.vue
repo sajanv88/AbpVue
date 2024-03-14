@@ -82,7 +82,7 @@ const goToAuthServer = async () => {
           <Navigation :navigations="navigations" />
         </section>
         <section class="md:ml-[4.5rem] lg:ml-[17rem] p-3 lg:p5">
-          <div class="dark:border-gray-300 shadow-md abp-vue-header-container">
+          <div class="abp-vue-header-container">
             <AdminHeader />
           </div>
           <div class="min-h-svh pt-5">

@@ -27,24 +27,16 @@ const showManageFeaturesDialog = ref<boolean>(false);
             <ul
               class="py-3 w-full flex items-center md:block dark:text-white text-gray-800 text-md"
             >
-              <li
-                @click="selectedTab = 'emailing'"
-                class="w-full"
-                :class="selectedTab === 'emailing' ? 'border-b' : ''"
-              >
+              <li @click="selectedTab = 'emailing'" class="w-full">
                 <Button
-                  :variant="selectedTab == 'emailing' ? 'outline' : 'link'"
+                  :variant="selectedTab == 'emailing' ? 'default' : 'link'"
                 >
                   Emailing</Button
                 >
               </li>
-              <li
-                @click="selectedTab = 'features'"
-                class="w-full"
-                :class="selectedTab === 'features' ? 'border-b' : ''"
-              >
+              <li @click="selectedTab = 'features'" class="w-full">
                 <Button
-                  :variant="selectedTab == 'features' ? 'outline' : 'link'"
+                  :variant="selectedTab == 'features' ? 'default' : 'link'"
                 >
                   Feature Management
                 </Button>

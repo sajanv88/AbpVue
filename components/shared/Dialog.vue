@@ -2,10 +2,8 @@
 import Icon from "~/components/shared/Icon.vue";
 import {
   Dialog,
-  DialogFooter,
   DialogClose,
   DialogTitle,
-  DialogDescription,
   DialogContent,
 } from "~/abp/ui/dialog";
 interface DialogProps {

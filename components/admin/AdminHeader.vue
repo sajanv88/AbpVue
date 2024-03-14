@@ -4,6 +4,7 @@ import { useAbpConfiguration, useNavigation } from "~/store/state";
 import { storeToRefs } from "pinia";
 import Avatar from "~/components/shared/Avatar.vue";
 import IconButton from "~/components/shared/IconButton.vue";
+import { Card, CardHeader } from "~/abp/ui/card";
 
 defineProps({
   sticky: Boolean,
@@ -38,58 +39,60 @@ const onMenuClickEvent = () => {
 </script>
 
 <template>
-  <header class="w-full p-3 bg-primary-foreground">
-    <div class="flex items-center h-full">
-      <div class="flex-1">
-        <h1
-          class="hidden md:block text-lg pt-5 pb-5 tracking-tight font-semibold capitalize text-gray-900 md:text-xl lg:text-2xl dark:text-white"
+  <Card>
+    <CardHeader>
+      <div class="flex items-center h-full">
+        <div class="flex-1">
+          <h1
+            class="hidden md:block text-lg pt-5 pb-5 tracking-tight font-semibold capitalize md:text-xl lg:text-2xl"
+          >
+            {{ fullName }}
+          </h1>
+          <IconButton @click="onMenuClickEvent" classname="inline md:hidden">
+            <Icon icon="menu" />
+          </IconButton>
+        </div>
+
+        <ThemeSwitch />
+
+        <Avatar :name="name" :full-name="config?.currentUser?.userName" />
+        <div
+          id="userDropdown"
+          class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
         >
-          {{ fullName }}
-        </h1>
-        <IconButton @click="onMenuClickEvent" classname="inline md:hidden">
-          <Icon icon="menu" />
-        </IconButton>
-      </div>
-
-      <ThemeSwitch />
-
-      <Avatar :name="name" :full-name="config?.currentUser?.userName" />
-      <div
-        id="userDropdown"
-        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-      >
-        <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-          <div>{{ config?.currentUser?.name }}</div>
-          <div class="font-medium truncate">
-            {{ config?.currentUser?.email }}
+          <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+            <div>{{ config?.currentUser?.name }}</div>
+            <div class="font-medium truncate">
+              {{ config?.currentUser?.email }}
+            </div>
+          </div>
+          <ul
+            class="py-2 text-sm text-gray-700 dark:text-gray-200"
+            aria-labelledby="avatarButton"
+          >
+            <li>
+              <NuxtLink
+                to="/admin/profile"
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                >Profile</NuxtLink
+              >
+            </li>
+          </ul>
+          <div class="py-1 text-gray-700 dark:text-gray-200">
+            <a
+              href="/api/auth/signout"
+              class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+            >
+              <span class="inline-block">
+                <Icon icon="logout" :w="18" :h="18" />
+              </span>
+              <span class="inline-block text-sm"> Logout </span>
+            </a>
           </div>
         </div>
-        <ul
-          class="py-2 text-sm text-gray-700 dark:text-gray-200"
-          aria-labelledby="avatarButton"
-        >
-          <li>
-            <NuxtLink
-              to="/admin/profile"
-              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              >Profile</NuxtLink
-            >
-          </li>
-        </ul>
-        <div class="py-1 text-gray-700 dark:text-gray-200">
-          <a
-            href="/api/auth/signout"
-            class="flex items-center space-x-2 px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-          >
-            <span class="inline-block">
-              <Icon icon="logout" :w="18" :h="18" />
-            </span>
-            <span class="inline-block text-sm"> Logout </span>
-          </a>
-        </div>
       </div>
-    </div>
-  </header>
+    </CardHeader>
+  </Card>
 </template>
 
 <style scoped></style>
