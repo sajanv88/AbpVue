@@ -8,7 +8,7 @@ import { navList } from "~/utils";
 
 useHead({
   bodyAttrs: {
-    class: "bg-primary-foreground",
+    class: "bg-background text-foreground",
   },
 });
 

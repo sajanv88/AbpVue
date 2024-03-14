@@ -52,7 +52,7 @@ const onSubmitEvent = async (e: SubmitEvent) => {
       v-if="featureStore.error"
     />
     <div
-      class="p-4 md:p-5 text-gray-900 dark:text-white"
+      class="text-gray-900 dark:text-white"
       v-if="featureGroups?.groups?.length > 0"
     >
       <form @submit="onSubmitEvent">

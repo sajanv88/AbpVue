@@ -45,7 +45,7 @@ const onClose = () => {
 <template>
   <Dialog :id="type" :open="isOpen" title="Are you sure?" @close="onClose">
     <Alert type="error" :message="error.message" v-if="error" />
-    <div class="p-4 md:p-5">
+    <div>
       <div class="flex flex-col justify-center items-center space-y-4">
         <Icon
           icon="info-circle"

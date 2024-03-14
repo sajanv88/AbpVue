@@ -69,23 +69,19 @@ const onSubmitForm = async (e: SubmitEvent) => {
 <template>
   <Dialog id="user" :title="dialogTitle" :open="open" @close="onCloseDialog">
     <Alert v-if="error" type="error" :message="error.message" />
-    <form
-      class="p-4 md:p-5"
-      @submit="onSubmitForm"
-      :novalidate="selectedTab !== 'user'"
-    >
+    <form @submit="onSubmitForm" :novalidate="selectedTab !== 'user'">
       <section class="flex items-center space-x-2 mb-5">
         <Button
           type="button"
           @click="selectedTab = 'user'"
-          :variant="selectedTab == 'user' ? 'outline' : 'ghost'"
+          :variant="selectedTab == 'user' ? 'default' : 'link'"
         >
           User Information
         </Button>
         <Button
           type="button"
           @click="selectedTab = 'role'"
-          :variant="selectedTab == 'role' ? 'outline' : 'ghost'"
+          :variant="selectedTab == 'role' ? 'default' : 'link'"
         >
           Roles
         </Button>

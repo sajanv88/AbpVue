@@ -52,7 +52,7 @@ const onSubmitForm = async (e: SubmitEvent) => {
       type="error"
       :message="emailStore.testEmail.error.message"
     />
-    <form class="p-4 md:p-5" @submit="onSubmitForm">
+    <form @submit="onSubmitForm">
       <section class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
           <label

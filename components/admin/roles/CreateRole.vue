@@ -84,7 +84,7 @@ const shouldDisabled = computed(() => {
       type="error"
       :message="createRole.error.message"
     />
-    <form class="p-4 md:p-5" @submit="onSubmitForm">
+    <form @submit="onSubmitForm">
       <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
           <label

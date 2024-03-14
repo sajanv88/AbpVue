@@ -124,7 +124,7 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
       type="error"
       :message="permissionStore.error.message"
     />
-    <form class="p-4 md:p-5" @submit="onSubmitForm">
+    <form @submit="onSubmitForm">
       <section class="grid md:gap-8 grid-cols-12">
         <section class="mb-10 md:mb-0 col-span-12 md:col-span-5">
           <h2
@@ -145,7 +145,7 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
               <Button
                 type="button"
                 :variant="
-                  selectedTabName == group.displayName ? 'outline' : 'link'
+                  selectedTabName == group.displayName ? 'default' : 'link'
                 "
                 @click="() => onTabChange(group.displayName!)"
               >
