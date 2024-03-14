@@ -3,8 +3,10 @@ import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 import { useDeleteDialog, useFeatures, useTenants } from "~/store/state";
+import Table from "~/components/shared/tables/Table.vue";
+import TableDropdown from "~/components/shared/tables/TableDropdown.vue";
 
-import Table, { type ITableHeaders } from "~/components/shared/Table.vue";
+import { type ITableHeaders } from "~/components/shared/Table.vue";
 import type { ActionCtaDataType } from "~/components/shared/Table.vue";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
@@ -13,6 +15,7 @@ import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureMana
 
 import { useTenantPolicy } from "~/composables/useTenantPolicy";
 import Alert from "~/components/shared/Alert.vue";
+import type { ColumnDef } from "@tanstack/vue-table";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
@@ -171,6 +174,37 @@ const onSortEvent = async (name: string, order: "asc" | "desc") => {
 const totalPages = computed(() =>
   Math.ceil(totalCount.value / maxRecord.value),
 );
+
+const cols: ColumnDef<{ name: string; id: string }>[] = [
+  {
+    id: "actions",
+    header: () => h("span", "Actions"),
+    cell: (props) => {
+      const tenant = props.row.original;
+      return h(
+        "span",
+        { class: "relative" },
+        h(TableDropdown, {
+          id: tenant.id,
+          name: tenant.name,
+          items: config.value.actionCtaBtnProps.options,
+          onAction: onTableActionEvent,
+        }),
+      );
+    },
+  },
+  {
+    accessorKey: "name",
+    header: () => h("span", "Name"),
+    cell: (props) => {
+      return h(
+        "span",
+        { class: "text-left" },
+        props.row.getValue<string>("name"),
+      );
+    },
+  },
+];
 </script>
 
 <template>
@@ -201,15 +235,16 @@ const totalPages = computed(() =>
       searchPlaceholder="Search..."
     />
     <main>
-      <Table
-        :is-loading="isLoading"
-        :headers="config.headers"
-        :columns="config.columns"
-        :action-cta="config.actionCtaBtnProps"
-        @on-Action="onTableActionEvent"
-        @on-sort="onSortEvent"
-        :is-no-data="tenants?.length === 0"
-      />
+      <Table :columns="cols" :data="config.columns" />
+      <!--      <Table-->
+      <!--        :is-loading="isLoading"-->
+      <!--        :headers="config.headers"-->
+      <!--        :columns="config.columns"-->
+      <!--        :action-cta="config.actionCtaBtnProps"-->
+      <!--        @on-Action="onTableActionEvent"-->
+      <!--        @on-sort="onSortEvent"-->
+      <!--        :is-no-data="tenants?.length === 0"-->
+      <!--      />-->
       <div v-if="enablePagination">
         <Pagination
           :total-page="totalPages"

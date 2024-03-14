@@ -29,11 +29,11 @@
     "openapi-typescript-codegen": "^0.27.0",
     "prettier": "^3.2.5",
     "shadcn-nuxt": "^0.10.0",
-    "typescript": "^5.4.2",
     "vue": "^3.4.19",
     "vue-router": "^4.2.5"
   },
   "dependencies": {
+    "@tanstack/vue-table": "^8.13.2",
     "@vercel/analytics": "^1.2.1",
     "@vercel/speed-insights": "^1.0.10",
     "@vueuse/core": "^10.9.0",

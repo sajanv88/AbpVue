@@ -5,12 +5,7 @@ import ToastContainer from "~/components/shared/ToastContainer.vue";
 import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
 import { navList } from "~/utils";
-
-useHead({
-  bodyAttrs: {
-    class: "bg-background text-foreground",
-  },
-});
+import AbpFooter from "~/components/shared/AbpFooter.vue";
 
 const showLogoutDialog = ref<boolean>(false);
 
@@ -77,7 +72,7 @@ const goToAuthServer = async () => {
               ? 'translate-x-0 w-full'
               : 'translate-x-[-100rem]'
           "
-          class="md:w-[17rem] z-20 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg bg-primary-foreground"
+          class="md:w-[17rem] z-20 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg bg-background"
         >
           <Navigation :navigations="navigations" />
         </section>
@@ -88,6 +83,7 @@ const goToAuthServer = async () => {
           <div class="min-h-svh pt-5">
             <slot />
           </div>
+          <AbpFooter />
         </section>
       </section>
     </section>
