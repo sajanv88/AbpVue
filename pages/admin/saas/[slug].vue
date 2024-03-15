@@ -21,7 +21,6 @@ import type { ColumnDef } from "@tanstack/vue-table";
 const saasSlugs = ["tenants"] as const;
 type Slug = (typeof saasSlugs)[number];
 type ReturnConfig = {
-  headers: Array<ITableHeaders>;
   columns: Array<{ name: string; id: string }>;
   actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
 };
@@ -67,21 +66,6 @@ const tenantPolicies = useTenantPolicy();
 // Update your code for editions etc..
 const slugMapper: Record<Slug, () => ReturnConfig> = {
   tenants: () => {
-    const headers: Array<ITableHeaders> = [
-      {
-        name: "Actions",
-      },
-      {
-        name: "TenantName",
-        sorting: true,
-      },
-      {
-        name: "",
-      },
-      {
-        name: "",
-      },
-    ];
     const columns: Array<{ name: string; id: string }> = [];
 
     const { canDeleteTenant, canUpdateTenant, canManageFeatures } =
@@ -100,7 +84,7 @@ const slugMapper: Record<Slug, () => ReturnConfig> = {
       actionCtaBtnProps.options.push({ name: "Settings" });
     }
 
-    return { headers, actionCtaBtnProps, columns };
+    return { actionCtaBtnProps, columns };
   },
 };
 
@@ -109,23 +93,18 @@ const onTableActionEvent = async ({
 }: {
   data: ActionCtaDataType;
 }) => {
-  if (invokedBy === "Delete") {
-    return await deleteDialogStore.showDialog(
-      value.id,
-      `${value.name} will be deleted. Do you confirm that?`,
-    );
-  }
-
-  if (invokedBy === "Edit") {
-    if (paramSlug === "tenants") {
-      // Trigger the tenant edit dialog
+  if (paramSlug === "tenants") {
+    if (invokedBy === "Edit") {
       return await tenantStore.getSelectedTenant(value.id);
     }
-  }
-  if (invokedBy === "Settings") {
-    if (paramSlug === "tenants") {
-      // Trigger the tenant feature management dialog
+    if (invokedBy === "Settings") {
       return await featureStore.fetch(value.id);
+    }
+    if (invokedBy === "Delete") {
+      return await deleteDialogStore.showDialog(
+        value.id,
+        `${value.name} will be deleted. Do you confirm that?`,
+      );
     }
   }
 };
@@ -162,7 +141,7 @@ const onPageChangeEvent = async (page: number) => {
   }
 };
 
-const onSortEvent = async (name: string, order: "asc" | "desc") => {
+const onSortEvent = async (order: "asc" | "desc") => {
   if (paramSlug === "tenants") {
     await tenantStore.fetch({
       MaxResultCount: maxRecord.value,
@@ -195,10 +174,11 @@ const cols: ColumnDef<{ name: string; id: string }>[] = [
   },
   {
     accessorKey: "name",
+    enableSorting: true,
     header: () => h("span", "Name"),
     cell: (props) => {
       return h(
-        "span",
+        "div",
         { class: "text-left" },
         props.row.getValue<string>("name"),
       );
@@ -235,16 +215,12 @@ const cols: ColumnDef<{ name: string; id: string }>[] = [
       searchPlaceholder="Search..."
     />
     <main>
-      <Table :columns="cols" :data="config.columns" />
-      <!--      <Table-->
-      <!--        :is-loading="isLoading"-->
-      <!--        :headers="config.headers"-->
-      <!--        :columns="config.columns"-->
-      <!--        :action-cta="config.actionCtaBtnProps"-->
-      <!--        @on-Action="onTableActionEvent"-->
-      <!--        @on-sort="onSortEvent"-->
-      <!--        :is-no-data="tenants?.length === 0"-->
-      <!--      />-->
+      <Table
+        :columns="cols"
+        :data="config.columns"
+        @on-sorting-change="onSortEvent"
+      />
+
       <div v-if="enablePagination">
         <Pagination
           :total-page="totalPages"

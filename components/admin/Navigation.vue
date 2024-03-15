@@ -4,6 +4,7 @@ import Accordion from "~/components/shared/Accordion.vue";
 import Icon from "~/components/shared/Icon.vue";
 import { useNavigation } from "~/store/state";
 import { onBeforeRouteUpdate, onNuxtReady } from "#app";
+import AbpFooter from "~/components/shared/AbpFooter.vue";
 
 interface INavigationProps {
   navigations: Array<INavigation>;

@@ -1,5 +1,11 @@
 <script setup lang="ts" generic="TData, TValue">
-import type { ColumnDef } from "@tanstack/vue-table";
+import {
+  type ColumnDef,
+  getSortedRowModel,
+  type Header,
+  type RowData,
+  type SortingState,
+} from "@tanstack/vue-table";
 import { FlexRender, getCoreRowModel, useVueTable } from "@tanstack/vue-table";
 
 import {
@@ -11,12 +17,20 @@ import {
   TableRow,
 } from "@/abp/ui/table";
 import { Card } from "~/abp/ui/card";
+import Icon from "~/components/shared/Icon.vue";
+import { valueUpdater } from "~/lib/utils";
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }>();
 
+const emit = defineEmits(["onSortingChange"]);
+const sorting = ref<SortingState>([]);
+const onSortEvent = (header: Header<RowData, unknown>) => {
+  header.column.toggleSorting(header.column.getIsSorted() === "asc");
+  emit("onSortingChange", sorting.value[0].desc ? "desc" : "asc");
+};
 const table = useVueTable({
   get data() {
     return props.data;
@@ -25,6 +39,13 @@ const table = useVueTable({
     return props.columns;
   },
   getCoreRowModel: getCoreRowModel(),
+  manualSorting: true,
+  onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+  state: {
+    get sorting() {
+      return sorting.value;
+    },
+  },
 });
 </script>
 
@@ -38,11 +59,23 @@ const table = useVueTable({
             :key="headerGroup.id"
             class="bg-primary-foreground"
           >
-            <TableHead v-for="header in headerGroup.headers" :key="header.id">
+            <TableHead
+              v-for="header in headerGroup.headers"
+              :key="header.id"
+              @click="onSortEvent(header)"
+            >
               <FlexRender
                 v-if="!header.isPlaceholder"
                 :render="header.column.columnDef.header"
                 :props="header.getContext()"
+              />
+              <Icon
+                :key="table.getState().sorting"
+                :icon="
+                  table.getState().sorting[0]?.desc ? 'chev-up' : 'chev-down'
+                "
+                :w="16"
+                :h="16"
               />
             </TableHead>
           </TableRow>

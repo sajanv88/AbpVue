@@ -5,7 +5,6 @@ import ToastContainer from "~/components/shared/ToastContainer.vue";
 import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
 import { navList } from "~/utils";
-import AbpFooter from "~/components/shared/AbpFooter.vue";
 
 const showLogoutDialog = ref<boolean>(false);
 
@@ -83,7 +82,6 @@ const goToAuthServer = async () => {
           <div class="min-h-svh pt-5">
             <slot />
           </div>
-          <AbpFooter />
         </section>
       </section>
     </section>
