@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 import {
+  useAbpConfiguration,
   useDeleteDialog,
   usePermissionStore,
   useRoles,
@@ -8,10 +9,6 @@ import {
 } from "~/store/state";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
-import Table, {
-  type ActionCtaDataType,
-  type ITableHeaders,
-} from "~/components/shared/Table.vue";
 import { v4 } from "uuid";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
@@ -21,6 +18,12 @@ import { PermissionProvider } from "~/types/permissionProvider";
 import ManagePermissions from "~/components/admin/permissions/ManagePermissions.vue";
 import Alert from "~/components/shared/Alert.vue";
 import CreateUser from "~/components/admin/users/CreateUser.vue";
+import type { ColumnDef } from "@tanstack/vue-table";
+import TableDropdown, {
+  type ActionEventParams,
+} from "~/components/shared/tables/TableDropdown.vue";
+import Table from "~/components/shared/tables/Table.vue";
+import TableTag from "~/components/shared/tables/TableTag.vue";
 
 const saasSlugs = ["roles", "users"] as const;
 type Slug = (typeof saasSlugs)[number];
@@ -39,7 +42,6 @@ type UserColumn = {
 };
 
 type TableConfig = {
-  headers: Array<ITableHeaders>;
   columns: Array<RoleColumn | UserColumn>;
   actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
 };
@@ -60,7 +62,7 @@ const roleStore = useRoles();
 const deleteDialogStore = useDeleteDialog();
 const permissionStore = usePermissionStore();
 const userStore = useUsers();
-
+const abpConfig = useAbpConfiguration();
 const {
   roles,
   totalCount: totalRolesCount,
@@ -97,12 +99,6 @@ const userPolicies = useUserPolicy();
 
 const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
   roles: () => {
-    const headers: Array<ITableHeaders> = [
-      { name: "Actions" },
-      { name: "Role Name", sorting: true },
-      { name: "" },
-      { name: "" },
-    ];
     const columns: TableConfig["columns"] = [];
     const { canUpdateRole, canManageRolePermissions, canDeleteRole } =
       rolePolicies;
@@ -120,15 +116,9 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
     if (canManageRolePermissions) {
       actionCtaBtnProps.options.push({ name: "Permissions" });
     }
-    return { headers, actionCtaBtnProps, columns };
+    return { actionCtaBtnProps, columns };
   },
   users: () => {
-    const headers: Array<ITableHeaders> = [
-      { name: "Actions" },
-      { name: "User Name", sorting: true },
-      { name: "Email Address", sorting: true },
-      { name: "Phone Number", sorting: true },
-    ];
     const columns: TableConfig["columns"] = [];
     const actionCtaBtnProps: TableConfig["actionCtaBtnProps"] = {
       name: "Actions",
@@ -147,11 +137,110 @@ const tableConfigSlugMapper: Record<Slug, () => TableConfig> = {
       actionCtaBtnProps.options.push({ name: "Permissions" });
     }
 
-    return { headers, actionCtaBtnProps, columns };
+    return { actionCtaBtnProps, columns };
   },
 };
 
 const config = ref(tableConfigSlugMapper[paramSlug]());
+const cols = () => {
+  if (paramSlug === "roles") {
+    const roleCols: ColumnDef<RoleColumn>[] = [
+      {
+        id: "actions",
+        header: () => h("span", "Actions"),
+        cell: (props) => {
+          const role = props.row.original;
+          return h(
+            "span",
+            { class: "relative" },
+            h(TableDropdown, {
+              id: role.id,
+              name: role.name,
+              items: config.value.actionCtaBtnProps.options.filter((p) => {
+                if (role.name === "admin" && abpConfig.isAdmin) {
+                  return p.name !== "Delete";
+                }
+                return p;
+              }),
+              onAction: onTableActionEvent,
+            }),
+          );
+        },
+      },
+      {
+        accessorKey: "name",
+        enableSorting: true,
+        header: () => h("span", "Role Name"),
+        cell: (props) => {
+          return h(
+            TableTag,
+            {
+              name: props.row.original.name,
+              tags: props.row.original.tags || [],
+            },
+            {
+              default: () => props.row.original.name,
+            },
+          );
+        },
+      },
+    ];
+    return roleCols;
+  } else if (paramSlug === "users") {
+    const userCols: ColumnDef<UserColumn>[] = [
+      {
+        id: "actions",
+        header: () => h("span", "Actions"),
+        cell: (props) => {
+          const role = props.row.original;
+          return h(
+            "span",
+            { class: "relative" },
+            h(TableDropdown, {
+              id: role.id,
+              name: role.name,
+              items: config.value.actionCtaBtnProps.options.filter((p) => {
+                if (role.name === "admin" && abpConfig.isAdmin) {
+                  return p.name !== "Delete";
+                }
+                return p;
+              }),
+              onAction: onTableActionEvent,
+            }),
+          );
+        },
+      },
+      {
+        accessorKey: "userName",
+        enableSorting: true,
+        header: () => h("span", "User Name"),
+        cell: (props) => {
+          const user = props.row.original;
+          return h("span", user.name);
+        },
+      },
+      {
+        accessorKey: "email",
+        enableSorting: true,
+        header: () => h("span", "Email Address"),
+        cell: (props) => {
+          const user = props.row.original;
+          return h("span", user.email);
+        },
+      },
+      {
+        accessorKey: "phoneNumber",
+        enableSorting: true,
+        header: () => h("span", "Phone Number"),
+        cell: (props) => {
+          const user = props.row.original;
+          return h("span", user.phoneNumber);
+        },
+      },
+    ];
+    return userCols;
+  }
+};
 const refreshRoles = (params: typeof roles) => {
   if (paramSlug == "roles" && params.value) {
     config.value.columns = [];
@@ -221,7 +310,7 @@ await paginate();
 const onTableActionEvent = async ({
   data: { invokedBy, value },
 }: {
-  data: ActionCtaDataType;
+  data: ActionEventParams;
 }) => {
   if (invokedBy === "Delete") {
     return await deleteDialogStore.showDialog(
@@ -261,29 +350,22 @@ const onPageChangeEvent = async (page: number) => {
   return await paginate();
 };
 
-const onSortEvent = async (name: string, order: "asc" | "desc") => {
-  if (name === "Role Name") {
+const onSortEvent = async ({
+  name,
+  order,
+}: {
+  name: string;
+  order: "asc" | "desc";
+}) => {
+  console.log(name, "name");
+  if (paramSlug === "roles") {
     await paginate(order);
   } else if (paramSlug == "users") {
-    if (name === "User Name") {
-      await userStore.fetch({
-        MaxResultCount: maxRecord.value,
-        SkipCount: currentPage.value,
-        Sorting: `userName ${order}`,
-      });
-    } else if (name === "Email Address") {
-      await userStore.fetch({
-        MaxResultCount: maxRecord.value,
-        SkipCount: currentPage.value,
-        Sorting: `email ${order}`,
-      });
-    } else if (name === "Phone Number") {
-      await userStore.fetch({
-        MaxResultCount: maxRecord.value,
-        SkipCount: currentPage.value,
-        Sorting: `phoneNumber ${order}`,
-      });
-    }
+    await userStore.fetch({
+      MaxResultCount: maxRecord.value,
+      SkipCount: currentPage.value,
+      Sorting: `${name} ${order}`,
+    });
   }
 };
 
@@ -295,7 +377,6 @@ const records = computed(() => {
       totalRecords: totalRolesCount.value,
       isLoading: rolesFetching.value,
       error: rolesError.value || permissionStore.error,
-      headers: config.value.headers,
       columns: config.value.columns,
       actionCtaBtnProps: config.value.actionCtaBtnProps,
     };
@@ -306,13 +387,13 @@ const records = computed(() => {
       totalRecords: totalUsersCount.value,
       isLoading: usersFetching.value,
       error: usersError.value || permissionStore.error,
-      headers: config.value.headers,
       columns: config.value.columns,
       actionCtaBtnProps: config.value.actionCtaBtnProps,
     };
   }
   return null;
 });
+
 const totalPages = computed(() => {
   if (records.value) {
     return Math.ceil(records.value.totalRecords / maxRecord.value);
@@ -355,14 +436,11 @@ const totalPages = computed(() => {
     />
     <main>
       <Table
-        :is-loading="records?.isLoading"
-        :headers="records?.headers"
-        :columns="records?.columns"
-        :action-cta="records?.actionCtaBtnProps"
-        @on-Action="onTableActionEvent"
-        @on-sort="onSortEvent"
-        :is-no-data="records?.data?.length === 0"
+        :data="records?.columns"
+        :columns="cols()"
+        @on-sorting-change="onSortEvent"
       />
+
       <div v-if="enablePagination" :key="enablePagination">
         <Pagination
           :total-page="totalPages"

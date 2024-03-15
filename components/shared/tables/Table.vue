@@ -1,7 +1,6 @@
 <script setup lang="ts" generic="TData, TValue">
 import {
   type ColumnDef,
-  getSortedRowModel,
   type Header,
   type RowData,
   type SortingState,
@@ -28,8 +27,12 @@ const props = defineProps<{
 const emit = defineEmits(["onSortingChange"]);
 const sorting = ref<SortingState>([]);
 const onSortEvent = (header: Header<RowData, unknown>) => {
+  if (!header.column.getCanSort()) return;
   header.column.toggleSorting(header.column.getIsSorted() === "asc");
-  emit("onSortingChange", sorting.value[0].desc ? "desc" : "asc");
+  emit("onSortingChange", {
+    name: sorting.value[0].id,
+    order: sorting.value[0].desc ? "desc" : "asc",
+  });
 };
 const table = useVueTable({
   get data() {
@@ -70,6 +73,7 @@ const table = useVueTable({
                 :props="header.getContext()"
               />
               <Icon
+                v-if="header.column.getCanSort()"
                 :key="table.getState().sorting"
                 :icon="
                   table.getState().sorting[0]?.desc ? 'chev-up' : 'chev-down'

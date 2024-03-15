@@ -4,10 +4,10 @@ import { watch } from "vue";
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 import { useDeleteDialog, useFeatures, useTenants } from "~/store/state";
 import Table from "~/components/shared/tables/Table.vue";
-import TableDropdown from "~/components/shared/tables/TableDropdown.vue";
+import TableDropdown, {
+  type ActionEventParams,
+} from "~/components/shared/tables/TableDropdown.vue";
 
-import { type ITableHeaders } from "~/components/shared/Table.vue";
-import type { ActionCtaDataType } from "~/components/shared/Table.vue";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
@@ -91,7 +91,7 @@ const slugMapper: Record<Slug, () => ReturnConfig> = {
 const onTableActionEvent = async ({
   data: { invokedBy, value },
 }: {
-  data: ActionCtaDataType;
+  data: ActionEventParams;
 }) => {
   if (paramSlug === "tenants") {
     if (invokedBy === "Edit") {
@@ -141,7 +141,13 @@ const onPageChangeEvent = async (page: number) => {
   }
 };
 
-const onSortEvent = async (order: "asc" | "desc") => {
+const onSortEvent = async ({
+  name,
+  order,
+}: {
+  name: string;
+  order: "asc" | "desc";
+}) => {
   if (paramSlug === "tenants") {
     await tenantStore.fetch({
       MaxResultCount: maxRecord.value,
@@ -158,6 +164,7 @@ const cols: ColumnDef<{ name: string; id: string }>[] = [
   {
     id: "actions",
     header: () => h("span", "Actions"),
+
     cell: (props) => {
       const tenant = props.row.original;
       return h(
@@ -175,7 +182,7 @@ const cols: ColumnDef<{ name: string; id: string }>[] = [
   {
     accessorKey: "name",
     enableSorting: true,
-    header: () => h("span", "Name"),
+    header: () => h("span", "Tenant Name"),
     cell: (props) => {
       return h(
         "div",

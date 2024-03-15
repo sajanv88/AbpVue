@@ -3,7 +3,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/abp/ui/dropdown-menu";
 import Icon from "~/components/shared/Icon.vue";
@@ -15,7 +14,7 @@ interface Props {
 }
 defineProps<Props>();
 const emit = defineEmits(["action"]);
-type ActionEventParams = {
+export type ActionEventParams = {
   invokedBy: string;
   value: { id: string; name: string };
 };
