@@ -196,12 +196,6 @@ const cols: ColumnDef<{ name: string; id: string }>[] = [
 
 <template>
   <section>
-    <Alert
-      type="error"
-      :message="tenantStore.error.message"
-      v-if="tenantStore.error"
-      :dismissible="true"
-    />
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
       <CreateTenant
@@ -222,6 +216,12 @@ const cols: ColumnDef<{ name: string; id: string }>[] = [
       searchPlaceholder="Search..."
     />
     <main>
+      <Alert
+        type="destructive"
+        :message="tenantStore.error.message"
+        v-if="tenantStore.error"
+        :dismissible="true"
+      />
       <Table
         :columns="cols"
         :data="config.columns"

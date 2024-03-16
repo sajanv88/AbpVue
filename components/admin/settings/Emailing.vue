@@ -59,7 +59,7 @@ const onSubmitEvent = async (e: SubmitEvent) => {
     </Teleport>
     <Alert
       v-if="emailStore.error"
-      type="error"
+      type="destructive"
       :message="emailStore.error.message"
     />
 

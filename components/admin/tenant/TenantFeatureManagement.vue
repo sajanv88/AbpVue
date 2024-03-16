@@ -47,7 +47,7 @@ const onSubmitEvent = async (e: SubmitEvent) => {
     @close="$emit('dialogClose')"
   >
     <Alert
-      type="error"
+      type="destructive"
       :message="featureStore.error?.message"
       v-if="featureStore.error"
     />

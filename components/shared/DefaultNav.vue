@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration } from "~/store/state";
+import Alert from "~/components/shared/Alert.vue";
 const abp = useAbpConfiguration();
 const currentUser = abp.config?.currentUser;
-console.log(currentUser?.isAuthenticated, "currentUser");
 </script>
 
 <template>
@@ -68,6 +68,14 @@ console.log(currentUser?.isAuthenticated, "currentUser");
           </ul>
         </div>
       </div>
+      <!--  Remove this Alert component when you are using it on production env  -->
+      <section class="px-2">
+        <Alert
+          variant="warning"
+          message="Please note that the following application is intended solely for demonstration purposes."
+          :notice="true"
+        />
+      </section>
     </nav>
   </header>
 </template>

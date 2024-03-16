@@ -121,7 +121,7 @@ const checkAllPermissions = permissionStore.hasAllPermissionsGranted;
   >
     <Alert
       v-if="permissionStore.error"
-      type="error"
+      type="destructive"
       :message="permissionStore.error.message"
     />
     <form @submit="onSubmitForm">

@@ -404,11 +404,6 @@ const totalPages = computed(() => {
 
 <template>
   <section>
-    <Alert
-      type="error"
-      v-if="records?.error"
-      :message="records?.error?.message"
-    />
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
       <CreateRole
@@ -435,6 +430,12 @@ const totalPages = computed(() => {
       searchPlaceholder="Search..."
     />
     <main>
+      <Alert
+        type="destructive"
+        v-if="records?.error"
+        :message="records?.error?.message"
+        :dismissible="true"
+      />
       <Table
         :data="records?.columns"
         :columns="cols()"

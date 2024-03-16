@@ -81,7 +81,7 @@ const shouldDisabled = computed(() => {
   <Dialog id="roles" :title="dialogTitle" :open="open" @close="onCloseDialog">
     <Alert
       v-if="createRole.error"
-      type="error"
+      type="destructive"
       :message="createRole.error.message"
     />
     <form @submit="onSubmitForm">

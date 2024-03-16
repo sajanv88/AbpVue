@@ -68,7 +68,11 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
     :open="open"
     @close="$emit('dialogClose')"
   >
-    <Alert v-if="create.error" type="error" :message="create.error.message" />
+    <Alert
+      v-if="create.error"
+      type="destructive"
+      :message="create.error.message"
+    />
     <form @submit="createNewTenant">
       <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">

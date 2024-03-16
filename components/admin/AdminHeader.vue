@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 import Avatar from "~/components/shared/Avatar.vue";
 import IconButton from "~/components/shared/IconButton.vue";
 import { Card, CardHeader } from "~/abp/ui/card";
+import Alert from "~/components/shared/Alert.vue";
 
 defineProps({
   sticky: Boolean,
@@ -40,6 +41,14 @@ const onMenuClickEvent = () => {
 
 <template>
   <Card>
+    <section class="px-2">
+      <!--  Remove this Alert component when you are using it on production env  -->
+      <Alert
+        variant="warning"
+        message="Please note that the following application is intended solely for demonstration purposes."
+        :notice="true"
+      />
+    </section>
     <CardHeader>
       <div class="flex items-center h-full">
         <div class="flex-1">

@@ -56,7 +56,7 @@ const onSubmitForm = async (e: SubmitEvent) => {
 
   const payload =
     userStore.userInputData as Volo_Abp_Identity_IdentityUserUpdateDto;
-  console.log(payload, "payload");
+
   const success = await userStore.updateExistingUser(payload).finally(() => {
     processing.value = false;
   });
@@ -68,7 +68,7 @@ const onSubmitForm = async (e: SubmitEvent) => {
 
 <template>
   <Dialog id="user" :title="dialogTitle" :open="open" @close="onCloseDialog">
-    <Alert v-if="error" type="error" :message="error.message" />
+    <Alert v-if="error" type="destructive" :message="error.message" />
     <form @submit="onSubmitForm" :novalidate="selectedTab !== 'user'">
       <section class="flex items-center space-x-2 mb-5">
         <Button

@@ -49,7 +49,7 @@ const onSubmitForm = async (e: SubmitEvent) => {
   >
     <Alert
       v-if="emailStore.testEmail.error"
-      type="error"
+      type="destructive"
       :message="emailStore.testEmail.error.message"
     />
     <form @submit="onSubmitForm">
