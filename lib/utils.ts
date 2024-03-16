@@ -4,7 +4,7 @@ import type { Updater } from "@tanstack/vue-table";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export function valueUpdater<T extends Updater<any>>(
+export function valueUpdater<T extends Updater<unknown>>(
   updaterOrValue: T,
   ref: Ref,
 ) {

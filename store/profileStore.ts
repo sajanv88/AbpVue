@@ -71,6 +71,7 @@ export const useProfile = defineStore("profile", {
 
       this.setProfile(payload);
       const toastStore = useToast();
+      console.log("Called...");
       toastStore.show({
         message: "Profile updated successfully",
         type: "success",

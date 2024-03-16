@@ -71,7 +71,7 @@ const currentUser = abp.config?.currentUser;
       <!--  Remove this Alert component when you are using it on production env  -->
       <section class="px-2">
         <Alert
-          variant="warning"
+          type="warning"
           message="Please note that the following application is intended solely for demonstration purposes."
           :notice="true"
         />

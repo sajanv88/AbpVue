@@ -18,6 +18,7 @@ import {
 import { Card } from "~/abp/ui/card";
 import Icon from "~/components/shared/Icon.vue";
 import { valueUpdater } from "~/lib/utils";
+import Spinner from "~/components/shared/Spinner.vue";
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[];
@@ -55,55 +56,60 @@ const table = useVueTable({
 <template>
   <Card>
     <div class="overflow-x-auto overflow-y-auto min-h-fit max-h-[34rem]">
-      <Table>
-        <TableHeader>
-          <TableRow
-            v-for="headerGroup in table.getHeaderGroups()"
-            :key="headerGroup.id"
-            class="bg-primary-foreground"
-          >
-            <TableHead
-              v-for="header in headerGroup.headers"
-              :key="header.id"
-              @click="onSortEvent(header)"
+      <LazyClientOnly>
+        <template #fallback>
+          <Spinner />
+        </template>
+        <Table>
+          <TableHeader>
+            <TableRow
+              v-for="headerGroup in table.getHeaderGroups()"
+              :key="headerGroup.id"
+              class="bg-primary-foreground"
             >
-              <FlexRender
-                v-if="!header.isPlaceholder"
-                :render="header.column.columnDef.header"
-                :props="header.getContext()"
-              />
-              <Icon
-                v-if="header.column.getCanSort()"
-                :key="table.getState().sorting"
-                :icon="
-                  table.getState().sorting[0]?.desc ? 'chev-up' : 'chev-down'
-                "
-                :w="16"
-                :h="16"
-              />
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <template v-if="table.getRowModel().rows?.length">
-            <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+              <TableHead
+                v-for="header in headerGroup.headers"
+                :key="header.id"
+                @click="onSortEvent(header)"
+              >
                 <FlexRender
-                  :render="cell.column.columnDef.cell"
-                  :props="cell.getContext()"
+                  v-if="!header.isPlaceholder"
+                  :render="header.column.columnDef.header"
+                  :props="header.getContext()"
                 />
-              </TableCell>
+                <Icon
+                  v-if="header.column.getCanSort()"
+                  :key="table.getState().sorting"
+                  :icon="
+                    table.getState().sorting[0]?.desc ? 'chev-up' : 'chev-down'
+                  "
+                  :w="16"
+                  :h="16"
+                />
+              </TableHead>
             </TableRow>
-          </template>
-          <template v-else>
-            <TableRow>
-              <TableCell :colSpan="columns.length" class="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          </template>
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            <template v-if="table.getRowModel().rows?.length">
+              <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
+                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                  <FlexRender
+                    :render="cell.column.columnDef.cell"
+                    :props="cell.getContext()"
+                  />
+                </TableCell>
+              </TableRow>
+            </template>
+            <template v-else>
+              <TableRow>
+                <TableCell :colSpan="columns.length" class="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            </template>
+          </TableBody>
+        </Table>
+      </LazyClientOnly>
     </div>
   </Card>
 </template>

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
+import Toaster from "@/abp/ui/toast/Toaster.vue";
+
 import { useAbpConfiguration, useNavigation } from "~/store/state";
-import ToastContainer from "~/components/shared/ToastContainer.vue";
+
 import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
 import { navList } from "~/utils";
@@ -48,7 +50,6 @@ const goToAuthServer = async () => {
   <main class="relative">
     <Teleport to="body">
       <Dialog
-        id="logout"
         title="Session Expired"
         :open="showLogoutDialog"
         @close="goToAuthServer"
@@ -87,7 +88,7 @@ const goToAuthServer = async () => {
     </section>
 
     <Teleport to="body">
-      <ToastContainer />
+      <Toaster />
     </Teleport>
   </main>
 </template>

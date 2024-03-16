@@ -44,7 +44,7 @@ const onMenuClickEvent = () => {
     <section class="px-2">
       <!--  Remove this Alert component when you are using it on production env  -->
       <Alert
-        variant="warning"
+        type="warning"
         message="Please note that the following application is intended solely for demonstration purposes."
         :notice="true"
       />

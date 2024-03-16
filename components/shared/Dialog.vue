@@ -7,15 +7,18 @@ import {
   DialogContent,
 } from "~/abp/ui/dialog";
 interface DialogProps {
-  id: string;
   title: string;
   open: boolean;
 }
 defineProps<DialogProps>();
+const emits = defineEmits(["close"]);
+const onCloseEvent = () => {
+  emits("close");
+};
 </script>
 
 <template>
-  <Dialog :open="open" :id="id">
+  <Dialog :open="open">
     <DialogContent
       class="p-0 w-full md:max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] p-0 max-h-[90dvh]"
     >
@@ -24,7 +27,7 @@ defineProps<DialogProps>();
           <span class="flex-1">
             {{ title }}
           </span>
-          <DialogClose @click="() => $emit('close', id)">
+          <DialogClose @click="onCloseEvent">
             <Icon icon="cross" :w="16" :h="16" />
           </DialogClose>
         </DialogTitle>
