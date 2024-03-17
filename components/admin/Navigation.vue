@@ -37,7 +37,7 @@ onBeforeRouteUpdate((to, from, next) => {
         </Button>
       </div>
       <h1
-        class="text-lg pt-6 pb-6 tracking-tight font-semibold text-center text-gray-900 md:text-xl lg:text-2xl"
+        class="text-lg pt-6 pb-6 tracking-tight font-semibold text-center md:text-xl lg:text-2xl"
       >
         <NuxtLink to="/admin">AbpVue Template</NuxtLink>
       </h1>

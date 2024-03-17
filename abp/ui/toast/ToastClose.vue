@@ -27,6 +27,6 @@ const delegatedProps = computed(() => {
       )
     "
   >
-    <Icon icon="cross" :w="16" :h="16" />
+    <Icon icon="cross" :w="16" :h="16" classname="text-foreground" />
   </ToastClose>
 </template>

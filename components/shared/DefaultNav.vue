@@ -2,6 +2,7 @@
 import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration } from "~/store/state";
 import Alert from "~/components/shared/Alert.vue";
+import ThemeSwitch from "~/components/shared/ThemeSwitch.vue";
 const abp = useAbpConfiguration();
 const currentUser = abp.config?.currentUser;
 </script>
