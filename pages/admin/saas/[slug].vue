@@ -3,9 +3,11 @@ import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import FilterContainer from "~/components/admin/FilterContainer.vue";
 import { useDeleteDialog, useFeatures, useTenants } from "~/store/state";
+import Table from "~/components/shared/tables/Table.vue";
+import TableDropdown, {
+  type ActionEventParams,
+} from "~/components/shared/tables/TableDropdown.vue";
 
-import Table, { type ITableHeaders } from "~/components/shared/Table.vue";
-import type { ActionCtaDataType } from "~/components/shared/Table.vue";
 import Pagination from "~/components/shared/Pagination.vue";
 import DeleteDialog from "~/components/shared/DeleteDialog.vue";
 import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
@@ -13,12 +15,12 @@ import TenantFeatureManagement from "~/components/admin/tenant/TenantFeatureMana
 
 import { useTenantPolicy } from "~/composables/useTenantPolicy";
 import Alert from "~/components/shared/Alert.vue";
+import type { ColumnDef } from "@tanstack/vue-table";
 
 // Include editions, etc..
 const saasSlugs = ["tenants"] as const;
 type Slug = (typeof saasSlugs)[number];
 type ReturnConfig = {
-  headers: Array<ITableHeaders>;
   columns: Array<{ name: string; id: string }>;
   actionCtaBtnProps: { name: string; options: Array<{ name: string }> };
 };
@@ -64,21 +66,6 @@ const tenantPolicies = useTenantPolicy();
 // Update your code for editions etc..
 const slugMapper: Record<Slug, () => ReturnConfig> = {
   tenants: () => {
-    const headers: Array<ITableHeaders> = [
-      {
-        name: "Actions",
-      },
-      {
-        name: "TenantName",
-        sorting: true,
-      },
-      {
-        name: "",
-      },
-      {
-        name: "",
-      },
-    ];
     const columns: Array<{ name: string; id: string }> = [];
 
     const { canDeleteTenant, canUpdateTenant, canManageFeatures } =
@@ -97,32 +84,27 @@ const slugMapper: Record<Slug, () => ReturnConfig> = {
       actionCtaBtnProps.options.push({ name: "Settings" });
     }
 
-    return { headers, actionCtaBtnProps, columns };
+    return { actionCtaBtnProps, columns };
   },
 };
 
 const onTableActionEvent = async ({
   data: { invokedBy, value },
 }: {
-  data: ActionCtaDataType;
+  data: ActionEventParams;
 }) => {
-  if (invokedBy === "Delete") {
-    return await deleteDialogStore.showDialog(
-      value.id,
-      `${value.name} will be deleted. Do you confirm that?`,
-    );
-  }
-
-  if (invokedBy === "Edit") {
-    if (paramSlug === "tenants") {
-      // Trigger the tenant edit dialog
+  if (paramSlug === "tenants") {
+    if (invokedBy === "Edit") {
       return await tenantStore.getSelectedTenant(value.id);
     }
-  }
-  if (invokedBy === "Settings") {
-    if (paramSlug === "tenants") {
-      // Trigger the tenant feature management dialog
+    if (invokedBy === "Settings") {
       return await featureStore.fetch(value.id);
+    }
+    if (invokedBy === "Delete") {
+      return await deleteDialogStore.showDialog(
+        value.id,
+        `${value.name} will be deleted. Do you confirm that?`,
+      );
     }
   }
 };
@@ -159,7 +141,13 @@ const onPageChangeEvent = async (page: number) => {
   }
 };
 
-const onSortEvent = async (name: string, order: "asc" | "desc") => {
+const onSortEvent = async ({
+  name,
+  order,
+}: {
+  name: string;
+  order: "asc" | "desc";
+}) => {
   if (paramSlug === "tenants") {
     await tenantStore.fetch({
       MaxResultCount: maxRecord.value,
@@ -171,16 +159,43 @@ const onSortEvent = async (name: string, order: "asc" | "desc") => {
 const totalPages = computed(() =>
   Math.ceil(totalCount.value / maxRecord.value),
 );
+
+const cols: ColumnDef<{ name: string; id: string }>[] = [
+  {
+    id: "actions",
+    header: () => h("span", "Actions"),
+
+    cell: (props) => {
+      const tenant = props.row.original;
+      return h(
+        "span",
+        { class: "relative" },
+        h(TableDropdown, {
+          id: tenant.id,
+          name: tenant.name,
+          items: config.value.actionCtaBtnProps.options,
+          onAction: onTableActionEvent,
+        }),
+      );
+    },
+  },
+  {
+    accessorKey: "name",
+    enableSorting: true,
+    header: () => h("span", "Tenant Name"),
+    cell: (props) => {
+      return h(
+        "div",
+        { class: "text-left" },
+        props.row.getValue<string>("name"),
+      );
+    },
+  },
+];
 </script>
 
 <template>
   <section>
-    <Alert
-      type="error"
-      :message="tenantStore.error.message"
-      v-if="tenantStore.error"
-      :dismissible="true"
-    />
     <Teleport to="body">
       <DeleteDialog :type="paramSlug" v-if="isOpen" />
       <CreateTenant
@@ -201,15 +216,18 @@ const totalPages = computed(() =>
       searchPlaceholder="Search..."
     />
     <main>
-      <Table
-        :is-loading="isLoading"
-        :headers="config.headers"
-        :columns="config.columns"
-        :action-cta="config.actionCtaBtnProps"
-        @on-Action="onTableActionEvent"
-        @on-sort="onSortEvent"
-        :is-no-data="tenants?.length === 0"
+      <Alert
+        type="destructive"
+        :message="tenantStore.error.message"
+        v-if="tenantStore.error"
+        :dismissible="true"
       />
+      <Table
+        :columns="cols"
+        :data="config.columns"
+        @on-sorting-change="onSortEvent"
+      />
+
       <div v-if="enablePagination">
         <Pagination
           :total-page="totalPages"

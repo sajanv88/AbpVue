@@ -1,7 +1,7 @@
 <script setup lang="ts"></script>
 
 <template>
-  <footer class="bg-gray-200 dark:bg-gray-800 p-4 border-t">
+  <footer class="p-4 bg-background">
     <div class="max-w-screen-xl mx-auto">
       <p class="text-center text-gray-600 dark:text-gray-400">
         &copy; 2024

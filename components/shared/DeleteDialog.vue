@@ -45,7 +45,7 @@ const onClose = () => {
 <template>
   <Dialog :id="type" :open="isOpen" title="Are you sure?" @close="onClose">
     <Alert type="error" :message="error.message" v-if="error" />
-    <div class="p-4 md:p-5">
+    <div>
       <div class="flex flex-col justify-center items-center space-y-4">
         <Icon
           icon="info-circle"
@@ -61,22 +61,22 @@ const onClose = () => {
         <span v-if="isLoading" class="dark:text-white text-gray-700"
           >Deleting a record...</span
         >
-        <button
+        <Button
           v-if="!isLoading"
           type="button"
-          class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+          variant="secondary"
           @click="onClose"
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           v-if="!isLoading"
           type="button"
-          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 focus:outline-none focus:border-blue-500 bg-white border border-red-200 hover:bg-red-700 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-red-800 dark:text-white dark:border-red-600 dark:hover:text-white dark:hover:bg-red-700"
+          variant="destructive"
           @click="deleteAction"
         >
           Delete
-        </button>
+        </Button>
       </div>
     </div>
   </Dialog>

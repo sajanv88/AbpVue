@@ -12,6 +12,7 @@ import CreateTenant from "~/components/admin/tenant/CreateTenant.vue";
 import CreateRole from "~/components/admin/roles/CreateRole.vue";
 import type { FetchQueryParamsType } from "~/types/fetchParams";
 import CreateUser from "~/components/admin/users/CreateUser.vue";
+import { Card, CardContent, CardHeader } from "~/abp/ui/card";
 
 interface IFilterContainerProps {
   slug: string;
@@ -99,28 +100,26 @@ const onCreateAction = () => {
       />
     </ClientOnly>
   </Teleport>
-  <header
-    class="relative mb-5 p-5 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-  >
-    <div class="flex items-center mb-10">
-      <h1 class="text-4xl font-extrabold dark:text-white capitalize flex-1">
-        {{ props.slug }}
-      </h1>
-      <button
-        v-if="canCreate"
-        @click="onCreateAction"
-        class="inline-flex items-center px-2 py-2 text-sm font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-      >
-        <Icon icon="plus" />
-        <span>{{ props.newBtnName }}</span>
-      </button>
-    </div>
-    <Search
-      @on-search="onSearchEvent"
-      :placeholder="props.searchPlaceholder"
-      :type="props.searchType"
-    />
-  </header>
+  <Card class="mb-5">
+    <CardHeader>
+      <div class="flex items-center">
+        <h1 class="text-4xl font-extrabold capitalize flex-1">
+          {{ props.slug }}
+        </h1>
+        <Button v-if="canCreate" @click="onCreateAction">
+          <Icon icon="plus" />
+          {{ props.newBtnName }}
+        </Button>
+      </div>
+    </CardHeader>
+    <CardContent>
+      <Search
+        @on-search="onSearchEvent"
+        :placeholder="props.searchPlaceholder"
+        :type="props.searchType"
+      />
+    </CardContent>
+  </Card>
 </template>
 
 <style scoped></style>

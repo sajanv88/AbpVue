@@ -5,6 +5,11 @@ import AbpFooter from "~/components/shared/AbpFooter.vue";
 import { useAbpConfiguration } from "~/store/state";
 const abp = useAbpConfiguration();
 abp.fetch();
+useHead({
+  bodyAttrs: {
+    class: "bg-background text-foreground",
+  },
+});
 </script>
 
 <template>

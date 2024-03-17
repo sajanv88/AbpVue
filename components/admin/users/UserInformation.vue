@@ -7,6 +7,7 @@ import type {
 } from "~/services/proxy/src";
 import Checkbox from "~/components/shared/Checkbox.vue";
 import Icon from "~/components/shared/Icon.vue";
+import { Input } from "~/abp/ui/input";
 
 interface IUserInformation {
   edit?: boolean;
@@ -55,13 +56,13 @@ if (props.edit && existingUser) {
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >User name *</label
       >
-      <input
+      <Input
         type="text"
         id="username"
         name="userName"
         @input="inputRef.userName = $event.target.value"
-        :value="existingUser?.userName ?? inputRef.userName"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        :default-value="existingUser?.userName ?? inputRef.userName"
+        class="p-6 pl-3"
         required
       />
     </div>
@@ -71,13 +72,13 @@ if (props.edit && existingUser) {
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >Name</label
       >
-      <input
+      <Input
         type="text"
         id="name"
         name="name"
         @input="inputRef.name = $event.target.value"
-        :value="existingUser?.name ?? inputRef.name"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        :default-value="existingUser?.name ?? inputRef.name"
+        class="p-6 pl-3"
       />
     </div>
     <div class="col-span-6 mb-5">
@@ -86,13 +87,13 @@ if (props.edit && existingUser) {
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >Surname</label
       >
-      <input
+      <Input
         type="text"
         id="surname"
         name="surname"
         @input="inputRef.surname = $event.target.value"
-        :value="existingUser?.surname ?? inputRef.surname"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        :default-value="existingUser?.surname ?? inputRef.surname"
+        class="p-6 pl-3"
       />
     </div>
     <div class="col-span-12">
@@ -102,24 +103,26 @@ if (props.edit && existingUser) {
         >Password {{ edit ? "" : "*" }}</label
       >
       <div class="flex items-center">
-        <input
+        <Input
           id="currentPassword"
           :type="!inputRef.passwordViewer ? 'text' : 'password'"
           name="password"
           @input="inputRef.password = $event.target.value"
-          :value="inputRef.password"
+          :default-value="inputRef.password"
           :autocomplete="true"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          class="p-6 pl-3"
           :required="!edit"
         />
-        <button
+        <Button
           type="button"
           @click="() => (inputRef.passwordViewer = !inputRef.passwordViewer)"
-          class="p-2 text-gray-900 dark:text-white focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 focus:border-blue-500 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+          variant="ghost"
+          size="icon"
+          :key="inputRef.passwordViewer"
         >
           <Icon :icon="!inputRef.passwordViewer ? 'eye' : 'eye-slash'" />
           <span class="sr-only">Eye</span>
-        </button>
+        </Button>
       </div>
     </div>
     <div class="col-span-12">
@@ -128,13 +131,13 @@ if (props.edit && existingUser) {
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >Email *</label
       >
-      <input
+      <Input
         type="email"
         id="email"
         name="email"
         @input="inputRef.email = $event.target.value"
-        :value="existingUser?.email ?? inputRef.email"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        :default-value="existingUser?.email ?? inputRef.email"
+        class="p-6 pl-3"
         required
       />
     </div>
@@ -144,13 +147,13 @@ if (props.edit && existingUser) {
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >Phone number</label
       >
-      <input
+      <Input
         type="text"
         id="phoneNumber"
         name="phoneNumber"
         @input="inputRef.phoneNumber = $event.target.value"
-        :value="existingUser?.phoneNumber ?? inputRef.phoneNumber"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        :default-value="existingUser?.phoneNumber ?? inputRef.phoneNumber"
+        class="p-6 pl-3"
       />
     </div>
     <div class="col-span-12">

@@ -4,6 +4,7 @@ import Alert from "~/components/shared/Alert.vue";
 import { useEmailing } from "~/store/state";
 import type { Volo_Abp_SettingManagement_EmailSettingsDto } from "~/services/proxy/src";
 import TestEmail from "~/components/admin/settings/TestEmail.vue";
+import { Input } from "~/abp/ui/input";
 
 const processing = ref<boolean>(false);
 const toggleCredentials = ref<boolean>(false);
@@ -58,7 +59,7 @@ const onSubmitEvent = async (e: SubmitEvent) => {
     </Teleport>
     <Alert
       v-if="emailStore.error"
-      type="error"
+      type="destructive"
       :message="emailStore.error.message"
     />
 
@@ -70,16 +71,16 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Default from display name *</label
           >
-          <input
+          <Input
             type="text"
             id="defaultFromDisplayName"
-            :value="
+            :default-value="
               emailStore.data?.defaultFromDisplayName ??
               inputFieldRef.defaultFromDisplayName
             "
             @input="inputFieldRef.defaultFromDisplayName = $event.target.value"
             name="defaultFromDisplayName"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="p-6 pl-3"
             required
           />
         </div>
@@ -90,16 +91,16 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Default from address *</label
           >
-          <input
+          <Input
             type="email"
             id="defaultFromAddress"
             name="defaultFromAddress"
-            :value="
+            :default-value="
               emailStore.data?.defaultFromAddress ??
               inputFieldRef.defaultFromAddress
             "
+            class="p-6 pl-3"
             @input="inputFieldRef.defaultFromAddress = $event.target.value"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
             required
           />
         </div>
@@ -109,13 +110,13 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Host</label
           >
-          <input
+          <Input
             type="text"
             id="smtpHost"
             name="smtpHost"
-            :value="emailStore.data?.smtpHost ?? inputFieldRef.smtpHost"
+            :default-value="emailStore.data?.smtpHost ?? inputFieldRef.smtpHost"
             @input="inputFieldRef.smtpHost = $event.target.value"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="p-6 pl-3"
           />
         </div>
         <div class="col-span-12">
@@ -124,13 +125,13 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Port</label
           >
-          <input
+          <Input
             type="number"
             id="smtpPort"
             name="smtpPort"
-            :value="emailStore.data?.smtpPort ?? inputFieldRef.smtpPort"
+            :default-value="emailStore.data?.smtpPort ?? inputFieldRef.smtpPort"
             @input="inputFieldRef.smtpPort = $event.target.value"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="p-6 pl-3"
           />
         </div>
         <div class="col-span-12">
@@ -165,13 +166,15 @@ const onSubmitEvent = async (e: SubmitEvent) => {
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Domain</label
             >
-            <input
+            <Input
               type="text"
               id="smtpDomain"
               name="smtpDomain"
-              :value="emailStore.data?.smtpDomain ?? inputFieldRef.smtpDomain"
+              :default-value="
+                emailStore.data?.smtpDomain ?? inputFieldRef.smtpDomain
+              "
               @input="inputFieldRef.smtpDomain = $event.target.value"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="p-6 pl-3"
             />
           </div>
           <div>
@@ -180,15 +183,15 @@ const onSubmitEvent = async (e: SubmitEvent) => {
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >User name</label
             >
-            <input
+            <Input
               type="text"
               id="smtpUserName"
               name="smtpUserName"
-              :value="
+              :default-value="
                 emailStore.data?.smtpUserName ?? inputFieldRef.smtpUserName
               "
               @input="inputFieldRef.smtpUserName = $event.target.value"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="p-6 pl-3"
             />
           </div>
           <div>
@@ -197,15 +200,15 @@ const onSubmitEvent = async (e: SubmitEvent) => {
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >Password</label
             >
-            <input
+            <Input
               type="text"
               id="smtpPassword"
               name="smtpPassword"
-              :value="
+              :default-value="
                 emailStore.data?.smtpPassword ?? inputFieldRef.smtpPassword
               "
               @input="inputFieldRef.smtpPassword = $event.target.value"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              class="p-6 pl-3"
             />
           </div>
         </div>
@@ -215,21 +218,15 @@ const onSubmitEvent = async (e: SubmitEvent) => {
           >Saving...</span
         >
         <div class="flex items-center justify-end space-x-2">
-          <button
+          <Button
             v-if="!processing"
             type="button"
             @click="showTestEmailDialog = true"
-            class="inline-flex items-center px-4 py-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+            variant="secondary"
           >
             Send test email
-          </button>
-          <button
-            v-if="!processing"
-            type="submit"
-            class="inline-flex items-center px-8 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-          >
-            Save
-          </button>
+          </Button>
+          <Button v-if="!processing" type="submit"> Save </Button>
         </div>
       </div>
     </form>

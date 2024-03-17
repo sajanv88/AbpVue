@@ -2,17 +2,21 @@
 // import type { NuxtPage } from "@nuxt/schema";
 
 export default defineNuxtConfig({
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/eslint-module", "@pinia/nuxt"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/eslint-module",
+    "@pinia/nuxt",
+    "shadcn-nuxt",
+  ],
+  shadcn: {
+    prefix: "",
+    componentDir: "./abp/ui",
+  },
   app: {
     head: {
       htmlAttrs: {
         lang: "en",
       },
-      script: [
-        {
-          src: "https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js",
-        },
-      ],
     },
   },
   devServer: {
@@ -36,21 +40,4 @@ export default defineNuxtConfig({
       baseUrl: process.env.NUXT_ORIGIN,
     },
   },
-  tailwindcss: {
-    cssPath: ["./assets/css/tailwind.css", { injectPosition: "first" }],
-    configPath: "tailwind.config",
-    exposeConfig: {
-      level: 2,
-    },
-    config: {},
-    viewer: true,
-    editorSupport: true,
-  },
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
-  eslint: {},
 });

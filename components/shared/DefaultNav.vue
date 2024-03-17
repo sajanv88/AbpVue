@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
 import { useAbpConfiguration } from "~/store/state";
+import Alert from "~/components/shared/Alert.vue";
+import ThemeSwitch from "~/components/shared/ThemeSwitch.vue";
 const abp = useAbpConfiguration();
 const currentUser = abp.config?.currentUser;
-console.log(currentUser?.isAuthenticated, "currentUser");
 </script>
 
 <template>
   <header class="relative">
-    <nav
-      class="bg-white dark:bg-gray-800 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600"
-    >
+    <nav class="bg-background fixed w-full z-20 top-0 start-0">
       <div
         class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
       >
@@ -70,6 +69,14 @@ console.log(currentUser?.isAuthenticated, "currentUser");
           </ul>
         </div>
       </div>
+      <!--  Remove this Alert component when you are using it on production env  -->
+      <section class="px-2">
+        <Alert
+          type="warning"
+          message="Please note that the following application is intended solely for demonstration purposes."
+          :notice="true"
+        />
+      </section>
     </nav>
   </header>
 </template>

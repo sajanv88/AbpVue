@@ -2,9 +2,11 @@ import { useAbpConfiguration } from "~/store/state";
 
 export const useRolePolicy = () => {
   const abpConfigStore = useAbpConfiguration();
+
   const canDeleteRole = abpConfigStore?.grantedPolicies?.get(
     "isAbpIdentityRolesDelete",
   );
+
   const canUpdateRole = abpConfigStore?.grantedPolicies?.get(
     "isAbpIdentityRolesUpdate",
   );

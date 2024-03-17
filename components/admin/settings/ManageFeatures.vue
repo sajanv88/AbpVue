@@ -19,7 +19,7 @@ const onCloseDialog = () => {
     :open="open"
     @close="onCloseDialog"
   >
-    <section class="p-4 md:p-5">
+    <section>
       <p class="text-sm text-gray-700 dark:text-white">
         There isn't any available feature.
       </p>

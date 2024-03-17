@@ -11,13 +11,9 @@ interface IAccordionProps {
   selected: boolean;
 }
 defineProps<IAccordionProps>();
+const accordionState = ref<"closed" | "open">("closed");
 const onAccordingClick = (id: string) => {
-  const slot = document.querySelector(`[data-slot="slot-${id}"]`);
-  const icon = document.querySelector(`[data-accordion-icon="icon-${id}"]`);
-
-  if (!slot || !icon) return;
-  icon.classList.toggle("rotate-180");
-  slot.classList.toggle("hidden");
+  accordionState.value = accordionState.value === "closed" ? "open" : "closed";
 };
 </script>
 
@@ -28,8 +24,8 @@ const onAccordingClick = (id: string) => {
         <span class="block">
           <button
             v-if="renderAs == 'button'"
-            :class="selected ? 'bg-gray-300 dark:bg-gray-700' : ''"
-            class="block flex items-center w-full p-3 relative z-0 after:absolute after:-z-0 after:w-full after:h-full after:top-0 after:left-0 hover:after:bg-gray-800/20"
+            :class="selected ? 'bg-primary-foreground' : ''"
+            class="block flex items-center w-full p-3 relative z-0 after:absolute after:-z-0 after:w-full after:h-full after:top-0 after:left-0 hover:after:bg-secondary/30"
             @click="() => onAccordingClick(id as string)"
           >
             <span
@@ -37,19 +33,15 @@ const onAccordingClick = (id: string) => {
               aria-expanded="true"
               class="flex w-full items-center space-x-2"
             >
-              <Icon
-                classname=" text-gray-800 dark:text-white"
-                :icon="icon"
-                v-if="icon"
-              />
-              <span class="block text-gray-800 dark:text-white truncate">
+              <Icon classname="text-primary" :icon="icon" v-if="icon" />
+              <span class="block truncate">
                 {{ title }}
               </span>
             </span>
             <span v-if="showArrow">
               <svg
-                :data-accordion-icon="`icon-${id}`"
-                class="w-3 h-3 shrink-0 dark:text-white"
+                :data-iconstate="accordionState"
+                class="w-3 h-3 shrink-0 transition-all ease-in"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -68,25 +60,39 @@ const onAccordingClick = (id: string) => {
           <NuxtLink
             v-else-if="renderAs == 'link'"
             :to="link"
-            activeClass="bg-gray-300 dark:bg-gray-700"
-            class="flex w-full items-center space-x-2 p-3 relative z-0 after:absolute after:-z-0 after:w-full after:h-full after:top-0 after:left-0 hover:after:bg-gray-800/20"
+            activeClass="bg-primary-foreground"
+            class="flex w-full items-center space-x-2 p-3 relative z-0 after:absolute after:-z-0 after:w-full after:h-full after:top-0 after:left-0 hover:after:bg-secondary/30"
           >
-            <Icon
-              classname="text-gray-800 dark:text-white"
-              :icon="icon"
-              v-if="icon"
-            />
-            <span class="block text-gray-800 dark:text-white truncate">
+            <Icon classname="text-primary" :icon="icon" v-if="icon" />
+            <span class="block truncate">
               {{ title }}
             </span>
           </NuxtLink>
         </span>
-        <span class="hidden pl-7" :data-slot="`slot-${id}`">
+        <div
+          class="pl-7 transition-all ease-out"
+          :data-slot="`slot-${id}`"
+          :data-state="accordionState"
+        >
           <slot />
-        </span>
+        </div>
       </span>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+[data-state="open"] {
+  max-height: 100px;
+}
+[data-state="closed"] {
+  max-height: 0px;
+  overflow: hidden;
+}
+[data-iconstate="open"] {
+  transform: rotate(180deg);
+}
+[data-iconstate="closed"] {
+  transform: rotate(0deg);
+}
+</style>

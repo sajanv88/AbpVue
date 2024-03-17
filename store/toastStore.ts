@@ -1,8 +1,16 @@
 import { defineStore } from "pinia";
 import { v4 } from "uuid";
-import type { IToastProps } from "~/components/shared/Toast.vue";
+import { useToastNotification } from "@/abp/ui/toast";
 
-type ToastProps = IToastProps & {
+interface Props {
+  type: "success" | "destructive" | "warning" | "info" | "default";
+  message: string;
+  autoClose?: boolean;
+  autoCloseDelay?: number;
+  dismissible?: boolean;
+}
+
+type ToastProps = Props & {
   show: boolean;
   id: string;
 };
@@ -10,13 +18,24 @@ type ToastProps = IToastProps & {
 type ToastState = {
   toasts: ToastProps[];
 };
+
+const notification = useToastNotification();
 export const useToast = defineStore("toast", {
   state: (): ToastState => ({
     toasts: [],
   }),
   actions: {
     show(options: ToastProps) {
-      this.toasts.push({ id: v4(), ...options });
+      const id = v4();
+      const props = { ...options, id, show: true };
+      notification.toast({
+        variant: props.type,
+        description: props.message,
+        action: {
+          label: "Close",
+          onClick: () => this.hide(props.id),
+        },
+      });
     },
     hide(id: string) {
       const index = this.toasts.findIndex((x) => x.id === id);

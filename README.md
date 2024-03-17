@@ -3,6 +3,7 @@
 This repo is a work in progress. This project can be used as a drop-in replacement for the Angular/AbpReact/Blazor UI of the ABP Framework.
 
 # Docs
+
 You can read the documentation of this template [abpvue](https://abpvuedocs.sajankumarv.com/)
 
 ## Demo
@@ -16,7 +17,6 @@ You can read the documentation of this template [abpvue](https://abpvuedocs.saja
     | username | password |
     |----------|----------|
     | admin    | 1q2w3E*  |
-
 
 ## What is this?
 

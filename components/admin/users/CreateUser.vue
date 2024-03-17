@@ -56,7 +56,7 @@ const onSubmitForm = async (e: SubmitEvent) => {
 
   const payload =
     userStore.userInputData as Volo_Abp_Identity_IdentityUserUpdateDto;
-  console.log(payload, "payload");
+
   const success = await userStore.updateExistingUser(payload).finally(() => {
     processing.value = false;
   });
@@ -68,37 +68,23 @@ const onSubmitForm = async (e: SubmitEvent) => {
 
 <template>
   <Dialog id="user" :title="dialogTitle" :open="open" @close="onCloseDialog">
-    <Alert v-if="error" type="error" :message="error.message" />
-    <form
-      class="p-4 md:p-5"
-      @submit="onSubmitForm"
-      :novalidate="selectedTab !== 'user'"
-    >
+    <Alert v-if="error" type="destructive" :message="error.message" />
+    <form @submit="onSubmitForm" :novalidate="selectedTab !== 'user'">
       <section class="flex items-center space-x-2 mb-5">
-        <button
+        <Button
           type="button"
           @click="selectedTab = 'user'"
-          class="py-2.5 me-5 mb-2 text-sm font-medium text-gray-900 border-gray-200 hover:text-gray-800 dark:border-gray-600 dark:hover:text-white"
-          :class="
-            selectedTab === 'user'
-              ? 'border-b-2 font-semibold text-gray-800 dark:text-white '
-              : 'dark:text-gray-500 text-gray-400'
-          "
+          :variant="selectedTab == 'user' ? 'default' : 'link'"
         >
           User Information
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           @click="selectedTab = 'role'"
-          :class="
-            selectedTab == 'role'
-              ? 'border-b-2 font-semibold text-gray-800 dark:text-white'
-              : 'dark:text-gray-500 text-gray-400'
-          "
-          class="py-2.5 me-5 mb-2 text-sm font-medium text-gray-900 border-gray-200 hover:text-gray-800 dark:border-gray-600 dark:hover:text-white"
+          :variant="selectedTab == 'role' ? 'default' : 'link'"
         >
           Roles
-        </button>
+        </Button>
       </section>
 
       <UserInformation v-show="selectedTab === 'user'" :edit="edit" />
@@ -111,21 +97,15 @@ const onSubmitForm = async (e: SubmitEvent) => {
         <span v-if="updateUser.status" class="text-gray-700 dark:text-white"
           >Updating a user...</span
         >
-        <button
+        <Button
           v-if="!processing"
           type="button"
           @click="onCloseDialog"
-          class="inline-flex items-center justify-center px-4 py-2 space-x-2 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium text-sm text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+          variant="secondary"
         >
           Cancel
-        </button>
-        <button
-          v-if="!processing"
-          type="submit"
-          class="inline-flex items-center px-4 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-        >
-          Save
-        </button>
+        </Button>
+        <Button v-if="!processing" type="submit"> Save </Button>
       </footer>
     </form>
   </Dialog>

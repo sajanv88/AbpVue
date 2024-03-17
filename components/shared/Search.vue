@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Icon from "~/components/shared/Icon.vue";
 import IconButton from "~/components/shared/IconButton.vue";
+import { Input } from "~/abp/ui/input";
 
 type SearchType = "tenants" | "roles" | "users";
 interface ISearchProps {
@@ -24,11 +25,11 @@ const onReset = () => {
 
 <template>
   <form @submit="onSubmitForm" ref="formRef">
-    <div class="relative w-full">
-      <input
+    <div class="relative w-full items-center">
+      <Input
         type="search"
         name="search"
-        class="block p-4 w-full z-20 text-gray-900 bg-gray-50 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+        class="p-7 pl-10"
         :placeholder="props.placeholder"
         @change="
           $emit('onSearch', $event.target.value);
@@ -36,24 +37,26 @@ const onReset = () => {
         "
         required
       />
-      <span v-if="searchString.length > 0" class="absolute top-3 end-16 z-10">
-        <IconButton
+      <span
+        v-if="searchString.length > 0"
+        class="absolute end-0 inset-y-0 flex items-center justify-center px-2"
+      >
+        <Button
           @click="
             $emit('onSearch', '');
             onReset();
           "
-          classname="bg-transparent dark:bg-transparent border-none"
+          variant="ghost"
+          size="icon"
         >
           <Icon icon="cross" :w="16" :h="16" />
-        </IconButton>
+        </Button>
       </span>
-      <button
-        type="submit"
-        class="absolute top-0 end-0 h-full p-3 text-gray-900 dark:text-white focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 focus:border-blue-500 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+      <span
+        class="absolute start-0 inset-y-0 flex items-center justify-center px-2"
       >
         <Icon icon="search" />
-        <span class="sr-only">Search</span>
-      </button>
+      </span>
     </div>
   </form>
 </template>

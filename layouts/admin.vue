@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import Navigation from "~/components/admin/Navigation.vue";
+import Toaster from "@/abp/ui/toast/Toaster.vue";
+
 import { useAbpConfiguration, useNavigation } from "~/store/state";
-import ToastContainer from "~/components/shared/ToastContainer.vue";
+
 import Dialog from "~/components/shared/Dialog.vue";
 import { SpeedInsights } from "@vercel/speed-insights/vue";
 import { navList } from "~/utils";
-
-useHead({
-  bodyAttrs: {
-    class: "bg-gray-200 dark:bg-gray-800",
-  },
-});
 
 const showLogoutDialog = ref<boolean>(false);
 
@@ -51,16 +47,15 @@ const goToAuthServer = async () => {
 
 <template>
   <SpeedInsights />
-  <main class="relative bg-gray-200 dark:bg-gray-800">
+  <main class="relative">
     <Teleport to="body">
       <Dialog
-        id="logout"
         title="Session Expired"
         :open="showLogoutDialog"
         @close="goToAuthServer"
       >
         <section class="p-5">
-          <p class="text-gray-700 dark:text-white">
+          <p>
             Your session has expired.
             <a href="/api/auth/signin">
               <span class="text-blue-500">Click here to login</span>
@@ -77,12 +72,12 @@ const goToAuthServer = async () => {
               ? 'translate-x-0 w-full'
               : 'translate-x-[-100rem]'
           "
-          class="md:w-[17rem] z-20 bg-gray-200 dark:bg-gray-800 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg"
+          class="md:w-[17rem] xl:w-[24rem] z-20 transition-all md:translate-x-0 fixed top-0 h-svh shadow-lg bg-background"
         >
           <Navigation :navigations="navigations" />
         </section>
-        <section class="md:ml-[4.5rem] lg:ml-[17rem] p-3 lg:p5">
-          <div class="dark:border-gray-300 shadow-md abp-vue-header-container">
+        <section class="md:ml-[17rem] xl:ml-[24rem] p-3 lg:p5">
+          <div class="abp-vue-header-container">
             <AdminHeader />
           </div>
           <div class="min-h-svh pt-5">
@@ -93,7 +88,7 @@ const goToAuthServer = async () => {
     </section>
 
     <Teleport to="body">
-      <ToastContainer />
+      <Toaster />
     </Teleport>
   </main>
 </template>

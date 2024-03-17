@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useProfile } from "~/store/state";
 import type { Volo_Abp_Account_UpdateProfileDto } from "~/services/proxy/src";
+import { Input } from "~/abp/ui/input";
 
 const profileStore = useProfile();
 
@@ -34,12 +35,12 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >User name *</label
           >
-          <input
+          <Input
             type="text"
             id="username"
             name="userName"
-            :value="profileStore?.userName"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            :default-value="profileStore?.userName"
+            class="p-6 pl-3"
             required
           />
         </div>
@@ -49,12 +50,12 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Name</label
           >
-          <input
+          <Input
             type="text"
             id="name"
             name="name"
-            :value="profileStore?.name"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            :default-value="profileStore?.name"
+            class="p-6 pl-3"
           />
         </div>
         <div class="col-span-6 mb-5">
@@ -63,12 +64,12 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Surname</label
           >
-          <input
+          <Input
             type="text"
             id="surname"
             name="surname"
-            :value="profileStore?.surname"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            :default-value="profileStore?.surname"
+            class="p-6 pl-3"
           />
         </div>
         <div class="col-span-12">
@@ -77,12 +78,12 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Email *</label
           >
-          <input
+          <Input
             type="email"
             id="email"
             name="email"
-            :value="profileStore?.email"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            :default-value="profileStore?.email"
+            class="p-6 pl-3"
             required
           />
         </div>
@@ -92,12 +93,12 @@ const onSubmitEvent = async (e: SubmitEvent) => {
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >Phone number</label
           >
-          <input
+          <Input
             type="text"
             id="phoneNumber"
             name="phoneNumber"
-            :value="profileStore?.phoneNumber"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            :default-value="profileStore?.phoneNumber"
+            class="p-6 pl-3"
           />
         </div>
       </div>
@@ -105,13 +106,7 @@ const onSubmitEvent = async (e: SubmitEvent) => {
         <span v-if="processing" class="text-gray-500 dark:text-white"
           >Saving...</span
         >
-        <button
-          v-if="!processing"
-          type="submit"
-          class="inline-flex items-center px-8 py-2 font-medium text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-        >
-          Save
-        </button>
+        <Button v-if="!processing" type="submit"> Save </Button>
       </div>
     </form>
   </section>

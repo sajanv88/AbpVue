@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { INavigation } from "~/types/navigation";
 import Accordion from "~/components/shared/Accordion.vue";
-import IconButton from "~/components/shared/IconButton.vue";
 import Icon from "~/components/shared/Icon.vue";
 import { useNavigation } from "~/store/state";
 import { onBeforeRouteUpdate, onNuxtReady } from "#app";
@@ -33,12 +32,12 @@ onBeforeRouteUpdate((to, from, next) => {
   <section role="navigation" id="nav">
     <div class="flex flex-col w-full p-1 pt-5">
       <div class="md:hidden flex justify-center" id="js-mobile-cross">
-        <IconButton @click="onToggleNav">
+        <Button @click="onToggleNav" size="icon">
           <Icon icon="cross" />
-        </IconButton>
+        </Button>
       </div>
       <h1
-        class="text-lg pt-6 pb-6 tracking-tight font-semibold text-center text-gray-900 md:text-xl lg:text-2xl dark:text-white"
+        class="text-lg pt-6 pb-6 tracking-tight font-semibold text-center md:text-xl lg:text-2xl"
       >
         <NuxtLink to="/admin">AbpVue Template</NuxtLink>
       </h1>

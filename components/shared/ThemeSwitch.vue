@@ -30,10 +30,12 @@ const onThemeSwitchEvent = async () => {
 
 <style scoped></style>
 <template>
-  <button
+  <Button
     @click="onThemeSwitchEvent"
     type="button"
-    class="mr-3 text-gray-500 dark:text-white dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 text-sm p-2.5"
+    variant="ghost"
+    size="icon"
+    class="mr-2"
   >
     <span v-if="currentTheme.theme == 'light'">
       <svg
@@ -63,5 +65,5 @@ const onThemeSwitchEvent = async () => {
         />
       </svg>
     </span>
-  </button>
+  </Button>
 </template>

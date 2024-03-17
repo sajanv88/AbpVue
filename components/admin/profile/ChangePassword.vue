@@ -2,6 +2,7 @@
 import type { Volo_Abp_Account_ChangePasswordInput } from "~/services/proxy/src";
 import Icon from "~/components/shared/Icon.vue";
 import { useProfile } from "~/store/state";
+import { Input } from "~/abp/ui/input";
 
 const profileStore = useProfile();
 const processing = ref(false);
@@ -73,21 +74,23 @@ const formNotValid = computed(() => {
           class="flex items-center"
           :key="passwordViewer.currentPassword.visible"
         >
-          <input
+          <Input
             id="currentPassword"
             :type="passwordViewer.currentPassword.visible ? 'text' : 'password'"
             name="currentPassword"
             @input="
               passwordViewer.currentPassword.fieldValue = $event.target.value
             "
-            :value="passwordViewer.currentPassword.fieldValue"
-            class="block p-3 w-full text-gray-900 bg-gray-50 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+            :default-value="passwordViewer.currentPassword.fieldValue"
+            class="p-6 pl-3"
             required
           />
-          <button
+          <Button
             type="button"
             @click="() => onTogglePassword('currentPassword')"
-            class="p-3 text-gray-900 dark:text-white focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 focus:border-blue-500 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            variant="ghost"
+            size="icon"
+            :key="passwordViewer.currentPassword.visible"
           >
             <Icon
               :icon="
@@ -95,7 +98,7 @@ const formNotValid = computed(() => {
               "
             />
             <span class="sr-only">Eye</span>
-          </button>
+          </Button>
         </div>
       </div>
       <div class="col-span-12">
@@ -108,25 +111,26 @@ const formNotValid = computed(() => {
           class="flex items-center"
           :key="passwordViewer.newPassword.visible"
         >
-          <input
+          <Input
             id="newPassword"
             :type="passwordViewer.newPassword.visible ? 'text' : 'password'"
             name="newPassword"
             @input="passwordViewer.newPassword.fieldValue = $event.target.value"
-            :value="passwordViewer.newPassword.fieldValue"
-            class="block p-3 w-full text-gray-900 bg-gray-50 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+            :default-value="passwordViewer.newPassword.fieldValue"
+            class="p-6 pl-3"
             required
           />
-          <button
+          <Button
             type="button"
             @click="() => onTogglePassword('newPassword')"
-            class="p-3 text-gray-900 dark:text-white focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 focus:border-blue-500 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            variant="ghost"
+            size="icon"
           >
             <Icon
               :icon="passwordViewer.newPassword.visible ? 'eye' : 'eye-slash'"
             />
             <span class="sr-only">Eye</span>
-          </button>
+          </Button>
         </div>
       </div>
       <div class="col-span-12">
@@ -139,15 +143,15 @@ const formNotValid = computed(() => {
           class="flex items-center"
           :key="passwordViewer.confirmPassword.visible"
         >
-          <input
+          <Input
             id="confirmPassword"
             name="confirmPassword"
             :type="passwordViewer.confirmPassword.visible ? 'text' : 'password'"
             @input="
               passwordViewer.confirmPassword.fieldValue = $event.target.value
             "
-            :value="passwordViewer.confirmPassword.fieldValue"
-            class="block p-3 w-full text-gray-900 bg-gray-50 border focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+            :default-value="passwordViewer.confirmPassword.fieldValue"
+            class="p-6 pl-3"
             :class="
               formNotValid
                 ? 'border-red-500 dark:border-s-red-700 dark:border-red-600'
@@ -155,10 +159,11 @@ const formNotValid = computed(() => {
             "
             required
           />
-          <button
+          <Button
             type="button"
             @click="() => onTogglePassword('confirmPassword')"
-            class="p-3 text-gray-900 dark:text-white focus:outline-none bg-white border border-gray-200 hover:bg-gray-100 focus:border-blue-500 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            variant="ghost"
+            size="icon"
           >
             <Icon
               :icon="
@@ -166,7 +171,7 @@ const formNotValid = computed(() => {
               "
             />
             <span class="sr-only">Eye</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -174,19 +179,9 @@ const formNotValid = computed(() => {
       <span v-if="processing" class="text-gray-500 dark:text-white"
         >Saving...</span
       >
-      <button
-        v-if="!processing"
-        type="submit"
-        :disabled="formNotValid"
-        class="inline-flex items-center px-8 py-2 font-medium text-gray-900 dark:text-white focus:outline-none bg-white"
-        :class="
-          formNotValid
-            ? 'bg-gray-400 dark:bg-gray-700 cursor-not-allowed'
-            : 'border border-gray-200 focus:border-blue-500 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700'
-        "
-      >
+      <Button v-if="!processing" type="submit" :disabled="formNotValid">
         Save
-      </button>
+      </Button>
     </div>
   </form>
 </template>
