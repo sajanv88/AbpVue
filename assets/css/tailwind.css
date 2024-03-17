@@ -36,13 +36,13 @@
     --radius: 0.5rem;
 
     --info: 205 100% 54%;
-    --info-foreground: 205 100% 92%;
+    --info-foreground: 205 100% 99%;
 
     --success: 163 100% 40%;
-    --success-foreground: 163 100% 92%;
+    --success-foreground: 163 100% 99%;
 
     --warning: 39 100% 71%;
-    --warning-foreground: 39 100% 92%;
+    --warning-foreground: 39 100% 99%;
   }
 
   .dark {
@@ -76,13 +76,13 @@
     --ring: 212.7 26.8% 83.9%;
 
     --info: 205 100% 54%;
-    --info-foreground: 205 100% 92%;
+    --info-foreground: 205 100% 10%;
 
     --success: 163 100% 40%;
-    --success-foreground: 163 100% 92%;
+    --success-foreground: 163 100% 10%;
 
     --warning: 39 100% 71%;
-    --warning-foreground: 39 100% 92%;
+    --warning-foreground: 39 100% 10%;
   }
 }
 

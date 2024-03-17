@@ -4,7 +4,6 @@ import Accordion from "~/components/shared/Accordion.vue";
 import Icon from "~/components/shared/Icon.vue";
 import { useNavigation } from "~/store/state";
 import { onBeforeRouteUpdate, onNuxtReady } from "#app";
-import AbpFooter from "~/components/shared/AbpFooter.vue";
 
 interface INavigationProps {
   navigations: Array<INavigation>;
@@ -38,7 +37,7 @@ onBeforeRouteUpdate((to, from, next) => {
         </Button>
       </div>
       <h1
-        class="text-lg pt-6 pb-6 tracking-tight font-semibold text-center text-gray-900 md:text-xl lg:text-2xl dark:text-white"
+        class="text-lg pt-6 pb-6 tracking-tight font-semibold text-center text-gray-900 md:text-xl lg:text-2xl"
       >
         <NuxtLink to="/admin">AbpVue Template</NuxtLink>
       </h1>

@@ -40,20 +40,21 @@ const onMenuClickEvent = () => {
 </script>
 
 <template>
-  <Card>
-    <section class="px-2">
-      <!--  Remove this Alert component when you are using it on production env  -->
-      <Alert
-        type="warning"
-        message="Please note that the following application is intended solely for demonstration purposes."
-        :notice="true"
-      />
-    </section>
+  <section class="sticky bg-warning-foreground">
+    <!--  Remove this Alert component when you are using it on production env  -->
+    <Alert
+      class="m-0"
+      type="warning"
+      message="Please note that the following application is intended solely for demonstration purposes."
+      :notice="true"
+    />
+  </section>
+  <Card class="shadow">
     <CardHeader>
       <div class="flex items-center h-full">
         <div class="flex-1">
           <h1
-            class="hidden md:block text-lg pt-5 pb-5 tracking-tight font-semibold capitalize md:text-xl lg:text-2xl"
+            class="hidden md:block text-lg tracking-tight font-semibold capitalize md:text-xl lg:text-2xl"
           >
             {{ fullName }}
           </h1>

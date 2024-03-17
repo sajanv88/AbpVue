@@ -6,7 +6,7 @@ definePageMeta({
 </script>
 
 <template>
-  <section class="pt-16">
+  <section class="pt-40">
     <Welcome />
   </section>
 </template>
