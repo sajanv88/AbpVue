@@ -1,6 +1,6 @@
 # ABP Vue template
 
-This repo is a work in progress. This project can be used as a drop-in replacement for the Angular/AbpReact/Blazor UI of the ABP Framework.
+This project can be used as a drop-in replacement for the Angular/AbpReact/Blazor UI of the ABP Framework.
 
 # Docs
 
