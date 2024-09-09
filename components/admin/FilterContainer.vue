@@ -82,23 +82,21 @@ const onCreateAction = () => {
 
 <template>
   <Teleport to="body">
-    <ClientOnly>
-      <CreateTenant
-        v-if="showCreateTenantDialog"
-        :open="showCreateTenantDialog"
-        @dialog-close="showCreateTenantDialog = false"
-      />
-      <CreateRole
-        v-if="showCreateRoleDialog"
-        :open="showCreateRoleDialog"
-        @dialog-close="showCreateRoleDialog = false"
-      />
-      <CreateUser
-        v-if="showCreateUserDialog"
-        :open="showCreateUserDialog"
-        @dialog-close="showCreateUserDialog = false"
-      />
-    </ClientOnly>
+    <CreateTenant
+      v-if="showCreateTenantDialog"
+      :open="showCreateTenantDialog"
+      @dialog-close="showCreateTenantDialog = false"
+    />
+    <CreateRole
+      v-if="showCreateRoleDialog"
+      :open="showCreateRoleDialog"
+      @dialog-close="showCreateRoleDialog = false"
+    />
+    <CreateUser
+      v-if="showCreateUserDialog"
+      :open="showCreateUserDialog"
+      @dialog-close="showCreateUserDialog = false"
+    />
   </Teleport>
   <Card class="mb-5">
     <CardHeader>

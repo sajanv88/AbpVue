@@ -73,7 +73,7 @@ export const useEmailing = defineStore("emailing", {
         const toast = useToast();
         toast.show({
           message: "Error updating email settings",
-          type: "error",
+          type: "destructive",
           dismissible: true,
           autoClose: true,
         });
@@ -112,7 +112,7 @@ export const useEmailing = defineStore("emailing", {
         const toast = useToast();
         toast.show({
           message: "Error sending test email",
-          type: "error",
+          type: "destructive",
           dismissible: true,
           autoClose: true,
         });

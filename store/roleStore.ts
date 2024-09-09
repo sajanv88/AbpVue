@@ -102,7 +102,6 @@ export const useRoles = defineStore("roles", {
       this.fetch();
       const toast = useToast();
       toast.show({
-        show: true,
         message: "Role Created successfully",
         dismissible: true,
         type: "success",
@@ -130,7 +129,6 @@ export const useRoles = defineStore("roles", {
       this.updateRole.status = false;
       const toast = useToast();
       toast.show({
-        show: true,
         message: "Role Updated successfully",
         dismissible: true,
         type: "success",

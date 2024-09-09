@@ -7,6 +7,7 @@ import IconButton from "~/components/shared/IconButton.vue";
 import { Card, CardHeader } from "~/abp/ui/card";
 import Alert from "~/components/shared/Alert.vue";
 import ThemeSwitch from "~/components/shared/ThemeSwitch.vue";
+import Spinner from "~/components/shared/Spinner.vue";
 
 defineProps({
   sticky: Boolean,
@@ -65,34 +66,42 @@ const onMenuClickEvent = () => {
         </div>
 
         <ThemeSwitch />
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Avatar :name="name" :full-name="config?.currentUser?.userName" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>
-              <div>{{ config?.currentUser?.name }}</div>
-              <div class="font-medium truncate">
-                {{ config?.currentUser?.email }}
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuItem>
-              <div class="py-1">
-                <NuxtLink to="/admin/profile">Profile</NuxtLink>
-              </div>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <div class="py-1">
-                <a href="/api/auth/signout" class="flex items-center space-x-2">
-                  <span class="inline-block">
-                    <Icon icon="logout" :w="18" :h="18" />
-                  </span>
-                  <span class="inline-block text-sm"> Logout </span>
-                </a>
-              </div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <LazyClientOnly>
+          <template #fallback>
+            <span>...</span>
+          </template>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Avatar :name="name" :full-name="config?.currentUser?.userName" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuLabel>
+                <div>{{ config?.currentUser?.name }}</div>
+                <div class="font-medium truncate">
+                  {{ config?.currentUser?.email }}
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuItem>
+                <div class="py-1">
+                  <NuxtLink to="/admin/profile">Profile</NuxtLink>
+                </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <div class="py-1">
+                  <a
+                    href="/api/auth/signout"
+                    class="flex items-center space-x-2"
+                  >
+                    <span class="inline-block">
+                      <Icon icon="logout" :w="18" :h="18" />
+                    </span>
+                    <span class="inline-block text-sm"> Logout </span>
+                  </a>
+                </div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </LazyClientOnly>
       </div>
     </CardHeader>
   </Card>

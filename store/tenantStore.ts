@@ -75,7 +75,6 @@ export const useTenants = defineStore("tenants", {
       this.updateTenant.error = null;
       const toastStore = useToast();
       toastStore.show({
-        show: true,
         message: "Tenant updated successfully",
         dismissible: true,
         type: "success",
@@ -103,10 +102,9 @@ export const useTenants = defineStore("tenants", {
           this.selectedTenant.isLoaded = false;
           const toastStore = useToast();
           toastStore.show({
-            show: true,
             message: `Error: ${error.statusMessage}. Please try again.`,
             dismissible: true,
-            type: "error",
+            type: "destructive",
           });
           throw error;
         }
@@ -137,10 +135,9 @@ export const useTenants = defineStore("tenants", {
       this.create.error = null;
       const toastStore = useToast();
       toastStore.show({
-        show: true,
         message: "Tenant Created successfully",
         dismissible: true,
-        type: "success",
+        type: "destructive",
         autoClose: true,
       });
       await this.fetch();

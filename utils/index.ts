@@ -87,6 +87,12 @@ export const navList: Array<INavigation> = [
     link: "/admin",
   },
   {
+    id: "dashboard",
+    title: "Dashboard",
+    icon: "graph",
+    link: "/admin/dashboard",
+  },
+  {
     id: "saas",
     title: "Saas",
     icon: "users",

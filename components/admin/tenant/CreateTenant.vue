@@ -62,12 +62,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
 </script>
 
 <template>
-  <Dialog
-    id="tenants"
-    :title="dialogTitle"
-    :open="open"
-    @close="$emit('dialogClose')"
-  >
+  <Dialog :title="dialogTitle" :open="open" @close="$emit('dialogClose')">
     <Alert
       v-if="create.error"
       type="destructive"
@@ -76,9 +71,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
     <form @submit="createNewTenant">
       <div class="grid gap-4 mb-4 grid-cols-2">
         <div class="col-span-2">
-          <label
-            for="name"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <label for="name" class="block mb-2 text-sm font-medium"
             >Tenant name *</label
           >
           <Input
@@ -93,9 +86,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
         </div>
         <!-- Abp basic version only allows you to edit name and host name. -->
         <div class="col-span-2" v-if="!edit">
-          <label
-            for="email"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <label for="email" class="block mb-2 text-sm font-medium"
             >Tenant admin's email address *</label
           >
           <Input
@@ -107,9 +98,7 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
           />
         </div>
         <div class="col-span-2" v-if="!edit">
-          <label
-            for="password"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          <label for="password" class="block mb-2 text-sm font-medium"
             >Tenant admin's password *</label
           >
           <Input
@@ -135,7 +124,6 @@ const dialogTitle = props.edit ? "Edit Tenant" : "New Tenant";
         >
         <Button
           v-if="!processing"
-          id="tenantCancelBtn"
           type="button"
           @click="$emit('dialogClose')"
           variant="secondary"

@@ -11,8 +11,7 @@ interface Props {
 }
 
 type ToastProps = Props & {
-  show: boolean;
-  id: string;
+  id?: string;
 };
 
 type ToastState = {
@@ -27,7 +26,7 @@ export const useToast = defineStore("toast", {
   actions: {
     show(options: ToastProps) {
       const id = v4();
-      const props = { ...options, id, show: true };
+      const props = { ...options, id };
       notification.toast({
         variant: props.type,
         description: props.message,

@@ -13,6 +13,7 @@ import { useRoles } from "./roleStore";
 import { usePermissionStore } from "./permissionStore";
 import { useUsers } from "./userStore";
 import { useEmailing } from "./emailingStore";
+import { useDashboard } from "./dashboardStore";
 
 import type { AbpEndpoint } from "~/types/abpEndpoint";
 
@@ -183,4 +184,5 @@ export {
   useUsers,
   useNavigation,
   useEmailing,
+  useDashboard,
 };

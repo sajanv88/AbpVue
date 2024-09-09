@@ -16,4 +16,5 @@ export type IconName =
   | "chev-up"
   | "rocket-takeoff"
   | "eye"
-  | "eye-slash";
+  | "eye-slash"
+  | "graph";

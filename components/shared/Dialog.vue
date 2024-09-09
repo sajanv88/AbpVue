@@ -21,6 +21,7 @@ const onCloseEvent = () => {
   <Dialog :open="open">
     <DialogContent
       class="p-0 w-full md:max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] p-0 max-h-[90dvh]"
+      aria-describedby="Create Tenant Dialog"
     >
       <DialogHeader class="pl-5 pr-5 pt-5">
         <DialogTitle class="flex items-center">
