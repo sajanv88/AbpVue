@@ -8,10 +8,12 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "shadcn-nuxt",
   ],
+
   shadcn: {
     prefix: "",
     componentDir: "./abp/ui",
   },
+
   app: {
     head: {
       htmlAttrs: {
@@ -19,12 +21,14 @@ export default defineNuxtConfig({
       },
     },
   },
+
   devServer: {
     https: {
       key: "cert.key",
       cert: "ca.pem",
     },
   },
+
   runtimeConfig: {
     openiddict: {
       issuer: process.env.NUXT_AUTHORITY_URL,
@@ -40,4 +44,6 @@ export default defineNuxtConfig({
       baseUrl: process.env.NUXT_ORIGIN,
     },
   },
+
+  compatibilityDate: "2025-01-03",
 });

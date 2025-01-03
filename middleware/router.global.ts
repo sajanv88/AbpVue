@@ -10,7 +10,7 @@ const navCallback = (nav: INavigation): string | string[] => {
 let validPaths = navList.map(navCallback).filter(Boolean).flat(2);
 validPaths = [...validPaths, "/admin/profile", "/error/notfound"];
 
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to) => {
   if (to.fullPath === "/") {
     return;
   }

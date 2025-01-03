@@ -40,7 +40,7 @@ if (!saasSlugs.includes(paramSlug)) {
 const tenantStore = useTenants();
 const deleteDialogStore = useDeleteDialog();
 const featureStore = useFeatures();
-const { tenants, totalCount, isLoading } = storeToRefs(tenantStore);
+const { tenants, totalCount } = storeToRefs(tenantStore);
 const { isOpen } = storeToRefs(deleteDialogStore);
 
 const currentPage = ref(0);
