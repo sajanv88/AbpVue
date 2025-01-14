@@ -8,12 +8,14 @@ const navCallback = (nav: INavigation): string | string[] => {
   return nav.link;
 };
 let validPaths = navList.map(navCallback).filter(Boolean).flat(2);
-validPaths = [...validPaths, "/admin/profile", "/error/notfound"];
 
+validPaths = [...validPaths, "/admin/profile", "/error/notfound"];
+console.log(...validPaths, "validPaths");
 export default defineNuxtRouteMiddleware((to) => {
   if (to.fullPath === "/") {
     return;
   }
+
   if (!validPaths.includes(to.fullPath)) {
     return navigateTo("/error/notfound");
   }

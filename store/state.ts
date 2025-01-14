@@ -71,6 +71,7 @@ const useAbpConfiguration = defineStore("abpConfiguration", {
     async fetch() {
       const url = `${getAbpServiceProxy("/abp/application-configuration")}`;
       const { data, error } = await useFetch(url);
+      console.log(data, "abp configuration response");
 
       if (error.value) {
         this.error = {

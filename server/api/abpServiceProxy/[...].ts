@@ -2,10 +2,13 @@ import { joinURL } from "ufo";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
-  const session = await getSession(event, { password: config.sessionSecret });
-  const { data } = session;
+  const authSessions = getCookie(event, "auth_session");
+  if(!authSessions) {
+    throw new Error("Unauthorized: Please login.");
+  }
+  const auth = JSON.parse(authSessions);
 
-  if (!data.tokenSet) {
+  if (!auth.tokenSet) {
     setResponseStatus(event, 401, "Unauthorized");
     return {
       status: 401,
@@ -18,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
   const verificationToken = getCookie(event, "XSRF-TOKEN");
   const headers = new Headers();
-  headers.set("Authorization", `Bearer ${data.tokenSet.access_token}`);
+  headers.set("Authorization", `Bearer ${auth.tokenSet.access_token}`);
   if (verificationToken) {
     headers.set("RequestVerificationToken", verificationToken);
   }
@@ -57,6 +60,6 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  const jsonData = await response.json();
-  return jsonData;
+  return await response.json();
+
 });

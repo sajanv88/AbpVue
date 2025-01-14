@@ -61,15 +61,24 @@ export default defineEventHandler(async (event) => {
           },
         );
         const claims = tokenSet.claims();
-        await updateSession(
+        const sessions = await useSession(
           event,
-          { password: config.sessionSecret },
-          {
-            tokenSet: tokenSet,
-            user: claims,
-          },
+          { password: config.sessionSecret }
         );
-
+        await sessions.update({
+          tokenSet: tokenSet,
+          user: claims,
+        });
+        setCookie(event, "auth_session", JSON.stringify({tokenSet: tokenSet, user: claims}), {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+        });
+        if(claims.tenantid) {
+          setCookie(event, "__tenant", JSON.stringify(claims.tenantid), {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+          });
+        }
         await sendRedirect(event, "/admin");
       } catch (e: unknown) {
         if (e instanceof Error) {
@@ -80,13 +89,17 @@ export default defineEventHandler(async (event) => {
     } else if (event.path == "/api/auth/signup") {
       await sendRedirect(event, `${config.openiddict.issuer}/Account/Register`);
     } else if (event.path == "/api/auth/signout") {
-      await getSession(event, { password: config.sessionSecret });
       const logoutUrl = client.endSessionUrl({
         client_id: config.openiddict.clientId,
+        post_logout_redirect_uri: config.openiddict.postLogoutRedirectUrl,
       });
-      await sendRedirect(event, logoutUrl);
+      console.log("Logging out: ", logoutUrl);
+      deleteCookie(event, "auth_session");
+      await sendRedirect(event, "/");
+
     } else if (event.path == `/${config.openiddict.postLogoutRedirectUrl}`) {
-      await clearSession(event, { password: config.sessionSecret });
+      // Todo: check and remove this
+      deleteCookie(event, "auth_session");
       await sendRedirect(event, "/");
     } else {
       await sendRedirect(event, "/error/notfound", 404);
