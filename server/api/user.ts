@@ -1,9 +1,16 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
-  const session = await getSession(event, { password: config.sessionSecret });
+  const authSessions = getCookie(event, "auth_session");
+  if(!authSessions) {
+    throw new Error("Unauthorized: Please login.");
+  }
+  const auth = JSON.parse(authSessions);
+  const token = auth.tokenSet.access_token;
+
   const abpUrl = config.abpApiEndpoint + "/account/my-profile";
 
-  if (Object.keys(session.data).length === 0) {
+
+  if (!auth || !token) {
     setResponseStatus(event, 401, "Unauthorized");
 
     return {
@@ -11,9 +18,10 @@ export default defineEventHandler(async (event) => {
       message: "Unauthorized: Please login.",
     };
   }
+
   const profile = await fetch(abpUrl, {
     headers: {
-      Authorization: `Bearer ${session.data.tokenSet.access_token}`,
+      Authorization: `Bearer ${token}`
     },
   });
 

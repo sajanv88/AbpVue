@@ -52,6 +52,14 @@ export const useEmailing = defineStore("emailing", {
           statusCode: error.value.statusCode ?? 500,
           message: error.value.message,
         };
+        const toast = useToast();
+        toast.show({
+          message: "Error fetching email settings",
+          type: "destructive",
+          show: true,
+          autoClose: true,
+          dismissible: true,
+        });
         this.isLoading = false;
         throw error.value;
       }

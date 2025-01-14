@@ -1,8 +1,11 @@
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
-  const session = await getSession(event, { password: config.sessionSecret });
+  const authSessions = getCookie(event, "auth_session");
+  if(!authSessions) {
+    throw new Error("Unauthorized: Please login.");
+  }
+  const auth = JSON.parse(authSessions);
 
-  if (Object.keys(session.data).length === 0) {
+  if (!auth || !auth.tokenSet.access_token) {
     setResponseStatus(event, 401, "Unauthorized");
     return {
       status: 401,
@@ -10,6 +13,6 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  const tokenSet = session.data.tokenSet;
+  const tokenSet = auth.tokenSet;
   return { jwt: tokenSet };
 });

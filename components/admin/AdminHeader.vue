@@ -34,6 +34,13 @@ const fullName = computed(() => {
   return config.value?.currentUser?.userName;
 });
 
+const showTenant = computed(() => {
+  if (config.value?.currentTenant?.id) {
+    return config.value?.currentTenant?.name + "\\";
+  }
+  return "";
+});
+
 const onMenuClickEvent = () => {
   navStore.toggleSideNavbar();
   emit("toggleNav");
@@ -57,7 +64,7 @@ const onMenuClickEvent = () => {
           <h1
             class="hidden md:block text-lg tracking-tight font-semibold capitalize md:text-xl lg:text-2xl"
           >
-            {{ fullName }}
+            {{ showTenant }}{{ fullName }}
           </h1>
           <IconButton @click="onMenuClickEvent" classname="inline md:hidden">
             <Icon icon="menu" />
